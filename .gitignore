@@ -44,10 +44,11 @@ htmlcov/
 .tox/
 .hypothesis/
 
-# Environment
+# Environment / secretos — NUNCA subir credenciales
 .env
-.env.local
-.env.*.local
+.env.*
+.env_*
+*.env
 
 # OS
 Thumbs.db
@@ -63,3 +64,9 @@ reports/output/
 # Contienen historial financiero personal. Usar fixtures anonimizados en tests/.
 *.csv
 !tests/fixtures/**/*.csv
+
+# Servidor MCP de CoinTracking: dependencia externa de terceros (MIT, repo
+# aparte). Se instala/clona localmente; no se versiona aquí. La integración
+# (configuración + documentación) sí es nuestra: .mcp.json y
+# knowledge/cointracking/MCP_API.md.
+cointracking-mcp-main/

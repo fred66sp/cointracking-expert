@@ -2,6 +2,8 @@
 
 **Cronograma del proyecto CoinTracking Expert**
 
+> **Nota (2026-07-02) — ADR-006:** El **corto plazo** ya no sigue este cronograma. El producto inmediato es un **agente de IA auditor en Claude Code** que se apoya en la base de conocimiento (ver `DECISIONS.md`, ADR-006). Las fases de framework/SDK descritas abajo (motores deterministas, CLI, API) pasan a ser **visión futura/opcional**, no el camino actual. Este documento se conserva como referencia de esa visión a largo plazo.
+
 Este documento describe las fases de desarrollo planificadas para el framework CoinTracking Expert, desde la fundación del proyecto hasta diagnósticos asistidos por IA. La hoja de ruta sigue un enfoque de desarrollo impulsado por documentación donde las especificaciones preceden a la implementación.
 
 ## Fase 1: Fundación del proyecto (Actual)

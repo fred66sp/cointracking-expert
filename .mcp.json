@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "cointracking": {
+      "command": "node",
+      "args": ["cointracking-mcp-main/dist/index.js"],
+      "env": {
+        "COINTRACKING_API_KEY": "${COINTRACKING_API_KEY}",
+        "COINTRACKING_API_SECRET": "${COINTRACKING_API_SECRET}"
+      }
+    }
+  }
+}
