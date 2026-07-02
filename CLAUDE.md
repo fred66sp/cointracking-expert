@@ -11,7 +11,8 @@ No es un SDK ni una librería de motores deterministas: eso se descartó (ver AD
 ## Estructura
 
 - `.claude/agents/cointracking-auditor.md` — el subagente auditor (rol, principios, límite de determinismo).
-- `.claude/skills/audit-cointracking/` — el playbook invocable con `/audit-cointracking`.
+- `.claude/skills/audit-cointracking/` — playbook de reconciliación (`/audit-cointracking`).
+- `.claude/skills/spanish-tax-return/` — preparación de la declaración de IRPF de un ejercicio (`/spanish-tax-return`); reconcilia primero y luego prepara lo fiscal.
 - `knowledge/` — el **cerebro** del agente (fuente de verdad):
   - `cointracking/` — formato CSV, modelo de coste, integración MCP, catálogo de referencia.
   - `taxation/spain/` — fiscalidad IRPF (ganancias patrimoniales, FIFO, Modelo 721).
@@ -22,7 +23,12 @@ No es un SDK ni una librería de motores deterministas: eso se descartó (ver AD
 
 ## Cómo se usa
 
-Invoca `/audit-cointracking`. El agente carga el conocimiento, obtiene los datos (MCP si está conectado; si no, el CSV) y produce un informe con formato **evidencia → causa → impacto → recomendación**.
+El agente responde a la **intención** del usuario, no a nombres técnicos:
+
+- "audita mi cuenta / revisa mis datos" → **`/audit-cointracking`** (reconciliación).
+- "quiero hacer la declaración de la renta 20XX / impuestos cripto / Modelo 721" → **`/spanish-tax-return`** (prepara la declaración; reconcilia primero).
+
+En ambos casos carga el conocimiento, obtiene los datos (MCP si está conectado; si no, el CSV) y produce un informe con formato **evidencia → causa → impacto → recomendación**.
 
 ## Principios (de FOUNDATION.md)
 

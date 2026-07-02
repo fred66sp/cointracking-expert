@@ -8,16 +8,20 @@ El agente vive en Claude Code, se apoya en una base de conocimiento propia y aud
 
 ## Cómo funciona
 
-1. Invocas la skill **`/audit-cointracking`** en Claude Code.
-2. El agente carga su conocimiento (`knowledge/`), obtiene los datos (MCP en vivo o CSV) y aplica su playbook de chequeos.
-3. Devuelve un informe con formato **evidencia → causa → impacto → recomendación**, citando la regla aplicada.
+Le dices lo que quieres y el agente lo enruta:
+
+- **Reconciliar / auditar** los datos → skill **`/audit-cointracking`**.
+- **Preparar la declaración de la renta** (IRPF) de un ejercicio → skill **`/spanish-tax-return`** (reconcilia primero y luego prepara lo fiscal).
+
+El agente carga su conocimiento (`knowledge/`), obtiene los datos (MCP en vivo o CSV) y devuelve un informe con formato **evidencia → causa → impacto → recomendación**, citando la regla aplicada.
 
 ## Estructura
 
 ```
 .claude/
   agents/cointracking-auditor.md      # El subagente auditor (rol y principios)
-  skills/audit-cointracking/          # El playbook invocable (/audit-cointracking)
+  skills/audit-cointracking/          # Playbook de reconciliación (/audit-cointracking)
+  skills/spanish-tax-return/          # Preparación de la declaración IRPF (/spanish-tax-return)
 knowledge/                            # El "cerebro" del agente (fuente de verdad)
   cointracking/                       # Formato CSV, modelo de coste, integración MCP, catálogo
   taxation/spain/                     # Fiscalidad IRPF: ganancias, FIFO, Modelo 721
