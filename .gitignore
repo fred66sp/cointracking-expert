@@ -58,3 +58,8 @@ reports/output/
 *.db
 *.sqlite
 *.sqlite3
+
+# Datos reales de usuario (privacidad) — NUNCA subir exportaciones reales
+# Contienen historial financiero personal. Usar fixtures anonimizados en tests/.
+*.csv
+!tests/fixtures/**/*.csv
