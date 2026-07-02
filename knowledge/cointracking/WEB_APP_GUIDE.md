@@ -12,6 +12,34 @@ Esta guía permite al agente **acompañar a un usuario novato** a operar la web 
 
 ---
 
+## La página de Transacciones (`enter_coins.php`)
+
+*(Verificado sobre la interfaz real, 2026-07. La UI puede cambiar; ADR-008.)*
+
+Es donde se ven, filtran, editan, fusionan y borran operaciones. Se accede desde el menú lateral **Transacciones**. Pestañas superiores: **Saldo por Exchange**, **Saldo actual**, **Lista de operaciones**.
+
+**Botones de acción** (sobre la tabla):
+- **Nueva** — añadir una operación manual.
+- **Editar** — editar la(s) fila(s) marcada(s).
+- **Duplicar** — duplicar la marcada.
+- **Fusionar para Operación** — combinar un **depósito + una retirada** seleccionados en una sola operación (trade). Útil al reconstruir transferencias.
+- **Eliminar** — borrar la(s) marcada(s).
+- **Borrado / Edición masivos** — acciones en lote.
+
+**Filtrar (Búsqueda avanzada):** caja de búsqueda libre + filtros por columna (Type, Buy, Cur., Sell, Cur., Fee, Cur., **Exchange**, Group, **Comment**, **Date**), cada uno con conmutador **Smart / RegEx**. Ejemplo usado en la auditoría de Coinbase: Exchange = `Coinbase` y búsqueda `16.03.2024`.
+
+**Seleccionar filas:** casilla a la izquierda de cada fila (Ctrl para varias, Shift para un rango). El pie indica *"Mostrando 1 a N de un total de N (filtradas de un total de 1.828 entradas)"* — sirve para confirmar el alcance del filtro antes de borrar.
+
+**Exportar** (botón *Export*): Copiar al Portapapeles, Imprimir, **CSV**, Excel, PDF, **PDF / CSV (Exportación Completa)**, JSON (limitado), XML (limitado), HTML. → El **CSV** es la "Trade Table" que usa el agente (ver `CSV_FORMAT.md`).
+
+**Opciones de la tabla (pie):** *Vista de tabla* (Extendida), *Edición integrada* (edición en línea sobre la propia tabla), *Autocompletar*, *Modo CSP*.
+
+**Columnas:** las mismas del CSV export — Tipo, Compra, Cur., Venta, Cur., Comisión, Cur., Intercambio, Grupo, Comentario, Fecha (+ columnas de direcciones y Tx Hash). Todas ordenables.
+
+> 🔧 **Para guiar un borrado/edición:** filtra por Exchange + fecha (formato `DD.MM.AAAA`), confirma con el pie cuántas filas quedan, marca las casillas correctas y usa **Eliminar** (o **Editar**). Recomienda **copia de seguridad** antes.
+
+---
+
 ## Mapa de remediación: hallazgo de auditoría → cómo arreglarlo
 
 | Hallazgo (ver informe de auditoría) | Acción en la web | Artículo oficial |
