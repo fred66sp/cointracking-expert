@@ -2,7 +2,7 @@
 
 **Agente de IA auditor de CoinTracking** para reconciliación de criptomonedas y fiscalidad española (IRPF).
 
-El agente vive en Claude Code, se apoya en una base de conocimiento propia y audita los datos de una cuenta de CoinTracking —accediendo por la API (vía MCP) o por el CSV export— para detectar y **explicar** problemas: transferencias huérfanas, ventas sin base de coste, duplicados, saldos imposibles e incoherencias fiscales.
+El agente vive en Claude Code, se apoya en una base de conocimiento propia y audita los datos de una cuenta de CoinTracking —accediendo por la API (vía MCP) o por el CSV export— para detectar y **explicar** problemas (transferencias huérfanas, ventas sin base de coste, duplicados, saldos imposibles, incoherencias fiscales), **guiar al usuario paso a paso a corregirlos en la web de CoinTracking** y preparar la declaración.
 
 > ⚠️ Herramienta de reconciliación y diagnóstico, **no asesoramiento fiscal**. El agente encuentra y explica; no produce cifras fiscales vinculantes (ver `DECISIONS.md`, ADR-006).
 
@@ -23,7 +23,7 @@ El agente carga su conocimiento (`knowledge/`), obtiene los datos (MCP en vivo o
   skills/audit-cointracking/          # Playbook de reconciliación (/audit-cointracking)
   skills/spanish-tax-return/          # Preparación de la declaración IRPF (/spanish-tax-return)
 knowledge/                            # El "cerebro" del agente (fuente de verdad)
-  cointracking/                       # Formato CSV, modelo de coste, integración MCP, catálogo
+  cointracking/                       # Formato CSV, coste, integración MCP, guía web (remediación), catálogo
   taxation/spain/                     # Fiscalidad IRPF: ganancias, FIFO, Modelo 721
 docs/GLOSSARY.md                      # Glosario de términos
 templates/AUDIT_REPORT.md             # Plantilla de informe de auditoría

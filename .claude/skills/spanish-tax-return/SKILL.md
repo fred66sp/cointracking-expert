@@ -52,7 +52,7 @@ Con `cointracking_get_trades` acotado a `start`/`end` del año (UNIX **segundos*
 
 - Método obligatorio en España: **FIFO** (`CAPITAL_GAINS.md` §4). En el MCP, `cointracking_get_gains(price:"oldest")` = FIFO.
 - **Limitación clave (decláralo):** `get_gains` devuelve ganancias **de toda la vida**, no del ejercicio, y **no** genera el informe español. Por tanto:
-  - El agente **verifica coherencia** y explica los eventos del año, pero **la cifra exacta del ejercicio** debe salir del **Informe de Impuestos de CoinTracking** (ajustes: método FIFO, jurisdicción España, año 2025) o de un asesor.
+  - El agente **verifica coherencia** y explica los eventos del año, pero **la cifra exacta del ejercicio** debe salir del **Informe de Impuestos de CoinTracking** (ajustes: método FIFO, jurisdicción España, año 2025) o de un asesor. Guía al usuario para generarlo con `knowledge/cointracking/WEB_APP_GUIDE.md` §7.
   - Toda cantidad que ofrezca el agente es **«estimación no vinculante»**.
 - Tramos de la base del ahorro por ejercicio: `CAPITAL_GAINS.md` §6 (versionar por año; 2025 llega al 30 %).
 - Compensación de pérdidas: `CAPITAL_GAINS.md` §7 (parcialmente `[PENDIENTE DE FUNDAMENTAR]`; no afirmar porcentajes/plazos sin fuente).

@@ -15,7 +15,7 @@ Este agente trata **cifras de inversión en cripto** y produce informes que van 
 
 ## Qué es este proyecto
 
-Un **agente de IA auditor de CoinTracking** que vive en Claude Code (ADR-006). Se apoya en una base de conocimiento propia y accede a los datos del usuario por dos vías: el **MCP de la API de CoinTracking** y/o el **CSV export** ("Trade Table"). Encuentra y explica problemas de reconciliación y fiscalidad española.
+Un **agente de IA auditor de CoinTracking** que vive en Claude Code (ADR-006). Se apoya en una base de conocimiento propia y accede a los datos del usuario por dos vías: el **MCP de la API de CoinTracking** y/o el **CSV export** ("Trade Table"). Encuentra y explica problemas de reconciliación y fiscalidad española, **guía al usuario paso a paso para corregirlos en la web de CoinTracking** y prepara lo necesario para la declaración.
 
 No es un SDK ni una librería de motores deterministas: eso se descartó (ver ADR-006). El "producto" es el agente + su conocimiento.
 
@@ -25,7 +25,7 @@ No es un SDK ni una librería de motores deterministas: eso se descartó (ver AD
 - `.claude/skills/audit-cointracking/` — playbook de reconciliación (`/audit-cointracking`).
 - `.claude/skills/spanish-tax-return/` — preparación de la declaración de IRPF de un ejercicio (`/spanish-tax-return`); reconcilia primero y luego prepara lo fiscal.
 - `knowledge/` — el **cerebro** del agente (fuente de verdad):
-  - `cointracking/` — formato CSV, modelo de coste, integración MCP, catálogo de referencia.
+  - `cointracking/` — formato CSV, modelo de coste, integración MCP, guía de uso de la web (remediación), catálogo de referencia.
   - `taxation/spain/` — fiscalidad IRPF (ganancias patrimoniales, FIFO, Modelo 721).
 - `DECISIONS.md` — registro de decisiones (ADR-001…007). Gobernanza vinculante.
 - `templates/AUDIT_REPORT.md` — plantilla de informe.

@@ -42,6 +42,14 @@ Para análisis profundo puedes delegar en el subagente `cointracking-auditor`.
 
 Usa la plantilla `templates/AUDIT_REPORT.md`. Ordena los hallazgos por severidad y, para cada uno: **causa, evidencia, impacto, recomendación**. Cierra con un resumen y con lo **no verificado** (datos faltantes, reglas pendientes de fundamentar como la fiscalidad de staking).
 
+## Paso 3 — Remediación guiada (ofrécela)
+
+Tras el informe, **ofrece ayudar a corregir** los hallazgos en la web de CoinTracking. Para cada problema con solución, guía al usuario **paso a paso y en lenguaje llano** usando `knowledge/cointracking/WEB_APP_GUIDE.md` (mapa de remediación: hallazgo → acción → artículo oficial).
+
+- **Antes de dar los pasos clic a clic, abre y lee el artículo oficial citado** para confirmar que siguen vigentes (la interfaz cambia; ADR-008/009). Si no puedes verificarlos, dilo y no improvises la ruta.
+- Ve de un problema en uno; confirma que se ha resuelto antes de pasar al siguiente.
+- Recuerda al usuario **re-ejecutar la auditoría** tras las correcciones para comprobar que el problema desaparece.
+
 ## Límite de determinismo (ADR-006)
 
 Recuerda: encuentras y explicas; **no** produces cifras fiscales vinculantes. Toda cantidad exacta es «estimación no vinculante» salvo que provenga de un cálculo determinista.

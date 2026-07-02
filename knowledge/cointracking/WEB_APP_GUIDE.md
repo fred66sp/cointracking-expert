@@ -1,0 +1,66 @@
+# Guía de uso de la web de CoinTracking (remediación y operación)
+
+**Tipo:** Conocimiento operativo destilado de fuentes oficiales de CoinTracking
+**Fuentes:** Centro de ayuda oficial (URLs al pie y en `reference/CATALOG.md`)
+**Última verificación:** 2026-07-02
+**Vigencia:** la **interfaz de CoinTracking cambia**. Los pasos concretos (nombres de menús/botones) pueden variar — **antes de dar instrucciones clic a clic, verifica los pasos vigentes** en el artículo oficial citado (ADR-008). No inventes rutas de menú (ADR-009).
+**Estado:** Destilado y reelaborado (no copia verbatim)
+
+Esta guía permite al agente **acompañar a un usuario novato** a operar la web de CoinTracking, sobre todo para **corregir** los problemas que detecta la auditoría y para **generar los informes**. Explica en pasos sencillos, uno a uno, y en lenguaje llano (ver estilo de guía en `CLAUDE.md`).
+
+> 🔒 **Regla (ADR-009):** cuando vayas a guiar una acción en la web, **abre y lee el artículo oficial citado** para confirmar los pasos actuales antes de instruir. Si no puedes verificarlos, dilo y no improvises la ruta.
+
+---
+
+## Mapa de remediación: hallazgo de auditoría → cómo arreglarlo
+
+| Hallazgo (ver informe de auditoría) | Acción en la web | Artículo oficial |
+|-------------------------------------|------------------|------------------|
+| Venta sin base de coste / "compra importada como depósito" | Cambiar el tipo de la operación de **Depósito → Trade**, o editar el valor del activo | Editar/eliminar operaciones · Editar valor del activo · Avisos de ganancias |
+| Transferencia huérfana (falta un lado) | Registrar el **lado que falta** (retirada o depósito), con la retirada **antes** que el depósito | Entrada de depósitos/retiradas/transferencias |
+| Duplicados | Revisar el informe de **duplicados** y borrarlos (individual o en lote) | Duplicate Transactions · Bulk Delete |
+| Depósito de fiat faltante (fiat negativo) | Añadir el **depósito de fiat** (p. ej. ingreso SEPA) que falta | Cómo introducir operaciones |
+| Saldo/coste incorrecto puntual | **Editar valor del activo** (precio de compra/venta) de la operación | Editar valor del activo |
+| Muchas operaciones a corregir igual | **Edición masiva** (tipo, hora, precio) | Bulk Edit |
+| Datos incompletos de un exchange | Revisar la **importación** (API/CSV) y el informe de transacciones faltantes | Importación · Missing Transactions Report |
+
+---
+
+## Tareas frecuentes (en lenguaje de usuario)
+
+### 1. Corregir una "venta sin base de coste"
+Suele deberse a que una **compra** se importó como **Depósito** (que no lleva coste) en vez de **Trade**. Dos vías:
+- **Cambiar el tipo** de la operación a *Trade* e indicar por cuánto se compró; o
+- **Editar el valor del activo** de la operación: en la página de **Transactions/Operaciones**, seleccionar la operación → *Edit* → *Edit Asset Value* → ajustar los valores de compra y venta.
+- Fuentes: [Editar y eliminar operaciones](https://cointracking.freshdesk.com/en/support/solutions/articles/29000044546-how-to-edit-and-delete-transactions) · [Editar valor del activo](https://cointracking.freshdesk.com/en/support/solutions/articles/29000033219-edit-asset-value-manually) · [Avisos en el informe de ganancias](https://cointracking.freshdesk.com/en/support/solutions/articles/29000007206-warnings-in-the-capital-gains-report)
+
+### 2. Registrar/corregir una transferencia entre cuentas propias
+Una transferencia necesita **los dos lados**: la **retirada** en la cuenta de origen y el **depósito** en la de destino. Importante: la **retirada debe tener fecha anterior o igual** al depósito, o no se traslada la base de coste. Usar los tipos *Depósito*/*Retirada* solo para monedas que ya se poseen con coste (para regalos/recompensas, usar el tipo correcto).
+- Fuente: [Entrada de depósitos, retiradas y transferencias](https://cointracking.freshdesk.com/en/support/solutions/articles/29000007201-entering-deposits-withdrawals-and-transfers-between-exchanges-wallets)
+
+### 3. Eliminar duplicados
+Usar el informe de **duplicados** para localizarlos y borrarlos; si son muchos, borrado en lote. Recuerda: filas idénticas **no siempre** son error (comisiones/recompensas recurrentes) — revisar antes de borrar.
+- Fuentes: [Duplicate Transactions](https://cointracking.freshdesk.com/en/support/solutions/articles/29000048918-duplicate-transactions) · [Transacciones duplicadas recurrentes](https://cointracking.freshdesk.com/en/support/solutions/articles/29000018219-reoccurring-duplicate-transactions) · [Borrado en lote](https://cointracking.freshdesk.com/en/support/solutions/articles/29000043099-bulk-delete-transactions)
+
+### 4. Introducir una operación manual (p. ej. un ingreso fiat que falta)
+Se pueden añadir operaciones a mano en la página de introducción de operaciones; hay campos obligatorios según el tipo.
+- Fuentes: [Cómo introducir operaciones](https://cointracking.freshdesk.com/en/support/solutions/articles/29000018166-how-to-enter-transactions-into-cointracking) · [Datos obligatorios (custom importer)](https://cointracking.freshdesk.com/en/support/solutions/articles/29000032507-custom-importer-and-mandatory-data-to-add-transactions)
+
+### 5. Ediciones masivas (tipo, hora, precio)
+Para corregir muchas operaciones a la vez: cambiar tipo, ajustar hora, fijar precio por unidad, etc.
+- Fuentes: [Bulk Edit y Delete](https://cointracking.freshdesk.com/en/support/solutions/articles/29000043331-bulk-edit-and-delete) · [Cambiar tipo](https://cointracking.freshdesk.com/en/support/solutions/articles/29000043132-bulk-edit-change-trade-type) · [Ajustar hora](https://cointracking.freshdesk.com/en/support/solutions/articles/29000043229-bulk-edit-adjust-trade-time) · [Fijar precio por unidad](https://cointracking.freshdesk.com/en/support/solutions/articles/29000043231-bulk-edit-set-price-per-unit)
+
+### 6. Validar la cuenta y transacciones faltantes
+CoinTracking ofrece herramientas de validación y un informe de transacciones faltantes (depósitos sin su retirada emparejada).
+- Fuentes: [Cómo validar mi cuenta](https://cointracking.freshdesk.com/en/support/solutions/articles/29000035339-how-to-validate-my-account-) · [Missing Transactions Report](https://cointracking.freshdesk.com/en/support/solutions/articles/29000048812-missing-transactions-report)
+
+### 7. Generar el informe fiscal de España (con FIFO)
+En la configuración del **Tax Report**: elegir **país = España** y **método de cálculo = FIFO** (España usa FIFO; ver `../taxation/spain/CAPITAL_GAINS.md` §4). El informe muestra: ganancias patrimoniales realizadas (spot, NFT, derivados), rendimientos generales (staking, minería, airdrops), ingresos no gravables, otros pagos, y el detalle de operaciones. Incluye una sección sobre el **Modelo 721**.
+- Fuente: [Guía del informe fiscal (España)](https://cointracking.freshdesk.com/en/support/solutions/articles/29000045612-guide-to-navigating-and-understanding-your-tax-report-spain-)
+- 🔑 Este informe (FIFO/España) es la **calculadora determinista** de referencia para las cifras fiscales (ADR-006): el agente prepara/limpia los datos y verifica; la cifra vinculante sale de aquí o del asesor.
+
+---
+
+## Fuentes
+
+Centro de ayuda oficial de CoinTracking (contenido propietario; enlaces públicos). Índice completo en `reference/CATALOG.md`. Ante cualquier paso clic a clic, **verificar en el artículo** por si la interfaz cambió.
