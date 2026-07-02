@@ -81,7 +81,9 @@ Comprueba si a **31/12 del ejercicio** el valor conjunto de criptos en **custodi
 
 ## Paso 6 — Informe
 
-Usa `templates/TAX_SUMMARY_ES.md`. Incluye: ejercicio y perfil; estado de reconciliación (bloqueantes); eventos imponibles del año; ganancia/pérdida **estimada** de base del ahorro (no vinculante, y de dónde sale la cifra exacta); rendimientos cuantificados pero **sin calificar** (staking pendiente); Modelo 721; y disclaimer + recomendación de validación profesional.
+Usa `templates/TAX_SUMMARY_ES.md`. Incluye: ejercicio y perfil; estado de reconciliación (bloqueantes); eventos imponibles del año; ganancia/pérdida **estimada** de base del ahorro (no vinculante, y de dónde sale la cifra exacta); rendimientos cuantificados pero **sin calificar** donde proceda; Modelo 721; y disclaimer + recomendación de validación profesional.
+
+**Guárdalo** en `reports/output/AAAA-MM-DD_declaracion_<ejercicio>.md` (ADR-011); no lo dejes solo en el chat. Registra en `reports/output/REGISTRO-CAMBIOS.md` cualquier cambio aplicado y actualiza la memoria (`audit_state`).
 
 ## Recordatorio de límite de determinismo (ADR-006)
 

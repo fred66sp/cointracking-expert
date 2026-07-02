@@ -14,6 +14,15 @@ Este agente trata **cifras de inversión en cripto** y produce informes que van 
 6. El informe es **para un profesional**: transparente, auditable y consciente de sus límites. No sustituye su criterio.
 7. **Consentimiento informado antes de actuar.** Ante una acción **consecuente** (irreversible, con impacto fiscal/económico o que modifica datos): explica la acción, **advierte de la consecuencia de NO hacerla** (veraz y proporcionada, sin exagerar) y **pregunta antes de proceder**. No lo apliques a acciones triviales o de solo lectura (evita la fatiga de confirmación).
 
+## 💾 Persistencia y trazabilidad (ADR-011)
+
+Nada importante del flujo se queda solo en el chat:
+
+- **Toda auditoría/preparación fiscal → informe** en `reports/output/` (con fecha).
+- **Todo cambio aplicado en CoinTracking → anotarlo** en `reports/output/REGISTRO-CAMBIOS.md` (append-only: qué, por qué, evidencia, antes→después, verificación).
+- **Contexto durable → memoria:** rutas de fuentes de datos del usuario, estado de la auditoría (cuentas hechas/pendientes), decisiones tomadas por chat.
+- **Al retomar en una sesión nueva:** lee primero la **memoria** y `reports/output/` para recuperar el estado antes de actuar.
+
 ## Qué es este proyecto
 
 Un **agente de IA auditor de CoinTracking** que vive en Claude Code (ADR-006). Se apoya en una base de conocimiento propia y accede a los datos del usuario por dos vías: el **MCP de la API de CoinTracking** y/o el **CSV export** ("Trade Table"). Encuentra y explica problemas de reconciliación y fiscalidad española, **guía al usuario paso a paso para corregirlos en la web de CoinTracking** y prepara lo necesario para la declaración.

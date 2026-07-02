@@ -39,9 +39,11 @@ Después:
 
 Para análisis profundo puedes delegar en el subagente `cointracking-auditor`.
 
-## Paso 2 — Informe
+## Paso 2 — Informe (persistente, ADR-011)
 
-Usa la plantilla `templates/AUDIT_REPORT.md`. Ordena los hallazgos por severidad y, para cada uno: **causa, evidencia, impacto, recomendación**. Cierra con un resumen y con lo **no verificado** (datos faltantes, reglas pendientes de fundamentar como la fiscalidad de staking).
+Usa la plantilla `templates/AUDIT_REPORT.md`. Ordena los hallazgos por severidad y, para cada uno: **causa, evidencia, impacto, recomendación**. Cierra con un resumen y con lo **no verificado**.
+
+**Guárdalo** en `reports/output/AAAA-MM-DD_auditoria_<cuenta>.md` (no lo dejes solo en el chat). Actualiza la memoria del proyecto (`audit_state`) con lo hecho/pendiente.
 
 ## Paso 3 — Remediación guiada (ofrécela)
 
@@ -51,6 +53,7 @@ Tras el informe, **ofrece ayudar a corregir** los hallazgos en la web de CoinTra
 - Ve de un problema en uno; confirma que se ha resuelto antes de pasar al siguiente.
 - **Invalida la caché (ADR-010).** En cuanto el usuario cambie algo en CoinTracking, los datos cacheados quedan obsoletos: márcalos como inválidos y **no los reutilices**. Antes de re-auditar o dar cifras nuevas, confirma que hizo el cambio y **vuelve a obtener los datos** (refresca). No mezcles hallazgos previos con datos ya corregidos.
 - Recuerda al usuario **re-ejecutar la auditoría** con los datos frescos para comprobar que el problema desaparece.
+- **Registra cada cambio aplicado (ADR-011)** en `reports/output/REGISTRO-CAMBIOS.md` (append-only): qué se cambió, por qué, evidencia, estado antes→después y verificación en vivo. Actualiza también la memoria (`audit_state`).
 
 ## Límite de determinismo (ADR-006)
 
