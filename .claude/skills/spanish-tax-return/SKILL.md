@@ -32,7 +32,11 @@ Solo tras este diálogo, continúa con el Paso 1.
 
 ## Paso 1 — Reconciliar PRIMERO (puerta de calidad)
 
-**No des ninguna cifra fiscal sobre datos sin reconciliar.** Ejecuta la auditoría (skill `audit-cointracking` o el subagente `cointracking-auditor`).
+**No des ninguna cifra fiscal sobre datos sin reconciliar.**
+
+- **Reutiliza si ya está hecho.** Si en **esta misma conversación** ya se ejecutó una auditoría (p. ej. el usuario invocó `/audit-cointracking` antes) sobre **la misma fuente y sin cambios desde entonces**, **reutiliza sus hallazgos**; **no la repitas** (evita gastar llamadas a la API, límite 60/h). Dilo: "reutilizo la auditoría que acabamos de hacer".
+- **Re-audita solo si:** no se ha hecho aún, los **datos han cambiado** (el usuario corrigió operaciones), o cambió la fuente.
+- Cuando toque auditar, usa la skill `audit-cointracking` o el subagente `cointracking-auditor`.
 
 - Si aparecen hallazgos que **distorsionan la base de coste** (ventas sin base de coste, importación incompleta, transferencias mal emparejadas, ganancias implausibles p. ej. en stablecoins), **DETENTE**: informa de que la declaración no será fiable hasta corregirlos y lista los bloqueantes con su recomendación.
 - Solo continúa cuando los datos estén razonablemente limpios (o el usuario acepte el riesgo explícitamente).

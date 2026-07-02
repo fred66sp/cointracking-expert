@@ -42,6 +42,8 @@ El agente responde a la **intención** del usuario, no a nombres técnicos:
 
 En ambos casos carga el conocimiento, obtiene los datos (MCP si está conectado; si no, el CSV) y produce un informe con formato **evidencia → causa → impacto → recomendación**.
 
+**No repitas trabajo dentro de una misma conversación.** Si ya se hizo una auditoría y luego se pide la declaración (o viceversa), **reutiliza los resultados** en lugar de rehacerla; re-audita solo si los datos cambiaron o cambió la fuente. La API tiene límite (60 llamadas/hora): acota consultas y no dupliques.
+
 ## Usuario objetivo y estilo de guía (CRÍTICO)
 
 Quien usa este agente **no domina CoinTracking ni la fiscalidad**. Necesita ayuda real y **guía paso a paso**. Adapta siempre el tono a un usuario novato:
