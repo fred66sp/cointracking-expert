@@ -20,6 +20,7 @@ Esta sección documenta el tratamiento fiscal de las criptomonedas ("monedas vir
 - **[CAPITAL_GAINS.md](CAPITAL_GAINS.md)** — Ganancias y pérdidas patrimoniales: venta por fiat, permuta cripto-cripto, valoración, método FIFO, integración en base del ahorro y tramos. *(Fundamentado en AEAT/LIRPF)*
 - **[INFORMATIVE_OBLIGATIONS.md](INFORMATIVE_OBLIGATIONS.md)** — Obligaciones informativas: Modelo 721 (criptos en el extranjero) y contexto de los Modelos 172/173. *(Fundamentado en AEAT)*
 - **[CAPITAL_INCOME.md](CAPITAL_INCOME.md)** — Rendimientos y otras rentas: staking (RCM, base del ahorro, DGT V1766-22), lending/intereses, airdrops (ganancia patrimonial, base general, DGT 0018-23), recompensas/referidos (DGT V1948-21) y minería (actividad económica). Incluye la regla clave: el valor al percibir = coste de adquisición futuro. *(Fundamentado en DGT/LIRPF)*
+- **[PENDIENTES.md](PENDIENTES.md)** — Backlog único de cuestiones abiertas (FIFO global vs cuenta, precios históricos EUR, staking delegado, autocustodia 721…) que el agente no debe afirmar sin cerrar contra fuente oficial.
 
 ## Relación con los motores
 

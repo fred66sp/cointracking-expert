@@ -26,7 +26,7 @@ Después:
 
 ## Paso 1 — Ejecuta el playbook de chequeos
 
-Para cada activo/cuenta según proceda. Cada chequeo cita su regla de conocimiento:
+**Usa `tools/ct_audit.py`** (código vetado y determinista; ADR-006/009) para los chequeos mecánicos sobre el CSV — saldos, saldos negativos, transferencias huérfanas, duplicados, colisiones — en vez de re-derivar la lógica en el momento (evita errores como doble-contar comisiones). Ejecútalo y sube al contexto **solo el resultado** (ADR-010). Ejemplo: `python tools/ct_audit.py "<csv>" --exchange Coinbase --check all`. Luego **interpreta y explica** cada hallazgo con el conocimiento:
 
 1. **Completitud de importación** — ¿faltan cuentas/exchanges (seguimiento de un solo lado)? Provoca base de coste 0 y ganancias infladas. *(COST_BASIS §3.2, "READ FIRST")*
 2. **Transferencias huérfanas** — retiradas sin depósito emparejado y viceversa. Empareja por **Tx Hash** (nivel 1, fuerte) y, si falta, por **moneda + importe ≈ retirada − comisión + ventana temporal + cuentas distintas** (nivel 2, heurístico con confianza). *(CSV_FORMAT §7)*

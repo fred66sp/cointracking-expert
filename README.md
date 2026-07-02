@@ -27,6 +27,8 @@ knowledge/                            # El "cerebro" del agente (fuente de verda
   taxation/spain/                     # Fiscalidad IRPF: ganancias, FIFO, Modelo 721
 docs/GLOSSARY.md                      # Glosario de términos
 templates/AUDIT_REPORT.md             # Plantilla de informe de auditoría
+tools/ct_audit.py                     # Chequeos deterministas vetados (saldos, transferencias, duplicados…)
+tests/fixtures/                       # Caso de prueba de oro (sintético) para regresión del tool
 USER_INPUT/                           # Aquí deja el usuario sus CSV/fuentes (ignorado por git)
 reports/output/                       # Informes generados (ignorado por git)
 DECISIONS.md                          # Registro de decisiones (ADR-001…007)

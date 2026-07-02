@@ -30,6 +30,8 @@ No es un SDK ni una librería de motores deterministas: eso se descartó (ver AD
   - `taxation/spain/` — fiscalidad IRPF (ganancias patrimoniales, FIFO, Modelo 721).
 - `DECISIONS.md` — registro de decisiones (ADR-001…007). Gobernanza vinculante.
 - `templates/AUDIT_REPORT.md` — plantilla de informe.
+- `tools/ct_audit.py` — chequeos deterministas vetados sobre el CSV (saldos, negativos, transferencias huérfanas, duplicados, colisiones). El agente lo **ejecuta** en vez de re-derivar la lógica (ADR-006/009/010).
+- `tests/fixtures/` — caso de prueba de oro (`sample_trades.csv` sintético + `EXPECTED.md`) para regresión del tool.
 - `USER_INPUT/` — donde el usuario deja los archivos que le pedimos (CSV u otras fuentes). Contenido ignorado por git (datos reales); solo se versiona su `README.md`.
 - `reports/output/` — informes generados (ignorado por git: datos sensibles).
 - `.mcp.json` — arranque del servidor MCP (credenciales por `--env-file`, sin secretos en el repo).
