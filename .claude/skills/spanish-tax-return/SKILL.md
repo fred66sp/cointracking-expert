@@ -24,9 +24,9 @@ Trata cada solicitud como si fuera un usuario nuevo (no asumas contexto previo).
 
 3. **Ofrece la comprobación extra con el CSV** en lenguaje llano (sin decir "API/MCP/cotejo"); pregúntalo y **espera respuesta**:
    > "Voy a leer tus datos directamente de CoinTracking (conexión automática). Como comprobación adicional opcional, puedo compararlos con un archivo que descargues tú mismo desde CoinTracking; así, si algo no cuadra entre ambos, lo detecto. ¿Quieres hacer esa comprobación extra? Si sí, te guío para descargar el archivo."
-   - Si acepta y no sabe cómo, **guíalo paso a paso** para exportar la lista de operaciones a CSV. Consulta los pasos exactos en `knowledge/cointracking/reference/CATALOG.md` (artículo de exportación/backup) antes de dárselos; no inventes rutas de menú.
+   - Si acepta y no sabe cómo, **guíalo paso a paso** para exportar la lista de operaciones a CSV. Consulta los pasos exactos en `knowledge/cointracking/reference/CATALOG.md` (artículo de exportación/backup) antes de dárselos; no inventes rutas de menú. Pídele que **deje el archivo en la carpeta `USER_INPUT/`**.
 
-4. **Comprueba el acceso a datos:** el MCP de CoinTracking debe estar conectado (herramientas `cointracking_*`); si el usuario menciona el CSV, localízalo. Si no hay ninguna fuente, detente y pídela.
+4. **Comprueba el acceso a datos:** el MCP de CoinTracking debe estar conectado (herramientas `cointracking_*`); y/o busca el CSV en **`USER_INPUT/`**. Si no hay ninguna fuente, detente y pide al usuario que deje el archivo en `USER_INPUT/` (o que conecte el MCP).
 
 Solo tras este diálogo, continúa con el Paso 1.
 

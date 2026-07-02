@@ -65,6 +65,12 @@ reports/output/
 *.csv
 !tests/fixtures/**/*.csv
 
+# Carpeta de entrada del usuario: aquí deja sus CSV u otras fuentes que le
+# pidamos (Excel, JSON, PDF, capturas...). Su contenido es DATO REAL y NUNCA
+# se versiona. Solo se versiona el README de instrucciones.
+USER_INPUT/*
+!USER_INPUT/README.md
+
 # Servidor MCP de CoinTracking: dependencia externa de terceros (MIT, repo
 # aparte). Se instala/clona localmente; no se versiona aquí. La integración
 # (configuración + documentación) sí es nuestra: .mcp.json y

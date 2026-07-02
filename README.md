@@ -27,6 +27,7 @@ knowledge/                            # El "cerebro" del agente (fuente de verda
   taxation/spain/                     # Fiscalidad IRPF: ganancias, FIFO, Modelo 721
 docs/GLOSSARY.md                      # Glosario de términos
 templates/AUDIT_REPORT.md             # Plantilla de informe de auditoría
+USER_INPUT/                           # Aquí deja el usuario sus CSV/fuentes (ignorado por git)
 reports/output/                       # Informes generados (ignorado por git)
 DECISIONS.md                          # Registro de decisiones (ADR-001…007)
 FOUNDATION.md                         # Principios de ingeniería del proyecto

@@ -11,14 +11,14 @@ Ejecuta una auditoría de reconciliación sobre los datos de CoinTracking del us
 
 **Conversa antes de ejecutar, en lenguaje llano** (el usuario no domina CoinTracking; evita "API/MCP/cotejo"). Anuncia qué vas a hacer y **ofrece una comprobación extra con un CSV**, esperando respuesta. Por ejemplo:
 > "Voy a revisar tu cuenta leyendo tus datos directamente de CoinTracking. Como comprobación adicional opcional, puedo compararlos con un archivo que descargues tú mismo; así detecto si algo no cuadra entre ambos. ¿Quieres hacer esa comprobación extra (te guío para descargar el archivo) o sigo solo con la conexión automática?"
-- Si acepta y no sabe cómo, **guíalo paso a paso** para exportar la lista de operaciones a CSV; consulta los pasos exactos en `knowledge/cointracking/reference/CATALOG.md` (artículo de exportación/backup) y no inventes rutas de menú.
+- Si acepta y no sabe cómo, **guíalo paso a paso** para exportar la lista de operaciones a CSV; consulta los pasos exactos en `knowledge/cointracking/reference/CATALOG.md` (artículo de exportación/backup) y no inventes rutas de menú. Pídele que **guarde el archivo en la carpeta `USER_INPUT/`**.
 
 Después:
 
 1. **Carga el conocimiento**: lee `knowledge/cointracking/CSV_FORMAT.md`, `knowledge/cointracking/COST_BASIS_AND_VALIDATION.md`, `knowledge/taxation/spain/CAPITAL_GAINS.md`. Son las reglas que aplicarás y citarás.
 2. **Localiza los datos** (ADR-006, ambas vías):
    - **MCP de CoinTracking**: si hay herramientas MCP de CoinTracking disponibles en la sesión, úsalas para datos en vivo. Si el usuario menciona un MCP pero no está conectado, pídele que lo conecte (`/mcp`).
-   - **CSV export**: busca una exportación "Trade Table" (p. ej. en la raíz del proyecto). El CSV está en `.gitignore` por privacidad; puede existir localmente.
+   - **CSV export**: búscalo en la carpeta **`USER_INPUT/`** (ahí deja el usuario los archivos que le pedimos; ver `USER_INPUT/README.md`). Está en `.gitignore` por privacidad.
    - Si hay ambos, usa el CSV como validación cruzada del MCP.
    - Si no hay ninguno, dilo y detente: no inventes datos.
 3. **Normaliza mentalmente** según el conocimiento: fechas a UTC desde `Europe/Madrid` con DST (ADR-005), importes con precisión decimal, ticker completo con sufijo (`SOL` ≠ `SOL2`), parsear por posición (3 columnas `Cur.`).
