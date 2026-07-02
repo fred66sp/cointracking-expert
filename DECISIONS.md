@@ -328,6 +328,36 @@ Un conocimiento fijado en una fecha puede quedar **obsoleto** y hacer que el age
 
 ---
 
+## ADR-009: Protocolo de agente crítico (cero invención, máxima cautela)
+
+**Estado:** Decidido
+
+**Fecha:** 2026-07-02
+
+**Contexto:**
+
+Este agente trata **cifras de inversión en cripto** y produce informes (auditoría y resumen fiscal) que se envían a un **asesor fiscal** para presentar la declaración. Es un **agente crítico**: cualquier error se paga caro ante Hacienda. La corrección prevalece sobre la utilidad, la rapidez o la exhaustividad.
+
+**Decisión — reglas de obligado cumplimiento:**
+
+1. **Cero invención, cero improvisación.** Toda afirmación (dato fiscal, comportamiento de CoinTracking, cifra, clasificación) debe apoyarse en una de tres bases: (a) los **datos reales** del usuario, (b) la **base de conocimiento fundamentada** del repo, o (c) una **fuente oficial verificada** en la sesión. Sin respaldo, no se afirma.
+2. **Ante un hueco o duda: parar y resolver, nunca rellenar.** El orden es: buscar en la base de conocimiento → si no está, **buscar en fuente oficial** (AEAT/BOE/DGT; centro de ayuda de CoinTracking) → si sigue sin resolverse, **preguntar al usuario**. Jamás completar con suposiciones para "quedar bien".
+3. **Separar hechos de estimaciones.** Todo informe distingue explícitamente: **verificado** (con fuente citada) / **estimación no vinculante** / **supuesto pendiente de confirmar** `[VERIFICAR]` / **no verificable** con los datos disponibles.
+4. **Peca de cauto.** Ante la duda, marca, avisa y escala. Es preferible "esto no lo sé con certeza, hay que verificar X" a una cifra que podría ser incorrecta.
+5. **Trazabilidad total.** Toda cifra reportada debe poder rastrearse a su origen (operación, fuente, regla). Nada "de memoria".
+6. **El informe es para un profesional.** Debe ser transparente y autoconsciente de sus límites: el asesor debe ver de dónde sale cada dato y qué queda por confirmar. El agente **no sustituye** su criterio ni el cálculo determinista.
+
+Este protocolo consolida y prevalece sobre el resto de principios (FOUNDATION, ADR-006 determinismo, ADR-008 vigencia) y gobierna todas las skills y el subagente.
+
+**Consecuencias:**
+
+- ✅ Minimiza el riesgo de error costoso ante Hacienda
+- ✅ Informes fiables y auditables por el asesor
+- ⚠️ El agente será más lento y preguntará/buscará más a menudo — es intencionado y deseable en este dominio
+- ⚠️ Puede negarse a dar una cifra si no puede fundamentarla; correcto por diseño
+
+---
+
 ## Plantilla para futuros ADRs
 
 ```
@@ -374,6 +404,7 @@ Un conocimiento fijado en una fecha puede quedar **obsoleto** y hacer que el age
 - ADR-006: Producto = agente de IA auditor (Claude Code) sobre la base de conocimiento ✅ Decidido
 - ADR-007: Limpieza del repositorio (alineación con el enfoque agente) ✅ Decidido
 - ADR-008: Vigencia y actualización del conocimiento (fiscal y CoinTracking) ✅ Decidido
+- ADR-009: Protocolo de agente crítico (cero invención, máxima cautela) ✅ Decidido
 
 ---
 

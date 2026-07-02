@@ -7,6 +7,8 @@
 
 > ⚠️ Informe de reconciliación con fines de coherencia de datos. **No es asesoramiento fiscal** ni una declaración. Las cifras marcadas como «estimación no vinculante» no sustituyen un cálculo determinista ni la revisión de un profesional (ADR-006).
 
+> 🔒 **Nivel de confianza (ADR-009).** Cada hallazgo y cifra indica su base: **verificado** (con fuente/datos) · **estimación no vinculante** · **supuesto `[VERIFICAR]`** · **no verificable** con los datos disponibles. Nada se afirma sin respaldo; los huecos se declaran, no se rellenan.
+
 ---
 
 ## Resumen ejecutivo

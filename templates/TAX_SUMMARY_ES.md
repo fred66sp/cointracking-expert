@@ -8,6 +8,8 @@
 
 > ⚠️ **No es asesoramiento fiscal ni una declaración.** Documento de preparación y coherencia. Las cifras marcadas como «estimación no vinculante» no sustituyen el Informe de Impuestos de CoinTracking (FIFO/España) ni la revisión de un profesional (ADR-006).
 
+> 🔒 **Nivel de confianza (ADR-009).** Cada dato indica su base: **verificado** (con fuente/datos) · **estimación no vinculante** · **supuesto `[VERIFICAR]`** · **no verificable**. El asesor debe poder rastrear cada cifra a su origen; los huecos se declaran, no se rellenan.
+
 ---
 
 ## 1. Estado de reconciliación (puerta de calidad)
