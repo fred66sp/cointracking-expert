@@ -71,6 +71,9 @@ reports/output/
 USER_INPUT/*
 !USER_INPUT/README.md
 
+# Caché de datos de CoinTracking (snapshots MCP/API) — datos reales, NUNCA subir (ADR-010)
+.cache/
+
 # Servidor MCP de CoinTracking: dependencia externa de terceros (MIT, repo
 # aparte). Se instala/clona localmente; no se versiona aquí. La integración
 # (configuración + documentación) sí es nuestra: .mcp.json y

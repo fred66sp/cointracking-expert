@@ -358,6 +358,34 @@ Este protocolo consolida y prevalece sobre el resto de principios (FOUNDATION, A
 
 ---
 
+## ADR-010: Eficiencia de tokens y caché de datos de CoinTracking
+
+**Estado:** Decidido
+
+**Fecha:** 2026-07-02
+
+**Contexto:**
+
+Las respuestas de CoinTracking (MCP/API) pueden ser muy grandes (historial de miles de operaciones, balances con decenas de activos). Volcar ese JSON al contexto del LLM cada vez consume muchos tokens y, si se repite, malgasta también llamadas a la API (límite 60/h). Hay que trabajar de forma económica sin perder rigor (ADR-009).
+
+**Decisión — protocolo de eficiencia:**
+
+1. **Caché a disco.** Al obtener datos de CoinTracking, guárdalos en `.cache/cointracking/` (ignorado por git: son datos reales) con **marca de tiempo**. Antes de llamar, comprueba si hay un snapshot reutilizable.
+2. **Reutilización.** Dentro de una misma conversación, reutiliza siempre lo ya obtenido (no recalcules ni recargues). Entre sesiones, reutiliza el snapshot si está **fresco**; si es antiguo o el usuario cambió datos, **refresca** y avísalo.
+3. **Consultas mínimas y dirigidas.** Pide solo lo necesario: acota por **rango de fechas** y `limit`, y usa **agregados** (`get_grouped_balance`, `get_gains`) antes que el detalle completo. No traigas todo el historial si solo hace falta un ejercicio.
+4. **Procesa lo grande con código, no en el contexto.** Para volúmenes grandes (p. ej. historial de operaciones), vuelca a un fichero y usa **scripts** (python/bash) para filtrar/agregar; sube al contexto **solo el resultado compacto** (conteos, totales, filas relevantes), nunca el JSON crudo completo. Cuando sea posible, obtén los datos con utilidades que **escriban directamente a disco** para que no pasen por el contexto.
+5. **Nada de JSON crudo en salidas.** Informes y respuestas resumen y citan totales/ejemplos; no pegan volcados completos.
+6. **Invalidación por cambios (CRÍTICO).** En cuanto pidas al usuario **modificar algo en CoinTracking** (editar/borrar/añadir operaciones, reimportar, corregir tipos), la caché queda **obsoleta**: márcala como inválida y **no la reutilices**. Antes de volver a dar cifras o informes, **confirma con el usuario que hizo el cambio** y **refresca** los datos (nueva consulta/volcado). Nunca mezcles hallazgos calculados con datos antiguos y datos nuevos.
+
+**Consecuencias:**
+
+- ✅ Menos tokens y menos llamadas a la API; más rápido y barato
+- ✅ Compatible con el rigor: el cálculo determinista sobre datos volcados es más fiable y trazable (ADR-006, ADR-009)
+- ⚠️ La caché contiene datos reales → **gitignored**; tratarla como sensible
+- ⚠️ Requiere gestionar la frescura de la caché (marca de tiempo, invalidación al cambiar datos)
+
+---
+
 ## Plantilla para futuros ADRs
 
 ```
@@ -405,6 +433,7 @@ Este protocolo consolida y prevalece sobre el resto de principios (FOUNDATION, A
 - ADR-007: Limpieza del repositorio (alineación con el enfoque agente) ✅ Decidido
 - ADR-008: Vigencia y actualización del conocimiento (fiscal y CoinTracking) ✅ Decidido
 - ADR-009: Protocolo de agente crítico (cero invención, máxima cautela) ✅ Decidido
+- ADR-010: Eficiencia de tokens y caché de datos de CoinTracking ✅ Decidido
 
 ---
 

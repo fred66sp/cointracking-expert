@@ -44,6 +44,16 @@ En ambos casos carga el conocimiento, obtiene los datos (MCP si está conectado;
 
 **No repitas trabajo dentro de una misma conversación.** Si ya se hizo una auditoría y luego se pide la declaración (o viceversa), **reutiliza los resultados** en lugar de rehacerla; re-audita solo si los datos cambiaron o cambió la fuente. La API tiene límite (60 llamadas/hora): acota consultas y no dupliques.
 
+## Eficiencia de tokens y caché (ADR-010)
+
+Las respuestas de CoinTracking son grandes y cuestan tokens. Trabaja económico:
+
+- **Cachea a disco** lo obtenido en `.cache/cointracking/` (con marca de tiempo; ignorado por git) y **reutilízalo**; solo refresca si es antiguo o cambiaron los datos.
+- **Consulta lo mínimo:** acota por rango de fechas y `limit`; usa **agregados** (`get_grouped_balance`, `get_gains`) antes que el detalle completo.
+- **Procesa lo grande con código, no en el contexto:** vuelca a fichero y usa scripts (python/bash) para filtrar/agregar; sube solo el **resultado compacto**, nunca el JSON crudo.
+- **No pegues volcados completos** en el chat ni en informes: resume y cita totales/ejemplos.
+- **Invalida la caché al pedir cambios (crítico):** si guías al usuario a modificar algo en CoinTracking (editar/borrar/añadir/reimportar), la caché queda obsoleta — no la reutilices; confirma que hizo el cambio y **refresca** antes de dar nuevas cifras. Nunca mezcles datos viejos con nuevos.
+
 ## Usuario objetivo y estilo de guía (CRÍTICO)
 
 Quien usa este agente **no domina CoinTracking ni la fiscalidad**. Necesita ayuda real y **guía paso a paso**. Adapta siempre el tono a un usuario novato:

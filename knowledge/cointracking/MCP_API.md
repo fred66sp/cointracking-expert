@@ -50,6 +50,14 @@ En `cointracking_get_gains`, el parámetro `price` mapea así:
 
 ---
 
+## Caché y eficiencia de tokens (ADR-010)
+
+Las respuestas pueden ser grandes; volcarlas al contexto cuesta tokens. Trabaja así:
+
+- **Snapshot a disco:** guarda lo obtenido en `.cache/cointracking/` con marca de tiempo (ignorado por git) y **reutilízalo** antes de volver a llamar. Refresca solo si el snapshot es antiguo o el usuario cambió datos.
+- **Consultas dirigidas:** acota `start`/`end` y `limit`; prioriza agregados (`get_grouped_balance`, `get_gains`) sobre `get_trades` completo.
+- **Datos grandes → código:** para el historial de operaciones, vuelca a fichero y **procésalo con un script** (filtrar por año, detectar huérfanas/duplicados, sumar); sube al contexto solo el resultado. No pegues el JSON crudo completo.
+
 ## Límites y buenas prácticas
 
 - **Límite de tasa:** 60 llamadas/hora (cuentas Unlimited). Ante HTTP 429, esperar y **acotar** las consultas. No hacer barridos innecesarios.

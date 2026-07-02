@@ -22,6 +22,7 @@ Después:
    - Si hay ambos, usa el CSV como validación cruzada del MCP.
    - Si no hay ninguno, dilo y detente: no inventes datos.
 3. **Normaliza mentalmente** según el conocimiento: fechas a UTC desde `Europe/Madrid` con DST (ADR-005), importes con precisión decimal, ticker completo con sufijo (`SOL` ≠ `SOL2`), parsear por posición (3 columnas `Cur.`).
+4. **Sé económico (ADR-010).** Cachea lo obtenido en `.cache/cointracking/` (con marca de tiempo) y reutilízalo; no vuelvas a llamar si ya lo tienes fresco. Consulta lo mínimo (rango, `limit`, agregados). Para volúmenes grandes (historial completo), vuelca a fichero y **procésalo con un script**, subiendo al contexto solo el resultado. No pegues JSON crudo.
 
 ## Paso 1 — Ejecuta el playbook de chequeos
 
@@ -48,7 +49,8 @@ Tras el informe, **ofrece ayudar a corregir** los hallazgos en la web de CoinTra
 
 - **Antes de dar los pasos clic a clic, abre y lee el artículo oficial citado** para confirmar que siguen vigentes (la interfaz cambia; ADR-008/009). Si no puedes verificarlos, dilo y no improvises la ruta.
 - Ve de un problema en uno; confirma que se ha resuelto antes de pasar al siguiente.
-- Recuerda al usuario **re-ejecutar la auditoría** tras las correcciones para comprobar que el problema desaparece.
+- **Invalida la caché (ADR-010).** En cuanto el usuario cambie algo en CoinTracking, los datos cacheados quedan obsoletos: márcalos como inválidos y **no los reutilices**. Antes de re-auditar o dar cifras nuevas, confirma que hizo el cambio y **vuelve a obtener los datos** (refresca). No mezcles hallazgos previos con datos ya corregidos.
+- Recuerda al usuario **re-ejecutar la auditoría** con los datos frescos para comprobar que el problema desaparece.
 
 ## Límite de determinismo (ADR-006)
 
