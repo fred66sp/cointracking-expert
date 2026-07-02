@@ -1,37 +1,37 @@
-# Project Manifesto
+# Manifiesto del proyecto
 
-**The Principles and Philosophy Behind CoinTracking Expert**
+**Los principios y filosofía detrás de CoinTracking Expert**
 
-This manifesto articulates the core beliefs and principles that guide all decisions in the CoinTracking Expert project. These principles take precedence over individual preferences, convenience, or tradition.
+Este manifiesto articula las creencias centrales y principios que guían todas las decisiones en el proyecto CoinTracking Expert. Estos principios tienen prioridad sobre preferencias individuales, conveniencia o tradición.
 
-## We Believe in Evidence
+## Creemos en la evidencia
 
-Every conclusion must be supported by observable data from transaction history. We never assume, infer, or guess when transaction data is available. Evidence drives every finding, recommendation, and report.
+Cada conclusión debe estar respaldada por datos observables del historial de transacciones. Nunca asumimos, inferimos o adivinamos cuando hay datos de transacciones disponibles. La evidencia impulsa cada hallazgo, recomendación e informe.
 
-## We Believe in Reproducibility
+## Creemos en la reproducibilidad
 
-The same dataset must always produce identical results. Reproducibility is not optional—it is fundamental to trust and auditability. Non-deterministic behavior is a bug.
+El mismo dataset debe siempre producir resultados idénticos. La reproducibilidad no es opcional—es fundamental para la confianza y auditoría. El comportamiento no-determinista es un bug.
 
-## We Believe in Transparency
+## Creemos en la transparencia
 
-Users must understand why a finding was made, what evidence supports it, how it impacts their data, and what actions are recommended. Hidden assumptions and invisible calculations have no place in financial auditing.
+Los usuarios deben entender por qué se hizo un hallazgo, qué evidencia lo soporta, cómo impacta sus datos y qué acciones se recomiendan. Las suposiciones ocultas y los cálculos invisibles no tienen lugar en la auditoría financiera.
 
-## We Believe in Minimal Intervention
+## Creemos en la intervención mínima
 
-We never recommend modifying or deleting transactions without sufficient evidence. Users retain full control over their data. We validate and explain; we do not presume to correct.
+Nunca recomendamos modificar o eliminar transacciones sin suficiente evidencia. Los usuarios retienen el control total de sus datos. Validamos y explicamos; no asumimos corregir.
 
-## We Believe in Separation of Concerns
+## Creemos en la separación de responsabilidades
 
-Business rules must remain separate from AI explanations. Deterministic calculations must be independent from heuristic diagnostics. Each component should be replaceable without affecting the rest.
+Las reglas de negocio deben permanecer separadas de las explicaciones de IA. Los cálculos deterministas deben ser independientes de los diagnósticos heurísticos. Cada componente debe ser reemplazable sin afectar el resto.
 
-## We Believe in Knowledge as a First-Class Component
+## Creemos en el conocimiento como componente de primera clase
 
-Documentation and knowledge are not secondary artifacts; they are primary components. Specifications precede implementation. Knowledge is versioned alongside code.
+La documentación y el conocimiento no son artefactos secundarios; son componentes primarios. Las especificaciones preceden a la implementación. El conocimiento está versionado junto con el código.
 
-## We Believe Silence is Not Acceptable
+## Creemos que el silencio no es aceptable
 
-Whenever data is incomplete, ambiguous, or inconsistent, we must report it explicitly. Silence implies correctness; uncertainty must be declared.
+Siempre que datos sean incompletos, ambiguos o inconsistentes, debemos reportarlo explícitamente. El silencio implica corrección; la incertidumbre debe ser declarada.
 
-## We Believe in the User
+## Creemos en el usuario
 
-Users are competent, curious, and responsible. We provide them with information and tools to make informed decisions. We do not make financial decisions for them.
+Los usuarios son competentes, curiosos y responsables. Les proporcionamos información y herramientas para tomar decisiones informadas. No tomamos decisiones financieras por ellos.

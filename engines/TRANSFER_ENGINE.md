@@ -1,44 +1,44 @@
-# Transfer Engine Specification
+# Especificación del motor de transferencias
 
-**Deposit and Withdrawal Matching**
+**Emparejamiento de depósito y retiro**
 
-The Transfer Engine matches withdrawal transactions from one account with deposit transactions to another account, identifying orphaned transfers and mismatched pairs.
+El motor de transferencias empareja transacciones de retiro de una cuenta con transacciones de depósito a otra cuenta, identificando transferencias huérfanas y pares desemparejados.
 
-## Purpose
+## Propósito
 
-Match transfers between accounts, detecting cases where one side of a transfer is missing or orphaned, and validating transfer consistency.
+Emparejar transferencias entre cuentas, detectando casos donde un lado de una transferencia falta u es huérfano, y validando consistencia de transferencia.
 
-## Inputs
+## Entradas
 
-- All withdrawal and deposit transactions
-- Multi-account transaction history
-- Exchange and wallet address mappings
+- Todas las transacciones de retiro y depósito
+- Historial de transacciones multi-cuenta
+- Mappings de dirección de exchange y billetera
 
-## Outputs
+## Salidas
 
-- Matched transfer pairs
-- Orphaned transfers (unmatched)
-- Transfer timeline and flow visualization
+- Pares de transferencia emparejados
+- Transferencias huérfanas (desemparejadas)
+- Timeline de transferencia y visualización de flujo
 
-## Responsibilities
+## Responsabilidades
 
-1. Identify potential transfer matches (same asset, similar amount, nearby dates)
-2. Match withdrawals to deposits
-3. Detect unmatched or orphaned transfers
-4. Handle bridge transfers and wrapped tokens
-5. Report on transfer timing and fee impact
+1. Identificar matches potenciales de transferencia (mismo activo, cantidad similar, fechas cercanas)
+2. Emparejar retiros a depósitos
+3. Detectar transferencias desemparejadas u huérfanas
+4. Manejar transferencias de puente y tokens envueltos
+5. Reportar sobre timing de transferencia e impacto de comisión
 
-## Key Algorithms
+## Algoritmos clave
 
-- Transfer matching algorithm (amount, asset, timestamp)
-- Ambiguity resolution for multiple candidates
-- Bridge and wrapped token detection
+- Algoritmo de emparejamiento de transferencia (cantidad, activo, timestamp)
+- Resolución de ambigüedad para múltiples candidatos
+- Detección de puente y token envuelto
 
-## Edge Cases
+## Casos extremos
 
-- Fees reducing transfer amount
-- Partial fills or split transfers
-- Delays between withdrawal and deposit
-- Address format variations
-- Bridge transfers (converting between chains)
-- Assets with multiple versions (wrapped, bridged, etc.)
+- Comisiones reduciendo cantidad de transferencia
+- Rellenos parciales o transferencias divididas
+- Demoras entre retiro y depósito
+- Variaciones de formato de dirección
+- Transferencias de puente (convirtiendo entre cadenas)
+- Activos con múltiples versiones (envuelto, puenteado, etc.)

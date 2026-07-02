@@ -1,44 +1,44 @@
-# Audit Engine Specification
+# Especificación del motor de auditoría
 
-**Complete Audit Process Orchestration**
+**Orquestación completa del proceso de auditoría**
 
-The Audit Engine is the central orchestrator responsible for coordinating the complete audit workflow. It manages imports, normalization, and delegates to specialized validation engines, then produces comprehensive audit reports with findings and recommendations.
+El motor de auditoría es el orquestador central responsable de coordinar el flujo de trabajo de auditoría completo. Administra importaciones, normalización y delega a motores de validación especializados, luego produce reportes de auditoría exhaustivos con hallazgos y recomendaciones.
 
-## Purpose
+## Propósito
 
-Orchestrate a complete audit of a CoinTracking database by running all validation engines and synthesizing results into a coherent audit report.
+Orquestar una auditoría completa de una base de datos de CoinTracking ejecutando todos los motores de validación y sintetizando resultados en un reporte de auditoría coherente.
 
-## Inputs
+## Entradas
 
-- CoinTracking export file (CSV or database export)
-- Configuration specifying which engines to run
-- Optional: Reference data from exchanges or wallets
-- Optional: Previous audit results for comparison
+- Archivo de exportación de CoinTracking (CSV o exportación de base de datos)
+- Configuración especificando qué motores ejecutar
+- Opcional: Datos de referencia de exchanges o billeteras
+- Opcional: Resultados de auditoría anterior para comparación
 
-## Outputs
+## Salidas
 
-- Complete audit report (markdown, HTML, JSON)
-- Detailed findings list with evidence
-- Recommendations for remediation
-- Statistics and summary metrics
+- Reporte de auditoría completo (markdown, HTML, JSON)
+- Lista detallada de hallazgos con evidencia
+- Recomendaciones para remediación
+- Estadísticas y métricas de resumen
 
-## Responsibilities
+## Responsabilidades
 
-1. Import and normalize transaction data
-2. Coordinate execution of all validation engines
-3. Synthesize findings from all engines
-4. Generate audit report in multiple formats
-5. Provide executive summary and findings list
+1. Importar y normalizar datos de transacciones
+2. Coordinar ejecución de todos los motores de validación
+3. Sintetizar hallazgos de todos los motores
+4. Generar reporte de auditoría en múltiples formatos
+5. Proporcionar resumen ejecutivo y lista de hallazgos
 
-## Key Algorithms
+## Algoritmos clave
 
-- Workflow orchestration
-- Finding deduplication and severity ranking
-- Report generation with formatting options
+- Orquestación de flujo de trabajo
+- Deduplicación de hallazgos y ranking de severidad
+- Generación de reporte con opciones de formato
 
-## Edge Cases
+## Casos extremos
 
-- Empty datasets
-- Single transaction
-- Very large datasets (performance)
-- Mixed data sources (API + CSV + manual)
+- Datasets vacíos
+- Transacción única
+- Datasets muy grandes (rendimiento)
+- Fuentes de datos mixtas (API + CSV + manual)

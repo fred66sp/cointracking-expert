@@ -1,53 +1,53 @@
-# Glossary
+# Glosario
 
-**Terminology and Definitions for CoinTracking Expert**
+**Terminología y definiciones para CoinTracking Expert**
 
-This glossary defines key terms and concepts used throughout the CoinTracking Expert project. Understanding these terms is essential for working with the framework and its documentation.
+Este glosario define términos clave y conceptos usados a lo largo del proyecto CoinTracking Expert. Entender estos términos es esencial para trabajar con el framework y su documentación.
 
-## Audit
+## Auditoría
 
-The complete process of validating a CoinTracking database for completeness, consistency, and compliance. An audit examines transactions, reconstructs balances, detects issues, and produces a detailed report.
+El proceso completo de validar una base de datos de CoinTracking para completitud, consistencia y cumplimiento. Una auditoría examina transacciones, reconstruye balances, detecta problemas y produce un informe detallado.
 
 ## Balance
 
-The amount of a specific asset held in an account, wallet, or exchange at a given point in time. Reconstructed from transaction history.
+La cantidad de un activo específico mantenido en una cuenta, billetera o exchange en un punto dado en el tiempo. Se reconstruye desde el historial de transacciones.
 
-## Duplicate Transaction
+## Transacción duplicada
 
-A transaction that appears more than once in the dataset, either as an exact duplicate or a probabilistic match.
+Una transacción que aparece más de una vez en el dataset, ya sea como un duplicado exacto o un match probabilístico.
 
-## FIFO (First-In-First-Out)
+## FIFO (First-In-First-Out / Primero-en-entrar-primero-en-salir)
 
-Accounting method that assigns acquisition lots to holdings based on chronological order. First assets purchased are first assets sold.
+Método de contabilidad que asigna lotes de adquisición a tenencias basado en orden cronológico. Los primeros activos comprados son los primeros vendidos.
 
-## Holding
+## Tenencia
 
-The quantity of a specific cryptocurrency asset held at a specific point in time. Reconstructed from transaction history.
+La cantidad de un activo de criptomoneda específico mantenido en un punto específico en el tiempo. Se reconstruye desde el historial de transacciones.
 
-## Ledger
+## Libro mayor
 
-Complete record of all transactions for an account, organized chronologically. Used to reconstruct balances and validate consistency.
+Registro completo de todas las transacciones para una cuenta, organizado cronológicamente. Se usa para reconstruir balances y validar consistencia.
 
-## Missing Purchase History
+## Historial de compras faltante
 
-Situation where an asset shows a negative balance at some point, indicating transactions were missing from the dataset.
+Situación donde un activo muestra un balance negativo en algún punto, indicando que transacciones estaban faltando del dataset.
 
-## Normalization
+## Normalización
 
-Process of converting transaction data from various sources (CSV, API, manual) into a canonical representation.
+Proceso de convertir datos de transacciones de varias fuentes (CSV, API, manual) a una representación canónica.
 
-## Reconciliation
+## Reconciliación
 
-Process of matching transactions between two sources (e.g., exchange records vs. CoinTracking database) or verifying consistency within a single source.
+Proceso de emparejar transacciones entre dos fuentes (ej. registros de exchange vs base de datos de CoinTracking) o verificar consistencia dentro de una fuente única.
 
-## Transfer
+## Transferencia
 
-Movement of assets between two accounts, wallets, or exchanges. Includes deposits and withdrawals.
+Movimiento de activos entre dos cuentas, billeteras o exchanges. Incluye depósitos y retiros.
 
-## Validation
+## Validación
 
-Process of checking data for consistency, completeness, and compliance with defined rules.
+Proceso de verificar datos para consistencia, completitud y cumplimiento con reglas definidas.
 
 ## CoinTracking
 
-Third-party cryptocurrency accounting and portfolio tracking platform. This framework validates CoinTracking databases.
+Plataforma tercera de contabilidad de criptomonedas y tracking de portfolio. Este framework valida bases de datos de CoinTracking.

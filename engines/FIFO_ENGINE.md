@@ -1,45 +1,45 @@
-# FIFO Engine Specification
+# Especificación del motor FIFO
 
-**Acquisition Lot Reconstruction and Cost Basis Calculation**
+**Reconstrucción de lote de adquisición y cálculo de base de costo**
 
-The FIFO Engine reconstructs acquisition lots using First-In-First-Out accounting, assigning purchase transactions to sale transactions based on chronological order. It identifies missing purchase history and calculates cost basis for tax purposes.
+El motor FIFO reconstruye lotes de adquisición usando contabilidad de primero-en-entrar-primero-en-salir, asignando transacciones de compra a transacciones de venta basado en orden cronológico. Identifica historial de compras faltante y calcula base de costo para propósitos fiscales.
 
-## Purpose
+## Propósito
 
-Assign acquisition lots to holdings using FIFO method, calculate cost basis, detect missing purchase history, and validate tax calculations based on lot cost.
+Asignar lotes de adquisición a tenencias usando método FIFO, calcular base de costo, detectar historial de compras faltante y validar cálculos fiscales basados en costo de lote.
 
-## Inputs
+## Entradas
 
-- Complete ledger with all buy and sell transactions
-- Historical price data (optional, for validation)
-- Tax configuration (cost basis method)
+- Libro mayor completo con todas las transacciones de compra y venta
+- Datos de precio históricos (opcional, para validación)
+- Configuración fiscal (método de base de costo)
 
-## Outputs
+## Salidas
 
-- Acquisition lot assignment for all holdings
-- Cost basis calculations
-- Missing purchase history detection
-- Tax gain/loss calculations by lot
+- Asignación de lote de adquisición para todas las tenencias
+- Cálculos de base de costo
+- Detección de historial de compras faltante
+- Cálculos de ganancia/pérdida fiscal por lote
 
-## Responsibilities
+## Responsabilidades
 
-1. Reconstruct acquisition lots chronologically
-2. Match holdings to specific purchase transactions
-3. Detect situations where more assets were sold than purchased
-4. Calculate cost basis for each holding
-5. Calculate realized and unrealized gains/losses
+1. Reconstruir lotes de adquisición cronológicamente
+2. Emparejar tenencias a transacciones de compra específicas
+3. Detectar situaciones donde más activos fueron vendidos que comprados
+4. Calcular base de costo para cada tenencia
+5. Calcular ganancias/pérdidas realizadas y no realizadas
 
-## Key Algorithms
+## Algoritmos clave
 
-- FIFO lot matching
-- Cost basis tracking
-- Gain/loss calculation
-- Missing purchase history detection
+- Emparejamiento de lote FIFO
+- Tracking de base de costo
+- Cálculo de ganancia/pérdida
+- Detección de historial de compras faltante
 
-## Edge Cases
+## Casos extremos
 
-- Fractional quantities
-- Asset consolidations and splits
-- Multiple purchase prices
-- Zero-cost acquisition (airdrops, staking rewards)
-- Partial holdings sales
+- Cantidades fraccionarias
+- Consolidaciones y splits de activos
+- Múltiples precios de compra
+- Adquisición de costo cero (airdrops, recompensas de staking)
+- Ventas de tenencias parciales

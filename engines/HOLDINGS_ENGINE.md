@@ -1,43 +1,43 @@
-# Holdings Engine Specification
+# Especificación del motor de tenencias
 
-**Current and Historical Holdings Reconstruction**
+**Reconstrucción de tenencias actuales e históricas**
 
-The Holdings Engine reconstructs current and historical holdings from transaction history and compares them with holdings reported by CoinTracking, detecting discrepancies.
+El motor de tenencias reconstruye tenencias actuales e históricas desde el historial de transacciones y las compara con tenencias reportadas por CoinTracking, detectando discrepancias.
 
-## Purpose
+## Propósito
 
-Rebuild current holdings from transaction history and compare with expected holdings, detecting unreported transactions or data inconsistencies.
+Reconstruir tenencias actuales desde el historial de transacciones y compararlas con tenencias esperadas, detectando transacciones no reportadas o inconsistencias de datos.
 
-## Inputs
+## Entradas
 
-- Complete transaction ledger
-- Current holdings as reported by CoinTracking
-- Historical holdings snapshots (optional)
+- Libro mayor de transacciones completo
+- Tenencias actuales como reportadas por CoinTracking
+- Snapshots de tenencias históricas (opcional)
 
-## Outputs
+## Salidas
 
-- Reconstructed holdings
-- Discrepancy detection and reporting
-- Holdings timeline
+- Tenencias reconstruidas
+- Detección y reporte de discrepancias
+- Timeline de tenencias
 
-## Responsibilities
+## Responsabilidades
 
-1. Compute current holdings from complete transaction history
-2. Compare with reported holdings
-3. Detect and explain discrepancies
-4. Build historical holdings timeline
-5. Report any assets with zero holdings or transfer-only transactions
+1. Calcular tenencias actuales desde historial de transacciones completo
+2. Comparar con tenencias reportadas
+3. Detectar y explicar discrepancias
+4. Construir timeline de tenencias históricas
+5. Reportar cualquier activo con tenencias cero o transacciones solo-transferencia
 
-## Key Algorithms
+## Algoritmos clave
 
-- Holdings computation from ledger
-- Discrepancy detection and attribution
-- Historical timeline building
+- Cálculo de tenencias desde libro mayor
+- Detección de discrepancia y atribución
+- Construcción de timeline histórico
 
-## Edge Cases
+## Casos extremos
 
-- Dust quantities (very small holdings)
-- Staking rewards and locked tokens
-- Wrapped tokens and bridges
-- Assets with multiple instances (e.g., different DEX versions)
-- Recent transactions affecting current holdings
+- Cantidades de polvo (tenencias muy pequeñas)
+- Recompensas de staking y tokens bloqueados
+- Tokens envueltos y puentes
+- Activos con múltiples instancias (ej. diferentes versiones DEX)
+- Transacciones recientes afectando tenencias actuales

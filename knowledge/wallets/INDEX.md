@@ -1,25 +1,25 @@
-# Wallet Knowledge Base
+# Base de conocimiento de billeteras
 
-**Reference Documentation for Supported Wallets**
+**Documentación de referencia para billeteras soportadas**
 
-This section contains documentation for blockchain wallets and wallet tracking services, including address formats, transaction data availability, and reconciliation approaches.
+Esta sección contiene documentación para billeteras de blockchain y servicios de seguimiento de billeteras, incluyendo formatos de dirección, disponibilidad de datos de transacciones y enfoques de reconciliación.
 
-## Supported Wallets
+## Billeteras soportadas
 
 - Ledger Live
 - MetaMask
 - Trust Wallet
 - Rabby Wallet
-- Hardware wallets (general patterns)
+- Billeteras hardware (patrones generales)
 
-## Contents per Wallet
+## Contenidos por billetera
 
-For each wallet, documentation covers:
+Para cada billetera, la documentación cubre:
 
-- Address format and generation
-- Transaction data sources
-- Balance tracking methods
-- Export and import options
-- Known limitations
-- Integration with CoinTracking
-- Common data synchronization issues
+- Formato y generación de dirección
+- Fuentes de datos de transacciones
+- Métodos de seguimiento de balance
+- Opciones de exportación e importación
+- Limitaciones conocidas
+- Integración con CoinTracking
+- Problemas comunes de sincronización de datos

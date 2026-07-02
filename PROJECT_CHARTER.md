@@ -1,67 +1,67 @@
-# Project Charter
+# Carta de Proyecto
 
-**Project:** CoinTracking Expert Framework
+**Proyecto:** Framework de CoinTracking Expert
 
-**Status:** Draft
+**Estado:** Borrador
 
-**Version:** 0.1.0
+**Versión:** 0.1.0
 
-**Owner:** CoinTracking Expert Project
+**Propietario:** Proyecto CoinTracking Expert
 
-**Last Updated:** 2026-07-02
-
----
-
-# 1. Vision
-
-Build the most reliable open-source framework for auditing, reconciling and validating CoinTracking databases, with first-class support for cryptocurrency accounting and Spanish tax reporting.
-
-The project aims to become the reference implementation for cryptocurrency reconciliation by combining deterministic algorithms, domain knowledge and AI-assisted diagnostics.
+**Última actualización:** 2026-07-02
 
 ---
 
-# 2. Mission
+# 1. Visión
 
-Enable users to verify that their CoinTracking data is complete, internally consistent and ready to produce reliable tax reports.
+Construir el framework de código abierto más confiable para auditar, reconciliar y validar bases de datos de CoinTracking, con soporte de primera clase para contabilidad de criptomonedas e informes fiscales españoles.
 
-The framework must explain every detected issue, identify its root cause and recommend the minimum corrective action supported by evidence.
-
----
-
-# 3. Objectives
-
-The project shall provide:
-
-- Transaction reconciliation.
-- Ledger reconstruction.
-- Holdings validation.
-- Duplicate detection.
-- Transfer matching.
-- Missing Purchase History analysis.
-- Tax consistency validation.
-- Professional audit reports.
-- AI-assisted diagnostics.
-- Extensible knowledge base.
+El proyecto tiene como objetivo convertirse en la implementación de referencia para reconciliación de criptomonedas al combinar algoritmos deterministas, conocimiento del dominio y diagnósticos asistidos por IA.
 
 ---
 
-# 4. Scope
+# 2. Misión
 
-The project includes:
+Permitir a los usuarios verificar que sus datos de CoinTracking sean completos, internamente consistentes y listos para producir informes fiscales confiables.
+
+El framework debe explicar cada problema detectado, identificar su causa raíz y recomendar la acción correctiva mínima respaldada por evidencia.
+
+---
+
+# 3. Objetivos
+
+El proyecto proporciona:
+
+- Reconciliación de transacciones
+- Reconstrucción de libro mayor
+- Validación de tenencias
+- Detección de duplicados
+- Emparejamiento de transferencias
+- Análisis de historial de compras faltante
+- Validación de consistencia fiscal
+- Informes de auditoría profesionales
+- Diagnósticos asistidos por IA
+- Base de conocimiento extensible
+
+---
+
+# 4. Alcance
+
+El proyecto incluye:
 
 ## CoinTracking
 
-- CSV imports
-- API imports
-- Manual transactions
-- Reports
-- Warnings
-- Holdings
-- Tax reports
+- Importaciones CSV
+- Importaciones API
+- Transacciones manuales
+- Informes
+- Advertencias
+- Tenencias
+- Informes fiscales
 
 ## Exchanges
 
-Initially:
+Inicialmente:
 
 - Binance
 - Coinbase
@@ -71,19 +71,19 @@ Initially:
 - KuCoin
 - BingX
 
-Additional exchanges may be supported later.
+Se pueden soportar exchanges adicionales más tarde.
 
-## Wallets
+## Billeteras
 
 - Ledger Live
 - MetaMask
 - Trust Wallet
 - Rabby
-- Hardware wallets
+- Billeteras hardware
 
 ## Blockchains
 
-Initially:
+Inicialmente:
 
 - Bitcoin
 - Ethereum
@@ -95,211 +95,211 @@ Initially:
 
 ---
 
-# 5. Out of Scope
+# 5. Fuera de alcance
 
-The following features are intentionally excluded from the first versions:
+Las siguientes características están intencionalmente excluidas de las primeras versiones:
 
-- Portfolio management
-- Trading automation
-- Exchange execution
-- Investment advice
-- Tax filing
-- Custody services
+- Gestión de carteras
+- Automatización de trading
+- Ejecución en exchange
+- Asesoramiento de inversión
+- Presentación de impuestos
+- Servicios de custodia
 
-The framework validates information.
+El framework valida información.
 
-It does not execute financial operations.
-
----
-
-# 6. Guiding Principles
-
-## Evidence First
-
-Every conclusion must be supported by observable data.
-
-No assumptions.
+No ejecuta operaciones financieras.
 
 ---
 
-## Reproducibility
+# 6. Principios guía
 
-The same dataset must always produce the same audit result.
+## Basado en evidencia
 
----
+Cada conclusión debe estar respaldada por datos observables.
 
-## Explainability
-
-Every detected issue must include:
-
-- Cause
-- Evidence
-- Impact
-- Recommended action
+Sin suposiciones.
 
 ---
 
-## Minimal Intervention
+## Reproducibilidad
 
-Never recommend deleting or modifying transactions without sufficient evidence.
-
----
-
-## Documentation Driven Development
-
-No feature shall be implemented before its functional specification has been approved.
+El mismo dataset siempre debe producir el mismo resultado de auditoría.
 
 ---
 
-## Modular Architecture
+## Explicabilidad
 
-Every component should be replaceable without affecting the rest of the system.
+Cada problema detectado debe incluir:
 
----
-
-# 7. Quality Goals
-
-The framework should always aim to produce:
-
-- Zero false positives whenever reasonably achievable.
-- Deterministic results.
-- Complete traceability.
-- Reproducible calculations.
-- Human-readable reports.
-- Machine-readable reports.
+- Causa
+- Evidencia
+- Impacto
+- Acción recomendada
 
 ---
 
-# 8. Success Criteria
+## Intervención mínima
 
-An audit is considered complete only when:
-
-- No unexplained negative balances exist.
-- No unresolved Missing Purchase History remains.
-- All duplicated transactions are identified.
-- Transfers are matched or explicitly justified.
-- Holdings reconstructed from history match expected balances.
-- Generated reports are internally consistent.
+Nunca recomendar eliminar o modificar transacciones sin suficiente evidencia.
 
 ---
 
-# 9. Architecture Principles
+## Desarrollo impulsado por documentación
 
-The framework is composed of independent engines.
+Ninguna característica será implementada antes de que su especificación funcional haya sido aprobada.
 
-Example:
+---
+
+## Arquitectura modular
+
+Cada componente debe ser reemplazable sin afectar al resto del sistema.
+
+---
+
+# 7. Objetivos de calidad
+
+El framework siempre debe apuntar a producir:
+
+- Cero falsos positivos cuando sea razonablemente posible
+- Resultados deterministas
+- Trazabilidad completa
+- Cálculos reproducibles
+- Informes legibles para humanos
+- Informes legibles para máquinas
+
+---
+
+# 8. Criterios de éxito
+
+Una auditoría se considera completa solo cuando:
+
+- No existen balances negativos inexplicados
+- No permanece historial de compras faltante sin resolver
+- Todas las transacciones duplicadas son identificadas
+- Las transferencias están emparejadas o justificadas explícitamente
+- Las tenencias reconstruidas desde el historial coinciden con los balances esperados
+- Los informes generados son internamente consistentes
+
+---
+
+# 9. Principios de arquitectura
+
+El framework está compuesto de motores independientes.
+
+Ejemplo:
 
 ```
-Import Layer
+Capa de importación
         │
-Normalization Layer
+Capa de normalización
         │
-Audit Engine
+Motor de auditoría
         │
-├── Duplicate Engine
-├── Transfer Engine
-├── Ledger Engine
-├── Holdings Engine
-├── FIFO Engine
-└── Report Engine
+├── Motor de duplicados
+├── Motor de transferencias
+├── Motor de libro mayor
+├── Motor de tenencias
+├── Motor FIFO
+└── Motor de informes
 ```
 
-Each engine must expose well-defined interfaces.
+Cada motor debe exponer interfaces bien definidas.
 
-Business rules should remain independent from AI models.
+Las reglas de negocio deben permanecer independientes de los modelos de IA.
 
 ---
 
-# 10. Knowledge Strategy
+# 10. Estrategia de conocimiento
 
-Knowledge is a first-class component of the project.
+El conocimiento es un componente de primera clase del proyecto.
 
-Documentation shall be organised into:
+La documentación debe organizarse en:
 
 - CoinTracking
 - Exchanges
-- Wallets
+- Billeteras
 - Blockchains
-- Taxation
-- Reconciliation
-- Accounting
-- Audit methodology
-- Real-world cases
+- Tributación
+- Reconciliación
+- Contabilidad
+- Metodología de auditoría
+- Casos del mundo real
 
-Knowledge must be versioned alongside the source code.
-
----
-
-# 11. AI Strategy
-
-Artificial Intelligence is an interface, not the source of truth.
-
-The framework must separate:
-
-- Business rules
-- Deterministic calculations
-- AI explanations
-
-AI models must never replace deterministic calculations.
-
-Their role is to:
-
-- explain;
-- guide;
-- diagnose;
-- summarize;
-- assist.
+El conocimiento debe estar versionado junto con el código fuente.
 
 ---
 
-# 12. Project Philosophy
+# 11. Estrategia de IA
 
-The framework does not attempt to "guess" accounting results.
+La inteligencia artificial es una interfaz, no la fuente de verdad.
 
-Instead, it reconstructs them from transaction history.
+El framework debe separar:
 
-Whenever uncertainty exists, it must be explicitly reported.
+- Reglas de negocio
+- Cálculos deterministas
+- Explicaciones de IA
 
-Silence is never preferred over uncertainty.
+Los modelos de IA nunca deben reemplazar cálculos deterministas.
 
----
+Su función es:
 
-# 13. Long-Term Vision
-
-The project should evolve into a complete ecosystem composed of:
-
-- Python library
-- Command Line Interface (CLI)
-- REST API
-- MCP Server
-- AI agents
-- Knowledge base
-- Audit engine
-- Tax engine
-- Reporting engine
-
-All components should share the same business rules and knowledge base.
+- Explicar
+- Guiar
+- Diagnosticar
+- Resumir
+- Asistir
 
 ---
 
-# 14. Governance
+# 12. Filosofía del proyecto
 
-Major architectural decisions must be documented as Architecture Decision Records (ADR).
+El framework no intenta "adivinar" resultados contables.
 
-Every significant change shall be:
+En su lugar, los reconstruye desde el historial de transacciones.
 
-1. Proposed.
-2. Reviewed.
-3. Documented.
-4. Implemented.
-5. Tested.
+Cuando existe incertidumbre, debe ser reportada explícitamente.
+
+El silencio nunca es preferido a la incertidumbre.
 
 ---
 
-# 15. Core Rule
+# 13. Visión a largo plazo
 
-**A reconciliation is never considered complete because it "looks correct".**
+El proyecto debe evolucionar hacia un ecosistema completo compuesto de:
 
-A reconciliation is complete only when every balance, holding and tax calculation can be reproduced from the complete transaction history using deterministic rules.
+- Librería Python
+- Interfaz de línea de comandos (CLI)
+- API REST
+- Servidor MCP
+- Agentes de IA
+- Base de conocimiento
+- Motor de auditoría
+- Motor de impuestos
+- Motor de informes
 
-This principle takes precedence over every other design decision in the project.
+Todos los componentes deben compartir las mismas reglas de negocio y base de conocimiento.
+
+---
+
+# 14. Gobernanza
+
+Las decisiones arquitectónicas principales deben documentarse como Registros de Decisión de Arquitectura (ADR).
+
+Cada cambio significativo debe:
+
+1. Ser propuesto
+2. Ser revisado
+3. Ser documentado
+4. Ser implementado
+5. Ser probado
+
+---
+
+# 15. Regla central
+
+**Una reconciliación nunca se considera completa porque "se vea correcta".**
+
+Una reconciliación está completa solo cuando cada balance, tenencia y cálculo fiscal puede ser reproducido desde el historial completo de transacciones utilizando reglas deterministas.
+
+Este principio tiene prioridad sobre todas las demás decisiones de diseño en el proyecto.

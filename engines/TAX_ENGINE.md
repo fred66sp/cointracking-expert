@@ -1,56 +1,56 @@
-# Tax Engine Specification
+# Especificación del motor fiscal
 
-**Tax Liability Calculation and Validation**
+**Cálculo y validación de obligación fiscal**
 
-The Tax Engine computes tax liabilities based on transaction history and validates CoinTracking tax calculations. Specialized support for Spanish taxation rules.
+El motor fiscal calcula obligaciones fiscales basadas en el historial de transacciones y valida cálculos fiscales de CoinTracking. Soporte especializado para reglas de tributación española.
 
-## Purpose
+## Propósito
 
-Calculate realized gains/losses, compute tax liabilities, validate CoinTracking tax calculations, and generate tax reports for multiple jurisdictions with emphasis on Spanish compliance.
+Calcular ganancias/pérdidas realizadas, calcular obligaciones fiscales, validar cálculos fiscales de CoinTracking y generar reportes fiscales para múltiples jurisdicciones con énfasis en cumplimiento español.
 
-## Inputs
+## Entradas
 
-- Complete transaction ledger with costs
-- FIFO acquisition lot assignments
-- Tax configuration (jurisdiction, method, exemptions)
-- Price data for gain/loss calculation
+- Libro mayor de transacciones completo con costos
+- Asignaciones de lote de adquisición FIFO
+- Configuración fiscal (jurisdicción, método, exenciones)
+- Datos de precio para cálculo de ganancia/pérdida
 
-## Outputs
+## Salidas
 
-- Realized gains and losses by transaction
-- Tax liability by year and asset class
-- Tax report in jurisdiction-specific format
-- Validation results comparing to CoinTracking calculations
+- Ganancias y pérdidas realizadas por transacción
+- Obligación fiscal por año y clase de activo
+- Reporte fiscal en formato específico de jurisdicción
+- Resultados de validación comparando con cálculos de CoinTracking
 
-## Responsibilities
+## Responsabilidades
 
-1. Compute realized gains/losses for all dispositions
-2. Identify taxable events
-3. Calculate tax liability by year
-4. Support multiple accounting methods (FIFO, etc.)
-5. Generate jurisdiction-specific tax reports
-6. Validate against CoinTracking calculations
+1. Calcular ganancias/pérdidas realizadas para todas las disposiciones
+2. Identificar eventos taxables
+3. Calcular obligación fiscal por año
+4. Soportar múltiples métodos de contabilidad (FIFO, etc.)
+5. Generar reportes fiscales específicos de jurisdicción
+6. Validar contra cálculos de CoinTracking
 
-## Key Algorithms
+## Algoritmos clave
 
-- Realized gain/loss calculation
-- Tax liability aggregation
-- Jurisdiction-specific rule application
-- Tax report generation
+- Cálculo de ganancia/pérdida realizada
+- Agregación de obligación fiscal
+- Aplicación de reglas específicas de jurisdicción
+- Generación de reporte fiscal
 
-## Spanish Tax Rules
+## Reglas fiscales españolas
 
-- Capital gains taxation
-- Cryptocurrency classification
-- Wash sale rules (if applicable)
-- Reporting requirements
-- Deduction rules
+- Tributación de ganancias de capital
+- Clasificación de criptomoneda
+- Reglas de venta ficticia (si aplica)
+- Requisitos de reportaje
+- Reglas de deducción
 
-## Edge Cases
+## Casos extremos
 
-- Gifts and personal transfers
-- Staking rewards and airdrops
-- Hard forks and token splits
-- Wrapped and bridged tokens
-- Cross-jurisdiction transactions
-- Non-arm's length transactions
+- Regalos y transferencias personales
+- Recompensas de staking y airdrops
+- Hard forks y splits de token
+- Tokens envueltos y puenteados
+- Transacciones entre jurisdicciones
+- Transacciones no de largo's length

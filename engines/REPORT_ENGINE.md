@@ -1,53 +1,53 @@
-# Report Engine Specification
+# Especificación del motor de reportes
 
-**Multi-Format Audit Report Generation**
+**Generación de reportes de auditoría en múltiples formatos**
 
-The Report Engine generates comprehensive audit reports in multiple formats (Markdown, HTML, Excel, JSON) with configurable detail levels and customizable templates.
+El motor de reportes genera reportes de auditoría exhaustivos en múltiples formatos (Markdown, HTML, Excel, JSON) con niveles de detalle configurables y plantillas personalizables.
 
-## Purpose
+## Propósito
 
-Transform audit findings, validation results, and analysis into professional, human-readable and machine-readable reports suitable for different audiences and use cases.
+Transformar hallazgos de auditoría, resultados de validación y análisis en reportes profesionales, legibles para humanos y máquinas adecuados para diferentes audiencias y casos de uso.
 
-## Inputs
+## Entradas
 
-- Complete audit results from all engines
-- Report configuration (format, detail level, sections)
-- Report templates (customizable)
+- Resultados de auditoría completos de todos los motores
+- Configuración de reporte (formato, nivel de detalle, secciones)
+- Plantillas de reporte (personalizables)
 
-## Outputs
+## Salidas
 
-- Reports in requested formats (Markdown, HTML, Excel, JSON)
-- Executive summary
-- Detailed findings with evidence
-- Recommendations with priority
-- Appendices with supporting data
+- Reportes en formatos solicitados (Markdown, HTML, Excel, JSON)
+- Resumen ejecutivo
+- Secciones de hallazgos detallados con evidencia
+- Recomendaciones con prioridad
+- Apéndices con datos de soporte
 
-## Responsibilities
+## Responsabilidades
 
-1. Synthesize findings into coherent narrative
-2. Generate executive summary
-3. Produce detailed findings sections with evidence
-4. Include recommendations with priority ranking
-5. Create supporting appendices and tables
-6. Format for multiple output formats
+1. Sintetizar hallazgos en narrativa coherente
+2. Generar resumen ejecutivo
+3. Producir secciones de hallazgos detallados con evidencia
+4. Incluir recomendaciones con ranking de prioridad
+5. Crear apéndices de soporte y tablas
+6. Formatear para múltiples formatos de salida
 
-## Key Algorithms
+## Algoritmos clave
 
-- Finding aggregation and deduplication
-- Severity ranking and prioritization
-- Template rendering and formatting
-- Cross-format consistency
+- Agregación y deduplicación de hallazgos
+- Ranking de severidad y priorización
+- Renderizado de plantillas y formateo
+- Consistencia entre formatos
 
-## Supported Formats
+## Formatos soportados
 
-- **Markdown**: For documentation and version control
-- **HTML**: For web viewing and printing
-- **Excel**: For spreadsheet import and pivot analysis
-- **JSON**: For programmatic processing
+- **Markdown**: Para documentación y control de versión
+- **HTML**: Para visualización web e impresión
+- **Excel**: Para importación de hoja de cálculo y análisis de pivote
+- **JSON**: Para procesamiento programático
 
-## Edge Cases
+## Casos extremos
 
-- Very large result sets (many findings)
-- Complex interdependencies between findings
-- Conflicting recommendations
-- Missing data in audit results
+- Conjuntos de resultados muy grandes (muchos hallazgos)
+- Interdependencias complejas entre hallazgos
+- Recomendaciones conflictivas
+- Datos faltantes en resultados de auditoría

@@ -1,10 +1,10 @@
-# Blockchain Knowledge Base
+# Base de conocimiento de blockchains
 
-**Reference Documentation for Supported Blockchains**
+**Documentación técnica de referencia para blockchains soportadas**
 
-This section contains technical documentation for blockchain networks, covering address formats, transaction structures, common smart contract interactions, and reconciliation approaches specific to each blockchain.
+Esta sección contiene documentación técnica para redes blockchain, cubriendo formatos de dirección, estructuras de transacciones, interacciones comunes de contratos inteligentes y enfoques de reconciliación específicos de cada blockchain.
 
-## Supported Blockchains
+## Blockchains soportadas
 
 - Bitcoin
 - Ethereum
@@ -14,16 +14,16 @@ This section contains technical documentation for blockchain networks, covering 
 - Arbitrum
 - Base
 
-## Contents per Blockchain
+## Contenidos por blockchain
 
-For each blockchain, documentation covers:
+Para cada blockchain, la documentación cubre:
 
-- Address formats and validation
-- Transaction structure and types
-- Smart contract interactions
-- Token standards and tracking
-- Bridge mechanisms and wrapped tokens
-- Block explorer APIs
-- Fee mechanisms
-- Reconciliation techniques
-- Common transactions and events
+- Formatos de dirección y validación
+- Estructura y tipos de transacciones
+- Interacciones de contratos inteligentes
+- Estándares de token y seguimiento
+- Mecanismos de puente y tokens envueltos
+- APIs de exploradores de bloques
+- Mecanismos de comisión
+- Técnicas de reconciliación
+- Transacciones y eventos comunes

@@ -1,71 +1,71 @@
-# Development Guide
+# Guía de desarrollo
 
-**Setup and Development Workflow for CoinTracking Expert**
+**Configuración y flujo de trabajo de desarrollo para CoinTracking Expert**
 
-This guide provides instructions for setting up a development environment, running tests, building documentation, and contributing code to the CoinTracking Expert project.
+Esta guía proporciona instrucciones para configurar un ambiente de desarrollo, ejecutar pruebas, construir documentación y contribuir código al proyecto CoinTracking Expert.
 
-## Prerequisites
+## Requisitos previos
 
-- Python 3.9 or higher
+- Python 3.9 o superior
 - Git
-- A code editor (VS Code, PyCharm, etc.)
-- pip and venv for package management
+- Un editor de código (VS Code, PyCharm, etc.)
+- pip y venv para gestión de paquetes
 
-## Initial Setup
+## Configuración inicial
 
-1. Clone the repository: `git clone https://github.com/cointracking-expert/cointracking-expert.git`
-2. Navigate to project directory: `cd cointracking-expert`
-3. Create virtual environment: `python -m venv venv`
-4. Activate virtual environment: `source venv/bin/activate` (Linux/Mac) or `venv\Scripts\activate` (Windows)
-5. Install dependencies: `pip install -r requirements.txt`
-6. Install development dependencies: `pip install -r requirements-dev.txt`
+1. Clona el repositorio: `git clone https://github.com/cointracking-expert/cointracking-expert.git`
+2. Navega al directorio del proyecto: `cd cointracking-expert`
+3. Crea ambiente virtual: `python -m venv venv`
+4. Activa ambiente virtual: `source venv/bin/activate` (Linux/Mac) o `venv\Scripts\activate` (Windows)
+5. Instala dependencias: `pip install -r requirements.txt`
+6. Instala dependencias de desarrollo: `pip install -r requirements-dev.txt`
 
-## Project Structure
+## Estructura del proyecto
 
-- `docs/` - Documentation and guides
-- `knowledge/` - Domain knowledge base
-- `engines/` - Engine specifications
-- `src/cointracking_expert/` - Python source code
-- `tests/` - Test suites
-- `schemas/` - Data models
-- `examples/` - Usage examples
-- `cases/` - Audit cases
-- `scripts/` - Utility scripts
-- `reports/` - Generated reports
-- `prompts/` - AI prompt templates
+- `docs/` - Documentación y guías
+- `knowledge/` - Base de conocimiento del dominio
+- `engines/` - Especificaciones de motores
+- `src/cointracking_expert/` - Código fuente Python
+- `tests/` - Suites de pruebas
+- `schemas/` - Modelos de datos
+- `examples/` - Ejemplos de uso
+- `cases/` - Casos de auditoría
+- `scripts/` - Scripts de utilidad
+- `reports/` - Reportes generados
+- `prompts/` - Plantillas de prompts de IA
 
-## Running Tests
+## Ejecutar pruebas
 
-Execute tests with pytest: `pytest tests/`
+Ejecuta pruebas con pytest: `pytest tests/`
 
-For coverage report: `pytest --cov=src tests/`
+Para reporte de cobertura: `pytest --cov=src tests/`
 
-## Building Documentation
+## Construir documentación
 
-Generate HTML documentation: `mkdocs build`
+Genera documentación HTML: `mkdocs build`
 
-Serve documentation locally: `mkdocs serve`
+Sirve documentación localmente: `mkdocs serve`
 
-## Code Standards
+## Estándares de código
 
-Follow PEP 8. Run formatter: `black src/ tests/`
+Sigue PEP 8. Ejecuta formateador: `black src/ tests/`
 
-Run linter: `flake8 src/ tests/`
+Ejecuta linter: `flake8 src/ tests/`
 
-Run type checker: `mypy src/`
+Ejecuta verificador de tipos: `mypy src/`
 
-## Creating a Pull Request
+## Crear pull request
 
-1. Create feature branch: `git checkout -b feature/your-feature-name`
-2. Make changes and commit: `git commit -am "Description of changes"`
-3. Push to remote: `git push origin feature/your-feature-name`
-4. Submit pull request on GitHub
-5. Address review feedback
-6. Merge after approval
+1. Crea rama de característica: `git checkout -b feature/tu-nombre-caracteristica`
+2. Realiza cambios y commit: `git commit -am "Descripción de cambios"`
+3. Push a remoto: `git push origin feature/tu-nombre-caracteristica`
+4. Envía pull request en GitHub
+5. Aborda feedback de revisión
+6. Fusiona después de aprobación
 
-## Documentation Guidelines
+## Directrices de documentación
 
-- Use clear, concrete language
-- Include examples where helpful
-- Update docs when code changes
-- Keep docs synchronized with implementation
+- Usa lenguaje claro y concreto
+- Incluye ejemplos cuando sean útiles
+- Actualiza docs cuando el código cambia
+- Mantén docs sincronizado con implementación

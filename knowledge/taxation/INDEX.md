@@ -1,33 +1,33 @@
-# Taxation Knowledge Base
+# Base de conocimiento de tributación
 
-**Reference Documentation for Tax Compliance and Reporting**
+**Documentación de referencia para cumplimiento fiscal e informes**
 
-This section contains jurisdiction-specific taxation documentation, with primary focus on Spanish tax requirements for cryptocurrency transactions and holdings. Includes general patterns applicable to other jurisdictions.
+Esta sección contiene documentación de tributación específica por jurisdicción, con enfoque principal en requisitos fiscales españoles para transacciones y tenencias de criptomonedas. Incluye patrones generales aplicables a otras jurisdicciones.
 
-## Jurisdiction Coverage
+## Cobertura de jurisdicciones
 
-- Spain (primary)
-- EU (general patterns)
-- General international principles
+- España (primaria)
+- UE (patrones generales)
+- Principios internacionales generales
 
-## Spanish Tax Documentation
+## Documentación fiscal española
 
-- Capital gains taxation rules
-- Cryptocurrency classification
-- Reporting requirements (Impuesto sobre la Renta de las Personas Físicas)
-- Deduction rules
-- Record-keeping requirements
-- Key court cases and interpretations
-- Changes in legislation
+- Reglas de tributación de ganancias de capital
+- Clasificación de criptomoneda
+- Requisitos de reportaje (Impuesto sobre la Renta de las Personas Físicas)
+- Reglas de deducción
+- Requisitos de mantenimiento de registros
+- Casos clave de cortes e interpretaciones
+- Cambios en legislación
 
-## Contents
+## Contenidos
 
-For each jurisdiction, documentation covers:
+Para cada jurisdicción, la documentación cubre:
 
-- Taxable events definition
-- Capital gains calculation methods
-- Applicable tax rates
-- Reporting deadlines
-- Required documentation
-- Common interpretations
-- Known audit triggers
+- Definición de eventos taxables
+- Métodos de cálculo de ganancias de capital
+- Tasas fiscales aplicables
+- Plazos de reportaje
+- Documentación requerida
+- Interpretaciones comunes
+- Disparadores de auditoría conocidos

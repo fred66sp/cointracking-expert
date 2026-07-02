@@ -1,43 +1,43 @@
-# Reconciliation Engine Specification
+# Especificación del motor de reconciliación
 
-**Transaction Reconciliation and Validation**
+**Reconciliación y validación de transacciones**
 
-The Reconciliation Engine validates transaction data for completeness, consistency, and compliance with defined rules. It serves as the foundation for all other audit engines by ensuring data quality.
+El motor de reconciliación valida datos de transacciones para completitud, consistencia y cumplimiento con reglas definidas. Sirve como fundación para todos los otros motores de auditoría asegurando calidad de datos.
 
-## Purpose
+## Propósito
 
-Validate transaction data and detect fundamental inconsistencies such as data corruption, missing fields, format errors, and rule violations.
+Validar datos de transacciones y detectar inconsistencias fundamentales como corrupción de datos, campos faltantes, errores de formato y violaciones de reglas.
 
-## Inputs
+## Entradas
 
-- Normalized transaction dataset
-- Validation rules and schema definitions
-- Reference data (optional)
+- Dataset de transacciones normalizadas
+- Reglas de validación y definiciones de esquema
+- Datos de referencia (opcional)
 
-## Outputs
+## Salidas
 
-- List of validation errors and warnings
-- Normalized, validated transaction dataset
-- Data quality metrics
+- Lista de errores y advertencias de validación
+- Dataset de transacciones normalizado y validado
+- Métricas de calidad de datos
 
-## Responsibilities
+## Responsabilidades
 
-1. Schema validation (all required fields present and properly typed)
-2. Range validation (amounts, dates, fees in acceptable ranges)
-3. Format validation (addresses, symbols, hashes properly formatted)
-4. Rule validation (custom business rules)
-5. Consistency validation (no logical contradictions)
+1. Validación de esquema (todos los campos requeridos presentes y tipados correctamente)
+2. Validación de rango (cantidades, fechas, comisiones en rangos aceptables)
+3. Validación de formato (direcciones, símbolos, hashes formateados correctamente)
+4. Validación de reglas (reglas de negocio personalizadas)
+5. Validación de consistencia (sin contradicciones lógicas)
 
-## Key Algorithms
+## Algoritmos clave
 
-- Schema matching and validation
-- Custom rule engine
-- Format validation against blockchain specifications
-- Consistency checking across transaction records
+- Matching y validación de esquema
+- Motor de reglas personalizadas
+- Validación de formato contra especificaciones de blockchain
+- Verificación de consistencia entre registros de transacciones
 
-## Edge Cases
+## Casos extremos
 
-- Missing fields
-- Invalid data types
-- Out-of-range values
-- Ambiguous or malformed data
+- Campos faltantes
+- Tipos de datos inválidos
+- Valores fuera de rango
+- Datos ambiguos o malformados

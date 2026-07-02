@@ -1,10 +1,10 @@
-# Exchange Knowledge Base
+# Base de conocimiento de exchanges
 
-**Reference Documentation for Supported Exchanges**
+**Documentación de referencia para exchanges soportados**
 
-This section contains detailed documentation for each supported exchange, including API structure, export formats, transaction types, address formats, and known discrepancies between exchange data and CoinTracking.
+Esta sección contiene documentación detallada para cada exchange soportado, incluyendo estructura de API, formatos de exportación, tipos de transacciones, formatos de dirección y discrepancias conocidas entre datos de exchange y CoinTracking.
 
-## Supported Exchanges
+## Exchanges soportados
 
 - Binance
 - Coinbase
@@ -14,15 +14,15 @@ This section contains detailed documentation for each supported exchange, includ
 - KuCoin
 - BingX
 
-## Contents per Exchange
+## Contenidos por exchange
 
-For each exchange, documentation covers:
+Para cada exchange, la documentación cubre:
 
-- API endpoints and authentication
-- CSV export formats
-- Transaction types
-- Fee handling
-- Address formats
-- Known data issues
-- Reconciliation patterns
-- Common import mistakes
+- Endpoints de API y autenticación
+- Formatos de exportación CSV
+- Tipos de transacciones
+- Manejo de comisiones
+- Formatos de dirección
+- Problemas de datos conocidos
+- Patrones de reconciliación
+- Errores comunes de importación

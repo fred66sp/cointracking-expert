@@ -1,33 +1,33 @@
-# Development Roadmap
+# Hoja de ruta de desarrollo
 
-**CoinTracking Expert Project Timeline**
+**Cronograma del proyecto CoinTracking Expert**
 
-This document outlines the planned development phases for the CoinTracking Expert framework, from project foundation through AI-assisted diagnostics. The roadmap follows a documentation-driven development approach where specifications precede implementation.
+Este documento describe las fases de desarrollo planificadas para el framework CoinTracking Expert, desde la fundación del proyecto hasta diagnósticos asistidos por IA. La hoja de ruta sigue un enfoque de desarrollo impulsado por documentación donde las especificaciones preceden a la implementación.
 
-## Phase 1: Project Foundation (Current)
+## Fase 1: Fundación del proyecto (Actual)
 
-Establish project infrastructure, governance, and knowledge base organization. Deliverables include project charter, architecture documentation, contribution guidelines, and initial knowledge structure. No implementation code in this phase.
+Establecer infraestructura del proyecto, gobernanza y organización de la base de conocimiento. Los entregables incluyen carta de proyecto, documentación de arquitectura, directrices de contribución y estructura de conocimiento inicial. Sin código de implementación en esta fase.
 
-## Phase 2: Knowledge Base Development
+## Fase 2: Desarrollo de la base de conocimiento
 
-Build comprehensive domain knowledge covering CoinTracking, exchanges, wallets, blockchains, taxation, and reconciliation patterns. This phase populates the knowledge directories with structured documentation and real-world audit cases.
+Construir conocimiento de dominio integral cubriendo CoinTracking, exchanges, billeteras, blockchains, tributación y patrones de reconciliación. Esta fase puebla los directorios de conocimiento con documentación estructurada y casos de auditoría del mundo real.
 
-## Phase 3: Engine Specifications
+## Fase 3: Especificaciones de motores
 
-Document complete functional specifications for all engines (Audit, Reconciliation, Ledger, FIFO, Holdings, Transfer, Duplicate, Tax, Report). Each specification includes inputs, outputs, algorithms, edge cases, and test scenarios.
+Documentar especificaciones funcionales completas para todos los motores (Auditoría, Reconciliación, Libro mayor, FIFO, Tenencias, Transferencia, Duplicados, Impuestos, Reporte). Cada especificación incluye entradas, salidas, algoritmos, casos extremos y escenarios de prueba.
 
-## Phase 4: Python Implementation
+## Fase 4: Implementación Python
 
-Implement core Python library with all engines. Includes data models, import/normalization layer, and individual engine implementations. Comprehensive unit and integration tests.
+Implementar librería Python central con todos los motores. Incluye modelos de datos, capa de importación/normalización e implementaciones de motores individuales. Pruebas unitarias e integración exhaustivas.
 
-## Phase 5: Command Line Interface
+## Fase 5: Interfaz de línea de comandos
 
-Develop CLI tool for running audits, generating reports, and querying results. Includes configuration management, output formatting, and batch processing capabilities.
+Desarrollar herramienta CLI para ejecutar auditorías, generar reportes y consultar resultados. Incluye gestión de configuración, formato de salida y capacidades de procesamiento por lotes.
 
-## Phase 6: REST API
+## Fase 6: API REST
 
-Create RESTful API for remote access to audit engines. Includes authentication, rate limiting, job management, and report streaming.
+Crear API RESTful para acceso remoto a motores de auditoría. Incluye autenticación, limitación de velocidad, gestión de trabajos y streaming de reportes.
 
-## Phase 7: AI Agent Integration
+## Fase 7: Integración de agentes de IA
 
-Integrate AI models (Claude, ChatGPT, others) as explainability layer. AI assists in explaining findings, generating recommendations, and interactive diagnostics without replacing deterministic calculations.
+Integrar modelos de IA (Claude, ChatGPT, otros) como capa de explicabilidad. La IA asiste en explicar hallazgos, generar recomendaciones y diagnósticos interactivos sin reemplazar cálculos deterministas.

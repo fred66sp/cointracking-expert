@@ -1,48 +1,48 @@
-# Changelog
+# Registro de cambios
 
-**CoinTracking Expert Release History**
+**Historial de lanzamientos de CoinTracking Expert**
 
-All notable changes to the CoinTracking Expert project are documented in this file. This project follows [Semantic Versioning](https://semver.org/): MAJOR.MINOR.PATCH for version numbers.
+Todos los cambios notables en el proyecto CoinTracking Expert se documentan en este archivo. Este proyecto sigue [Versionado Semántico](https://semver.org/): MAYOR.MENOR.PARCHE para números de versión.
 
-## [Unreleased]
+## [No lanzado]
 
-### Added
-- Initial project structure and documentation
-- Project charter and governance model
-- Architecture documentation
-- Development roadmap
+### Agregado
+- Estructura inicial del proyecto y documentación
+- Carta de proyecto y modelo de gobernanza
+- Documentación de arquitectura
+- Hoja de ruta de desarrollo
 
-### Changed
+### Cambiado
 - N/A
 
-### Deprecated
+### Deprecado
 - N/A
 
-### Removed
+### Eliminado
 - N/A
 
-### Fixed
+### Arreglado
 - N/A
 
-### Security
+### Seguridad
 - N/A
 
 ---
 
-## Version Format
+## Formato de versión
 
-Each release includes:
-- Version number (semantic versioning)
-- Release date
-- Added features (new functionality)
-- Changed features (modifications to existing functionality)
-- Deprecated features (to be removed in future versions)
-- Removed features (previously deprecated functionality)
-- Fixed bugs and issues
-- Security updates
+Cada lanzamiento incluye:
+- Número de versión (versionado semántico)
+- Fecha de lanzamiento
+- Características agregadas (nueva funcionalidad)
+- Características cambiadas (modificaciones a funcionalidad existente)
+- Características deprecadas (a ser eliminadas en versiones futuras)
+- Características eliminadas (funcionalidad previamente deprecada)
+- Bugs arreglados y problemas
+- Actualizaciones de seguridad
 
 ---
 
-## Future Releases
+## Lanzamientos futuros
 
-Planned releases will follow the development roadmap phases outlined in [ROADMAP.md](ROADMAP.md).
+Los lanzamientos planificados seguirán las fases de la hoja de ruta de desarrollo descritas en [ROADMAP.md](ROADMAP.md).

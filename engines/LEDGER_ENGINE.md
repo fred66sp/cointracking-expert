@@ -1,42 +1,42 @@
-# Ledger Engine Specification
+# Especificación del motor de libro mayor
 
-**Chronological Balance Reconstruction**
+**Reconstrucción de balance cronológico**
 
-The Ledger Engine reconstructs the balance of each asset over time by processing transactions chronologically. It detects negative balances (impossible states) and validates consistency.
+El motor de libro mayor reconstruye el balance de cada activo a lo largo del tiempo procesando transacciones cronológicamente. Detecta balances negativos (estados imposibles) y valida consistencia.
 
-## Purpose
+## Propósito
 
-Reconstruct complete balance history for each asset by processing all transactions in chronological order, and detect impossible states (negative balances without sufficient source data).
+Reconstruir el historial completo de balance para cada activo procesando todas las transacciones en orden cronológico, y detectar estados imposibles (balances negativos sin datos de fuente suficientes).
 
-## Inputs
+## Entradas
 
-- Normalized, validated transaction dataset
-- Starting balances (if any)
+- Dataset de transacciones normalizado y validado
+- Balances iniciales (si los hay)
 
-## Outputs
+## Salidas
 
-- Complete balance history for each asset
-- Negative balance detection and reporting
-- Balance verification status
+- Historial completo de balance para cada activo
+- Detección y reporte de balance negativo
+- Estado de verificación de balance
 
-## Responsibilities
+## Responsabilidades
 
-1. Sort transactions chronologically by timestamp
-2. Process transactions in order, updating running balances
-3. Detect negative balance states
-4. Report missing transaction history when detected
-5. Verify final balances against known reference data (if available)
+1. Ordenar transacciones cronológicamente por timestamp
+2. Procesar transacciones en orden, actualizando balances corrientes
+3. Detectar estados de balance negativo
+4. Reportar historial de transacciones faltante cuando se detecte
+5. Verificar balances finales contra datos de referencia conocidos (si están disponibles)
 
-## Key Algorithms
+## Algoritmos clave
 
-- Chronological ledger reconstruction
-- Balance state tracking by asset and account
-- Negative balance detection and validation
+- Reconstrucción de libro mayor cronológico
+- Tracking de estado de balance por activo y cuenta
+- Detección y validación de balance negativo
 
-## Edge Cases
+## Casos extremos
 
-- Transactions with identical timestamps
-- Timezone conversions
-- Asset splits and consolidations
-- Bridge transfers and wrapped assets
-- Fee calculations affecting balances
+- Transacciones con timestamps idénticos
+- Conversiones de zona horaria
+- Splits y consolidaciones de activos
+- Transferencias de puente y activos envueltos
+- Cálculos de comisión afectando balances

@@ -1,27 +1,27 @@
-# Frequently Asked Questions
+# Preguntas frecuentes
 
-**Common Questions About CoinTracking Expert and Cryptocurrency Reconciliation**
+**Preguntas comunes sobre CoinTracking Expert y reconciliación de criptomonedas**
 
-This section contains answers to frequently asked questions about the CoinTracking Expert framework, reconciliation methodology, and cryptocurrency accounting topics.
+Esta sección contiene respuestas a preguntas frecuentes sobre el framework CoinTracking Expert, metodología de reconciliación y temas de contabilidad de criptomonedas.
 
-## FAQ Categories
+## Categorías de preguntas frecuentes
 
-- Project questions
-- Framework usage
-- Reconciliation methodology
-- Exchange-specific issues
-- Tax and accounting questions
-- Common error resolution
-- Data recovery and cleanup
+- Preguntas del proyecto
+- Uso del framework
+- Metodología de reconciliación
+- Problemas específicos de exchange
+- Preguntas de impuestos y contabilidad
+- Resolución de errores comunes
+- Recuperación y limpieza de datos
 
-## Contents
+## Contenidos
 
-Includes comprehensive answers to:
+Incluye respuestas exhaustivas a:
 
-- How to use individual engines
-- How to interpret audit results
-- How to fix common data issues
-- How to reconcile across exchanges
-- How to validate tax calculations
-- How to handle special transactions
-- How to troubleshoot import errors
+- Cómo usar motores individuales
+- Cómo interpretar resultados de auditoría
+- Cómo arreglar problemas comunes de datos
+- Cómo reconciliar entre exchanges
+- Cómo validar cálculos fiscales
+- Cómo manejar transacciones especiales
+- Cómo resolver problemas de importación

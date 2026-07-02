@@ -1,19 +1,19 @@
-# CoinTracking Knowledge Base
+# Base de conocimiento de CoinTracking
 
-**Reference Documentation for CoinTracking Platform**
+**Documentación de referencia para la plataforma CoinTracking**
 
-This section contains comprehensive documentation about the CoinTracking platform, its features, data structures, import mechanisms, export formats, and known limitations. This knowledge is essential for understanding how to validate CoinTracking databases and reconcile their data with external sources.
+Esta sección contiene documentación exhaustiva sobre la plataforma CoinTracking, sus características, estructuras de datos, mecanismos de importación, formatos de exportación y limitaciones conocidas. Este conocimiento es esencial para entender cómo validar bases de datos de CoinTracking y reconciliar sus datos con fuentes externas.
 
-## Contents
+## Contenidos
 
-This directory will contain detailed documentation covering:
+Este directorio contendrá documentación detallada cubriendo:
 
-- CoinTracking features and capabilities
-- Import mechanisms (CSV, API, manual)
-- Export formats and structure
-- Transaction types and handling
-- Holdings and balance reporting
-- Tax report generation
-- Known limitations and quirks
-- API documentation and examples
-- Common data issues and resolutions
+- Características y capacidades de CoinTracking
+- Mecanismos de importación (CSV, API, manual)
+- Formatos y estructura de exportación
+- Tipos de transacciones y manejo
+- Reporte de tenencias y balances
+- Generación de reportes fiscales
+- Limitaciones conocidas y peculiaridades
+- Documentación de API y ejemplos
+- Problemas comunes de datos y resoluciones

@@ -1,27 +1,27 @@
-# Reconciliation Patterns Knowledge Base
+# Base de conocimiento de patrones de reconciliación
 
-**Reference Documentation for Common Reconciliation Patterns**
+**Documentación de referencia para patrones comunes de reconciliación**
 
-This section documents common reconciliation patterns, data issues, and solutions encountered in real-world cryptocurrency portfolios. These patterns help identify issues and their root causes.
+Esta sección documenta patrones comunes de reconciliación, problemas de datos y soluciones encontrados en carteras de criptomonedas del mundo real. Estos patrones ayudan a identificar problemas y sus causas raíz.
 
-## Pattern Categories
+## Categorías de patrones
 
-- Data quality patterns
-- Import error patterns
-- Missing data patterns
-- Reconciliation techniques
-- Common issue resolutions
-- Best practices for portfolio management
+- Patrones de calidad de datos
+- Patrones de errores de importación
+- Patrones de datos faltantes
+- Técnicas de reconciliación
+- Resoluciones de problemas comunes
+- Mejores prácticas para gestión de cartera
 
-## Contents
+## Contenidos
 
-Documentation covers:
+La documentación cubre:
 
-- Duplicate transaction patterns
-- Missing transaction detection
-- Balance discrepancy patterns
-- Transfer matching patterns
-- Fee calculation variations
-- Asset naming inconsistencies
-- Exchange data format differences
-- Recovery patterns from corrupted data
+- Patrones de transacciones duplicadas
+- Detección de transacciones faltantes
+- Patrones de discrepancias de balance
+- Patrones de emparejamiento de transferencias
+- Variaciones de cálculo de comisión
+- Inconsistencias de nomenclatura de activos
+- Diferencias de formato de datos de exchange
+- Patrones de recuperación de datos corrupto

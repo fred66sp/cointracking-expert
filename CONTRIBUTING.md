@@ -1,48 +1,48 @@
-# Contributing to CoinTracking Expert
+# Contribuir a CoinTracking Expert
 
-**Guidelines for Contributing to the Project**
+**Directrices para contribuir al proyecto**
 
-Thank you for your interest in contributing to CoinTracking Expert! This document explains how to participate in the project, from reporting issues to submitting code and documentation.
+¡Gracias por tu interés en contribuir a CoinTracking Expert! Este documento explica cómo participar en el proyecto, desde reportar problemas hasta enviar código y documentación.
 
-## Getting Started
+## Comenzar
 
-1. Read the [Project Charter](PROJECT_CHARTER.md) to understand project vision and principles
-2. Review the [Architecture](ARCHITECTURE.md) document to understand system design
-3. Check the [Development Guide](docs/DEVELOPMENT_GUIDE.md) for setup instructions
-4. Review existing [issues](https://github.com/cointracking-expert/issues) to avoid duplicates
+1. Lee la [Carta de proyecto](PROJECT_CHARTER.md) para comprender la visión y principios del proyecto
+2. Revisa el documento de [Arquitectura](ARCHITECTURE.md) para entender el diseño del sistema
+3. Consulta la [Guía de desarrollo](docs/DEVELOPMENT_GUIDE.md) para instrucciones de configuración
+4. Revisa los [issues](https://github.com/cointracking-expert/issues) existentes para evitar duplicados
 
-## Types of Contributions
+## Tipos de contribuciones
 
-We welcome contributions in several areas:
+Bienvenidas las contribuciones en varias áreas:
 
-- **Knowledge Base**: Add documentation, exchange guides, patterns, and real-world cases
-- **Specifications**: Help refine engine specifications and algorithms
-- **Implementation**: Code new features and engines following the specifications
-- **Testing**: Write tests, identify edge cases, and improve test coverage
-- **Documentation**: Improve guides, API documentation, and user-facing content
-- **Bug Reports**: Report issues with detailed reproduction steps and evidence
+- **Base de conocimiento**: Añadir documentación, guías de exchanges, patrones y casos del mundo real
+- **Especificaciones**: Ayudar a refinar especificaciones de motores y algoritmos
+- **Implementación**: Codificar nuevas características y motores siguiendo las especificaciones
+- **Testing**: Escribir pruebas, identificar casos extremos y mejorar cobertura de pruebas
+- **Documentación**: Mejorar guías, documentación de API y contenido orientado al usuario
+- **Reportes de bugs**: Reportar problemas con pasos de reproducción detallados y evidencia
 
-## Documentation-Driven Development
+## Desarrollo impulsado por documentación
 
-No feature should be implemented before its functional specification is documented and approved. Please submit specifications as pull requests to the appropriate docs/ or engines/ directory.
+Ninguna característica debe ser implementada antes de que su especificación funcional esté documentada y aprobada. Por favor, envía especificaciones como pull requests al directorio docs/ o engines/ apropiado.
 
-## Code Standards
+## Estándares de código
 
-- Follow PEP 8 style guidelines
-- Write clear, meaningful commit messages
-- Include docstrings for public functions and classes
-- Add tests for all functionality
-- Ensure code passes all existing tests
+- Sigue directrices de estilo PEP 8
+- Escribe mensajes de commit claros y significativos
+- Incluye docstrings para funciones y clases públicas
+- Añade pruebas para toda la funcionalidad
+- Asegúrate de que el código pase todas las pruebas existentes
 
-## Pull Request Process
+## Proceso de pull request
 
-1. Create a feature branch from `main`
-2. Make your changes following code standards
-3. Submit a pull request with a clear description
-4. Ensure CI/CD checks pass
-5. Address any review feedback
-6. Merge after approval
+1. Crea una rama de característica desde `main`
+2. Realiza tus cambios siguiendo los estándares de código
+3. Envía un pull request con una descripción clara
+4. Asegúrate de que los controles de CI/CD pasen
+5. Aborda cualquier comentario de revisión
+6. Fusiona después de la aprobación
 
-## License
+## Licencia
 
-By contributing, you agree that your contributions will be licensed under the project's license.
+Al contribuir, aceptas que tus contribuciones serán licenciadas bajo la licencia del proyecto.

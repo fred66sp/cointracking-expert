@@ -1833,287 +1833,389 @@ Los Value Objects son inmutables y se identifican por sus valores, no por identi
 
 ### Money
 
-```kotlin
-data class Money(
-    val amount: BigDecimal,
-    val currency: Currency
-) {
-    init {
-        require(amount >= 0) { "Amount must be non-negative" }
-        require(!amount.isNaN()) { "Amount must be a number" }
-    }
+```python
+from dataclasses import dataclass
+from decimal import Decimal
+from enum import Enum
+
+@dataclass(frozen=True)
+class Money:
+    amount: Decimal
+    currency: str
     
-    fun plus(other: Money): Money {
-        require(this.currency == other.currency)
-        return Money(this.amount + other.amount, currency)
-    }
+    def __post_init__(self):
+        if self.amount < 0:
+            raise ValueError("Amount must be non-negative")
+        try:
+            float(self.amount)
+        except (ValueError, OverflowError):
+            raise ValueError("Amount must be a number")
     
-    fun times(factor: BigDecimal): Money {
-        return Money(this.amount * factor, currency)
-    }
-}
+    def plus(self, other: 'Money') -> 'Money':
+        if self.currency != other.currency:
+            raise ValueError(f"Cannot add {self.currency} to {other.currency}")
+        return Money(self.amount + other.amount, self.currency)
+    
+    def times(self, factor: Decimal) -> 'Money':
+        return Money(self.amount * factor, self.currency)
 ```
 
 ### Quantity
 
-```kotlin
-data class Quantity(
-    val amount: BigDecimal,
-    val decimals: Int = 18
-) {
-    init {
-        require(decimals in 0..18)
-        require(!amount.isNaN())
-    }
+```python
+from dataclasses import dataclass
+from decimal import Decimal, ROUND_HALF_UP
+
+@dataclass(frozen=True)
+class Quantity:
+    amount: Decimal
+    decimals: int = 18
     
-    val normalizedAmount: BigDecimal
-        get() = amount.setScale(decimals)
-}
+    def __post_init__(self):
+        if not (0 <= self.decimals <= 18):
+            raise ValueError("Decimals must be between 0 and 18")
+        try:
+            float(self.amount)
+        except (ValueError, OverflowError):
+            raise ValueError("Amount must be a number")
+    
+    @property
+    def normalized_amount(self) -> Decimal:
+        return self.amount.quantize(
+            Decimal(10) ** -self.decimals,
+            rounding=ROUND_HALF_UP
+        )
 ```
 
 ### Timestamp
 
-```kotlin
-data class Timestamp(
-    val instant: Instant
-) {
-    init {
-        require(instant <= Instant.now()) { "Cannot be in future" }
-    }
+```python
+from dataclasses import dataclass
+from datetime import datetime, timezone
+
+@dataclass(frozen=True)
+class Timestamp:
+    instant: datetime
     
-    companion object {
-        fun now(): Timestamp = Timestamp(Instant.now())
-    }
-}
+    def __post_init__(self):
+        if self.instant > datetime.now(timezone.utc):
+            raise ValueError("Cannot be in future")
+    
+    @classmethod
+    def now(cls) -> 'Timestamp':
+        return cls(datetime.now(timezone.utc))
 ```
 
 ### CurrencyPair
 
-```kotlin
-data class CurrencyPair(
-    val from: Currency,
-    val to: Currency
-) {
-    init {
-        require(from != to) { "Currencies must differ" }
-    }
+```python
+from dataclasses import dataclass
+
+@dataclass(frozen=True)
+class CurrencyPair:
+    from_currency: str
+    to_currency: str
     
-    fun inverse(): CurrencyPair = CurrencyPair(to, from)
-}
+    def __post_init__(self):
+        if self.from_currency == self.to_currency:
+            raise ValueError("Currencies must differ")
+    
+    def inverse(self) -> 'CurrencyPair':
+        return CurrencyPair(self.to_currency, self.from_currency)
 ```
 
 ### Hash
 
-```kotlin
-data class Hash(
-    val value: String,
-    val algorithm: HashAlgorithm
-) {
-    init {
-        require(value.isNotBlank())
-        require(value.length in 32..128) // Varies by algo
-    }
-}
+```python
+from dataclasses import dataclass
+from enum import Enum
 
-enum class HashAlgorithm {
-    SHA256, KECCAK256, BLAKE2B
-}
+class HashAlgorithm(Enum):
+    SHA256 = "sha256"
+    KECCAK256 = "keccak256"
+    BLAKE2B = "blake2b"
+
+@dataclass(frozen=True)
+class Hash:
+    value: str
+    algorithm: HashAlgorithm
+    
+    def __post_init__(self):
+        if not self.value or self.value.isspace():
+            raise ValueError("Hash value cannot be blank")
+        if not (32 <= len(self.value) <= 128):
+            raise ValueError(f"Hash length must be between 32 and 128 characters")
 ```
 
 ### Address
 
-```kotlin
-data class Address(
-    val value: String,
-    val network: Network
-) {
-    init {
-        require(value.isNotBlank())
-        validate(network)
-    }
+```python
+from dataclasses import dataclass
+import re
+from enum import Enum
+
+class Network(Enum):
+    BITCOIN = "bitcoin"
+    ETHEREUM = "ethereum"
+    BNB_CHAIN = "bnb_chain"
+    SOLANA = "solana"
+    POLYGON = "polygon"
+    ARBITRUM = "arbitrum"
+    BASE = "base"
+
+@dataclass(frozen=True)
+class Address:
+    value: str
+    network: Network
     
-    private fun validate(network: Network) {
-        when (network) {
-            Network.ETHEREUM -> {
-                require(value.startsWith("0x"))
-                require(value.length == 42)
-            }
-            Network.BITCOIN -> {
-                require(value.matches(Regex("[13][a-km-zA-HJ-NP-Z1-9]{25,34}")))
-            }
-            // ... other networks
-        }
-    }
-}
+    def __post_init__(self):
+        if not self.value or self.value.isspace():
+            raise ValueError("Address cannot be blank")
+        self._validate(self.network)
+    
+    def _validate(self, network: Network) -> None:
+        if network == Network.ETHEREUM:
+            if not self.value.startswith("0x"):
+                raise ValueError("Ethereum address must start with 0x")
+            if len(self.value) != 42:
+                raise ValueError("Ethereum address must be 42 characters long")
+        elif network == Network.BITCOIN:
+            if not re.match(r"^[13][a-km-zA-HJ-NP-Z1-9]{25,34}$", self.value):
+                raise ValueError("Invalid Bitcoin address format")
+        # ... validación para otras redes
 ```
 
 ### TransactionId
 
-```kotlin
-data class TransactionId(val value: String) {
-    init {
-        require(value.isNotBlank())
-        require(value.length in 1..256)
-    }
+```python
+from dataclasses import dataclass
+import uuid
+
+@dataclass(frozen=True)
+class TransactionId:
+    value: str
     
-    companion object {
-        fun generate(): TransactionId = 
-            TransactionId(UUID.randomUUID().toString())
-    }
-}
+    def __post_init__(self):
+        if not self.value or self.value.isspace():
+            raise ValueError("TransactionId cannot be blank")
+        if not (1 <= len(self.value) <= 256):
+            raise ValueError("TransactionId length must be between 1 and 256")
+    
+    @classmethod
+    def generate(cls) -> 'TransactionId':
+        return cls(str(uuid.uuid4()))
 ```
 
 ### TradeId
 
-```kotlin
-data class TradeId(val value: String) {
-    init {
-        require(value.isNotBlank())
-    }
-}
+```python
+from dataclasses import dataclass
+
+@dataclass(frozen=True)
+class TradeId:
+    value: str
+    
+    def __post_init__(self):
+        if not self.value or self.value.isspace():
+            raise ValueError("TradeId cannot be blank")
 ```
 
 ### Fee
 
-```kotlin
-data class Fee(
-    val amount: Money,
-    val feeType: FeeType
-) {
-    init {
-        require(amount.amount >= 0) { "Fee must be non-negative" }
-    }
-}
+```python
+from dataclasses import dataclass
+from enum import Enum
 
-enum class FeeType {
-    NETWORK, EXCHANGE, BRIDGE, OTHER
-}
+class FeeType(Enum):
+    NETWORK = "network"
+    EXCHANGE = "exchange"
+    BRIDGE = "bridge"
+    OTHER = "other"
+
+@dataclass(frozen=True)
+class Fee:
+    amount: Money
+    fee_type: FeeType
+    
+    def __post_init__(self):
+        if self.amount.amount < 0:
+            raise ValueError("Fee must be non-negative")
 ```
 
 ### ExchangeId
 
-```kotlin
-data class ExchangeId(val value: String) {
-    companion object {
-        fun BINANCE() = ExchangeId("BINANCE")
-        fun COINBASE() = ExchangeId("COINBASE")
-        fun KRAKEN() = ExchangeId("KRAKEN")
-        fun BYBIT() = ExchangeId("BYBIT")
-        fun OKX() = ExchangeId("OKX")
-        fun KUCOIN() = ExchangeId("KUCOIN")
-        fun BINGX() = ExchangeId("BINGX")
-    }
-}
+```python
+from dataclasses import dataclass
+
+@dataclass(frozen=True)
+class ExchangeId:
+    value: str
+    
+    @classmethod
+    def BINANCE(cls) -> 'ExchangeId':
+        return cls("BINANCE")
+    
+    @classmethod
+    def COINBASE(cls) -> 'ExchangeId':
+        return cls("COINBASE")
+    
+    @classmethod
+    def KRAKEN(cls) -> 'ExchangeId':
+        return cls("KRAKEN")
+    
+    @classmethod
+    def BYBIT(cls) -> 'ExchangeId':
+        return cls("BYBIT")
+    
+    @classmethod
+    def OKX(cls) -> 'ExchangeId':
+        return cls("OKX")
+    
+    @classmethod
+    def KUCOIN(cls) -> 'ExchangeId':
+        return cls("KUCOIN")
+    
+    @classmethod
+    def BINGX(cls) -> 'ExchangeId':
+        return cls("BINGX")
 ```
 
 ### WalletId
 
-```kotlin
-data class WalletId(val value: String) {
-    companion object {
-        fun generate(): WalletId = 
-            WalletId(UUID.randomUUID().toString())
-    }
-}
+```python
+from dataclasses import dataclass
+import uuid
+
+@dataclass(frozen=True)
+class WalletId:
+    value: str
+    
+    @classmethod
+    def generate(cls) -> 'WalletId':
+        return cls(str(uuid.uuid4()))
 ```
 
 ### AssetSymbol
 
-```kotlin
-data class AssetSymbol(val value: String) {
-    init {
-        require(value.isNotBlank())
-        require(value.matches(Regex("[A-Z0-9]{1,10}")))
-    }
-}
+```python
+from dataclasses import dataclass
+import re
+
+@dataclass(frozen=True)
+class AssetSymbol:
+    value: str
+    
+    def __post_init__(self):
+        if not self.value or self.value.isspace():
+            raise ValueError("AssetSymbol cannot be blank")
+        if not re.match(r"^[A-Z0-9]{1,10}$", self.value):
+            raise ValueError("AssetSymbol must be 1-10 uppercase letters or digits")
 ```
 
 ### Network
 
-```kotlin
-enum class Network {
-    BITCOIN,
-    ETHEREUM,
-    BNB_CHAIN,
-    SOLANA,
-    POLYGON,
-    ARBITRUM,
-    BASE,
-    AVALANCHE,
-    OPTIMISM,
-    FANTOM,
-    CRONOS,
-    HARMONY
-}
+```python
+from enum import Enum
+
+class Network(Enum):
+    BITCOIN = "bitcoin"
+    ETHEREUM = "ethereum"
+    BNB_CHAIN = "bnb_chain"
+    SOLANA = "solana"
+    POLYGON = "polygon"
+    ARBITRUM = "arbitrum"
+    BASE = "base"
+    AVALANCHE = "avalanche"
+    OPTIMISM = "optimism"
+    FANTOM = "fantom"
+    CRONOS = "cronos"
+    HARMONY = "harmony"
 ```
 
 ### Status
 
 Múltiples enums de status para diferentes entidades.
 
-```kotlin
-enum class TransactionStatus {
-    CONFIRMED, PENDING, FAILED, DISPUTED
-}
+```python
+from enum import Enum
 
-enum class AccountStatus {
-    ACTIVE, ARCHIVED, SUSPENDED, CLOSED
-}
+class TransactionStatus(Enum):
+    CONFIRMED = "confirmed"
+    PENDING = "pending"
+    FAILED = "failed"
+    DISPUTED = "disputed"
 
-enum class AuditStatus {
-    CREATED, RUNNING, COMPLETED, FAILED
-}
+class AccountStatus(Enum):
+    ACTIVE = "active"
+    ARCHIVED = "archived"
+    SUSPENDED = "suspended"
+    CLOSED = "closed"
 
-enum class HoldingStatus {
-    ACTIVE, LIQUIDATED, DUST, WATCHED
-}
+class AuditStatus(Enum):
+    CREATED = "created"
+    RUNNING = "running"
+    COMPLETED = "completed"
+    FAILED = "failed"
 
-enum class TransferStatus {
-    MATCHED, ORPHANED, PENDING, SUSPICIOUS
-}
+class HoldingStatus(Enum):
+    ACTIVE = "active"
+    LIQUIDATED = "liquidated"
+    DUST = "dust"
+    WATCHED = "watched"
 
-enum class FindingStatus {
-    OPEN, ACKNOWLEDGED, RESOLVED, DISMISSED
-}
+class TransferStatus(Enum):
+    MATCHED = "matched"
+    ORPHANED = "orphaned"
+    PENDING = "pending"
+    SUSPICIOUS = "suspicious"
+
+class FindingStatus(Enum):
+    OPEN = "open"
+    ACKNOWLEDGED = "acknowledged"
+    RESOLVED = "resolved"
+    DISMISSED = "dismissed"
 ```
 
 ### Severity
 
-```kotlin
-enum class Severity {
-    CRITICAL,  // Requires immediate action
-    HIGH,      // Significant issue
-    MEDIUM,    // Notable but not urgent
-    LOW,       // Minor issue
-    INFO       // Informational
-}
+```python
+from enum import Enum
+
+class Severity(Enum):
+    CRITICAL = "critical"   # Requiere acción inmediata
+    HIGH = "high"          # Problema significativo
+    MEDIUM = "medium"      # Notable pero no urgente
+    LOW = "low"            # Problema menor
+    INFO = "info"          # Informacional
 ```
 
 ### RiskLevel
 
-```kotlin
-enum class RiskLevel {
-    CRITICAL,
-    HIGH,
-    MEDIUM,
-    LOW,
-    NONE
-}
+```python
+from enum import Enum
+
+class RiskLevel(Enum):
+    CRITICAL = "critical"
+    HIGH = "high"
+    MEDIUM = "medium"
+    LOW = "low"
+    NONE = "none"
 ```
 
 ### FindingType
 
-```kotlin
-enum class FindingType {
-    DUPLICATE,                   // Duplicate transaction
-    ORPHANED_TRANSFER,          // Transfer without pair
-    NEGATIVE_BALANCE,           // Impossible state
-    MISSING_PURCHASE_HISTORY,   // Sold more than bought
-    INCONSISTENCY,              // Data mismatch
-    MISMATCH,                   // Expected vs actual
-    WARNING,                    // Unusual but possible
-    INFO                        // Informational
-}
+```python
+from enum import Enum
+
+class FindingType(Enum):
+    DUPLICATE = "duplicate"                           # Transacción duplicada
+    ORPHANED_TRANSFER = "orphaned_transfer"          # Transferencia sin par
+    NEGATIVE_BALANCE = "negative_balance"            # Estado imposible
+    MISSING_PURCHASE_HISTORY = "missing_purchase"    # Vendido más que comprado
+    INCONSISTENCY = "inconsistency"                  # Desajuste de datos
+    MISMATCH = "mismatch"                            # Esperado vs actual
+    WARNING = "warning"                              # Inusual pero posible
+    INFO = "info"                                    # Informacional
 ```
 
 ---
@@ -2122,158 +2224,168 @@ enum class FindingType {
 
 ### TransactionType
 
-```kotlin
-enum class TransactionType {
-    BUY,                    // Compra de activo
-    SELL,                   // Venta de activo
-    DEPOSIT,                // Entrada de fondos
-    WITHDRAWAL,             // Salida de fondos
-    TRANSFER,               // Transferencia entre cuentas
-    STAKING_REWARD,         // Recompensa de staking
-    AIRDROP,                // Airdrop recibido
-    FEE,                    // Comisión pagada
-    DUST,                   // Cantidad insignificante
-    INTERNAL_TRANSFER,      // Transferencia interna (mismo exchange)
-    MARGIN_INTEREST,        // Interés de margin
-    DIVIDEND,               // Dividendo
-    INFLATION,              // Inflación de token
-    MERGE,                  // Merge de blockchain
-    HARD_FORK,              // Fork de blockchain
-    OTHER                   // Otro tipo no clasificado
-}
+```python
+from enum import Enum
+
+class TransactionType(Enum):
+    BUY = "buy"                               # Compra de activo
+    SELL = "sell"                             # Venta de activo
+    DEPOSIT = "deposit"                       # Entrada de fondos
+    WITHDRAWAL = "withdrawal"                 # Salida de fondos
+    TRANSFER = "transfer"                     # Transferencia entre cuentas
+    STAKING_REWARD = "staking_reward"         # Recompensa de staking
+    AIRDROP = "airdrop"                       # Airdrop recibido
+    FEE = "fee"                               # Comisión pagada
+    DUST = "dust"                             # Cantidad insignificante
+    INTERNAL_TRANSFER = "internal_transfer"   # Transferencia interna (mismo exchange)
+    MARGIN_INTEREST = "margin_interest"       # Interés de margin
+    DIVIDEND = "dividend"                     # Dividendo
+    INFLATION = "inflation"                   # Inflación de token
+    MERGE = "merge"                           # Merge de blockchain
+    HARD_FORK = "hard_fork"                   # Fork de blockchain
+    OTHER = "other"                           # Otro tipo no clasificado
 ```
 
 ### DataSource
 
-```kotlin
-enum class DataSource {
-    COINTRACKING_CSV,       // Export CSV de CoinTracking
-    COINTRACKING_API,       // Import desde API de CoinTracking
-    EXCHANGE_API,           // API de exchange
-    BLOCKCHAIN,             // Blockchain explorer
-    BLOCKCHAIN_INDEXER,     // Indexer como Etherscan
-    WALLET_API,             // API de billetera
-    MANUAL,                 // Entrada manual del usuario
-    AGGREGATOR,             // Servicio agregador
-    IMPORT_FILE,            // Archivo importado
-    UNKNOWN                 // Origen desconocido
-}
+```python
+from enum import Enum
+
+class DataSource(Enum):
+    COINTRACKING_CSV = "cointracking_csv"         # Export CSV de CoinTracking
+    COINTRACKING_API = "cointracking_api"         # Import desde API de CoinTracking
+    EXCHANGE_API = "exchange_api"                 # API de exchange
+    BLOCKCHAIN = "blockchain"                     # Blockchain explorer
+    BLOCKCHAIN_INDEXER = "blockchain_indexer"     # Indexer como Etherscan
+    WALLET_API = "wallet_api"                     # API de billetera
+    MANUAL = "manual"                             # Entrada manual del usuario
+    AGGREGATOR = "aggregator"                     # Servicio agregador
+    IMPORT_FILE = "import_file"                   # Archivo importado
+    UNKNOWN = "unknown"                           # Origen desconocido
 ```
 
 ### ExchangeType
 
-```kotlin
-enum class ExchangeType {
-    CENTRALIZED,            // CEX (Binance, Coinbase, etc.)
-    DECENTRALIZED,          // DEX en blockchain
-    HYBRID,                 // Híbrido
-    WALLET_PROVIDER,        // Proveedor de billetera
-    BRIDGE,                 // Bridge entre chains
-    AGGREGATOR,             // Agregador
-    UNKNOWN                 // Desconocido
-}
+```python
+from enum import Enum
+
+class ExchangeType(Enum):
+    CENTRALIZED = "centralized"          # CEX (Binance, Coinbase, etc.)
+    DECENTRALIZED = "decentralized"      # DEX en blockchain
+    HYBRID = "hybrid"                    # Híbrido
+    WALLET_PROVIDER = "wallet_provider"  # Proveedor de billetera
+    BRIDGE = "bridge"                    # Bridge entre chains
+    AGGREGATOR = "aggregator"            # Agregador
+    UNKNOWN = "unknown"                  # Desconocido
 ```
 
 ### WalletType
 
-```kotlin
-enum class WalletType {
-    HARDWARE,               // Hardware wallet (Ledger, Trezor)
-    SOFTWARE,               // Software wallet (MetaMask)
-    MULTISIG,               // Multi-signature
-    HARDWARE_ABSTRACTION,   // HAL (Smart contract wallet)
-    EXCHANGE_CUSTODY,       // Custodia en exchange
-    CUSTODIAL,              // Custodia terceros
-    PAPER,                  // Billetera de papel
-    OTHER                   // Otra
-}
+```python
+from enum import Enum
+
+class WalletType(Enum):
+    HARDWARE = "hardware"                        # Hardware wallet (Ledger, Trezor)
+    SOFTWARE = "software"                        # Software wallet (MetaMask)
+    MULTISIG = "multisig"                        # Multi-signature
+    HARDWARE_ABSTRACTION = "hardware_abstraction"  # HAL (Smart contract wallet)
+    EXCHANGE_CUSTODY = "exchange_custody"        # Custodia en exchange
+    CUSTODIAL = "custodial"                      # Custodia terceros
+    PAPER = "paper"                              # Billetera de papel
+    OTHER = "other"                              # Otra
 ```
 
 ### AccountSource
 
-```kotlin
-enum class AccountSource {
-    EXCHANGE,               // Cuenta en exchange
-    WALLET,                 // Billetera blockchain
-    COINTRACKING,           // Portafolio CoinTracking
-    AGGREGATOR,             // Servicio agregador
-    VIRTUAL,                // Cuenta virtual/imaginaria
-    OTHER                   // Otra
-}
+```python
+from enum import Enum
+
+class AccountSource(Enum):
+    EXCHANGE = "exchange"              # Cuenta en exchange
+    WALLET = "wallet"                  # Billetera blockchain
+    COINTRACKING = "cointracking"      # Portafolio CoinTracking
+    AGGREGATOR = "aggregator"          # Servicio agregador
+    VIRTUAL = "virtual"                # Cuenta virtual/imaginaria
+    OTHER = "other"                    # Otra
 ```
 
 ### RuleType
 
-```kotlin
-enum class RuleType {
-    DATA_QUALITY,           // Validación de calidad
-    CONSISTENCY,            // Validación de consistencia
-    RECONCILIATION,         // Validación de reconciliación
-    COMPLETENESS,           // Validación de completitud
-    PLAUSIBILITY,           // Validación de plausibilidad
-    BUSINESS_LOGIC,         // Lógica de negocio
-    COMPLIANCE,             // Conformidad
-    OTHER                   // Otra
-}
+```python
+from enum import Enum
+
+class RuleType(Enum):
+    DATA_QUALITY = "data_quality"          # Validación de calidad
+    CONSISTENCY = "consistency"            # Validación de consistencia
+    RECONCILIATION = "reconciliation"      # Validación de reconciliación
+    COMPLETENESS = "completeness"          # Validación de completitud
+    PLAUSIBILITY = "plausibility"          # Validación de plausibilidad
+    BUSINESS_LOGIC = "business_logic"      # Lógica de negocio
+    COMPLIANCE = "compliance"              # Conformidad
+    OTHER = "other"                        # Otra
 ```
 
 ### RuleSeverity
 
-```kotlin
-enum class RuleSeverity {
-    CRITICAL,               // Fallo crítico
-    HIGH,                   // Fallo importante
-    MEDIUM,                 // Advertencia
-    LOW,                    // Información
-    INFO                    // Solo informativo
-}
+```python
+from enum import Enum
+
+class RuleSeverity(Enum):
+    CRITICAL = "critical"      # Fallo crítico
+    HIGH = "high"              # Fallo importante
+    MEDIUM = "medium"          # Advertencia
+    LOW = "low"                # Información
+    INFO = "info"              # Solo informativo
 ```
 
 ### ReportFormat
 
-```kotlin
-enum class ReportFormat {
-    MARKDOWN,               // Markdown
-    HTML,                   // HTML
-    EXCEL,                  // Excel/XLSX
-    JSON,                   // JSON
-    PDF,                    // PDF
-    CSV,                    // CSV
-    TEXT                    // Texto plano
-}
+```python
+from enum import Enum
+
+class ReportFormat(Enum):
+    MARKDOWN = "markdown"      # Markdown
+    HTML = "html"              # HTML
+    EXCEL = "excel"            # Excel/XLSX
+    JSON = "json"              # JSON
+    PDF = "pdf"                # PDF
+    CSV = "csv"                # CSV
+    TEXT = "text"              # Texto plano
 ```
 
 ### TaxEventType
 
-```kotlin
-enum class TaxEventType {
-    CAPITAL_GAIN,           // Ganancia de capital
-    CAPITAL_LOSS,           // Pérdida de capital
-    INCOME,                 // Ingreso (staking, etc.)
-    STAKING_REWARD,         // Recompensa staking
-    AIRDROP,                // Airdrop
-    HARD_FORK,              // Bifurcación
-    DIVIDEND,               // Dividendo
-    GIFT,                   // Regalo (no taxable)
-    EXPENSE,                // Gasto deducible
-    OTHER                   // Otro
-}
+```python
+from enum import Enum
+
+class TaxEventType(Enum):
+    CAPITAL_GAIN = "capital_gain"          # Ganancia de capital
+    CAPITAL_LOSS = "capital_loss"          # Pérdida de capital
+    INCOME = "income"                      # Ingreso (staking, etc.)
+    STAKING_REWARD = "staking_reward"      # Recompensa staking
+    AIRDROP = "airdrop"                    # Airdrop
+    HARD_FORK = "hard_fork"                # Bifurcación
+    DIVIDEND = "dividend"                  # Dividendo
+    GIFT = "gift"                          # Regalo (no taxable)
+    EXPENSE = "expense"                    # Gasto deducible
+    OTHER = "other"                        # Otro
 ```
 
 ### Jurisdiction
 
-```kotlin
-enum class Jurisdiction {
-    SPAIN,
-    EU,
-    USA,
-    UK,
-    CANADA,
-    AUSTRALIA,
-    SINGAPORE,
-    JAPAN,
-    UNKNOWN
-}
+```python
+from enum import Enum
+
+class Jurisdiction(Enum):
+    SPAIN = "spain"
+    EU = "eu"
+    USA = "usa"
+    UK = "uk"
+    CANADA = "canada"
+    AUSTRALIA = "australia"
+    SINGAPORE = "singapore"
+    JAPAN = "japan"
+    UNKNOWN = "unknown"
 ```
 
 ---
@@ -2312,15 +2424,42 @@ enum class Jurisdiction {
 
 **Repositorio**:
 
-```kotlin
-interface AccountRepository {
-    fun save(account: Account): AccountId
-    fun findById(id: AccountId): Account?
-    fun findByExchangeId(exchangeId: ExchangeId): List<Account>
-    fun findByWalletId(walletId: WalletId): List<Account>
-    fun update(account: Account)
-    fun delete(id: AccountId)
-}
+```python
+from abc import ABC, abstractmethod
+from typing import Optional, List
+
+class AccountRepository(ABC):
+    """Repositorio para gestión de cuentas."""
+    
+    @abstractmethod
+    def save(self, account: Account) -> AccountId:
+        """Guarda una nueva cuenta."""
+        pass
+    
+    @abstractmethod
+    def find_by_id(self, account_id: AccountId) -> Optional[Account]:
+        """Encuentra una cuenta por ID."""
+        pass
+    
+    @abstractmethod
+    def find_by_exchange_id(self, exchange_id: ExchangeId) -> List[Account]:
+        """Encuentra todas las cuentas para un exchange."""
+        pass
+    
+    @abstractmethod
+    def find_by_wallet_id(self, wallet_id: WalletId) -> List[Account]:
+        """Encuentra todas las cuentas para una billetera."""
+        pass
+    
+    @abstractmethod
+    def update(self, account: Account) -> None:
+        """Actualiza una cuenta existente."""
+        pass
+    
+    @abstractmethod
+    def delete(self, account_id: AccountId) -> None:
+        """Elimina una cuenta."""
+        pass
 ```
 
 ---
@@ -2347,14 +2486,37 @@ interface AccountRepository {
 
 **Repositorio**:
 
-```kotlin
-interface AuditRepository {
-    fun save(audit: Audit): AuditId
-    fun findById(id: AuditId): Audit?
-    fun findByAccountId(accountId: AccountId): List<Audit>
-    fun update(audit: Audit)
-    fun delete(id: AuditId)
-}
+```python
+from abc import ABC, abstractmethod
+from typing import Optional, List
+
+class AuditRepository(ABC):
+    """Repositorio para gestión de auditorías."""
+    
+    @abstractmethod
+    def save(self, audit: Audit) -> AuditId:
+        """Guarda una nueva auditoría."""
+        pass
+    
+    @abstractmethod
+    def find_by_id(self, audit_id: AuditId) -> Optional[Audit]:
+        """Encuentra una auditoría por ID."""
+        pass
+    
+    @abstractmethod
+    def find_by_account_id(self, account_id: AccountId) -> List[Audit]:
+        """Encuentra todas las auditorías para una cuenta."""
+        pass
+    
+    @abstractmethod
+    def update(self, audit: Audit) -> None:
+        """Actualiza una auditoría existente."""
+        pass
+    
+    @abstractmethod
+    def delete(self, audit_id: AuditId) -> None:
+        """Elimina una auditoría."""
+        pass
 ```
 
 ---
@@ -2485,198 +2647,401 @@ Los servicios del dominio encapsulan lógica que cruza múltiples agregados.
 
 Valida transacciones y reconcilia con fuentes externas.
 
-```kotlin
-interface TransactionReconciliationService {
-    fun validateTransaction(t: Transaction): ValidationResult
-    fun reconcileWithSource(
-        transactions: List<Transaction>,
-        source: DataSource
-    ): ReconciliationResult
+```python
+from abc import ABC, abstractmethod
+from typing import List
+
+class TransactionReconciliationService(ABC):
+    """Servicio para reconciliación de transacciones."""
     
-    fun detectDuplicates(
-        transactions: List<Transaction>
-    ): List<DuplicatePair>
-}
+    @abstractmethod
+    def validate_transaction(self, transaction: Transaction) -> ValidationResult:
+        """Valida una transacción individual."""
+        pass
+    
+    @abstractmethod
+    def reconcile_with_source(
+        self,
+        transactions: List[Transaction],
+        source: DataSource
+    ) -> ReconciliationResult:
+        """Reconcilia transacciones con una fuente externa."""
+        pass
+    
+    @abstractmethod
+    def detect_duplicates(
+        self,
+        transactions: List[Transaction]
+    ) -> List[DuplicatePair]:
+        """Detecta transacciones duplicadas."""
+        pass
 ```
 
 ### 2. **TransferMatchingService**
 
 Empareja transfers entre cuentas.
 
-```kotlin
-interface TransferMatchingService {
-    fun matchTransfers(
-        withdrawals: List<Transaction>,
-        deposits: List<Transaction>
-    ): List<Transfer>
+```python
+from abc import ABC, abstractmethod
+from typing import List
+
+class TransferMatchingService(ABC):
+    """Servicio para emparejamiento de transferencias."""
     
-    fun findOrphanedTransfers(
-        transactions: List<Transaction>
-    ): List<Transaction>
-}
+    @abstractmethod
+    def match_transfers(
+        self,
+        withdrawals: List[Transaction],
+        deposits: List[Transaction]
+    ) -> List[Transfer]:
+        """Empareja retiros con depósitos."""
+        pass
+    
+    @abstractmethod
+    def find_orphaned_transfers(
+        self,
+        transactions: List[Transaction]
+    ) -> List[Transaction]:
+        """Encuentra transferencias huérfanas sin emparejar."""
+        pass
 ```
 
 ### 3. **LedgerReconstructionService**
 
 Reconstruye ledgers desde transacciones.
 
-```kotlin
-interface LedgerReconstructionService {
-    fun reconstructLedger(
-        account: Account
-    ): Ledger
+```python
+from abc import ABC, abstractmethod
+from typing import List
+
+class LedgerReconstructionService(ABC):
+    """Servicio para reconstrucción de libro mayor."""
     
-    fun detectNegativeBalances(
+    @abstractmethod
+    def reconstruct_ledger(self, account: Account) -> Ledger:
+        """Reconstruye el libro mayor de una cuenta."""
+        pass
+    
+    @abstractmethod
+    def detect_negative_balances(
+        self,
         ledger: Ledger
-    ): List<NegativeBalanceViolation>
-}
+    ) -> List[NegativeBalanceViolation]:
+        """Detecta balances negativos (estados imposibles)."""
+        pass
 ```
 
 ### 4. **FifoCalculationService**
 
 Calcula FIFO y lotes de adquisición.
 
-```kotlin
-interface FifoCalculationService {
-    fun calculateAcquisitionLots(
-        account: Account
-    ): List<AcquisitionLot>
+```python
+from abc import ABC, abstractmethod
+from typing import List
+
+class FifoCalculationService(ABC):
+    """Servicio para cálculo FIFO."""
     
-    fun calculateDisposals(
-        lots: List<AcquisitionLot>,
-        sells: List<Transaction>
-    ): List<Disposal>
-    
-    fun detectMissingPurchaseHistory(
+    @abstractmethod
+    def calculate_acquisition_lots(
+        self,
         account: Account
-    ): List<MissingPurchaseViolation>
-}
+    ) -> List[AcquisitionLot]:
+        """Calcula lotes de adquisición usando FIFO."""
+        pass
+    
+    @abstractmethod
+    def calculate_disposals(
+        self,
+        lots: List[AcquisitionLot],
+        sells: List[Transaction]
+    ) -> List[Disposal]:
+        """Calcula disposiciones (ventas) de lotes."""
+        pass
+    
+    @abstractmethod
+    def detect_missing_purchase_history(
+        self,
+        account: Account
+    ) -> List[MissingPurchaseViolation]:
+        """Detecta historial de compras faltante."""
+        pass
 ```
 
 ### 5. **TaxCalculationService**
 
 Calcula impuestos.
 
-```kotlin
-interface TaxCalculationService {
-    fun calculateTaxEvents(
+```python
+from abc import ABC, abstractmethod
+from typing import List
+
+class TaxCalculationService(ABC):
+    """Servicio para cálculo de impuestos."""
+    
+    @abstractmethod
+    def calculate_tax_events(
+        self,
         account: Account,
         jurisdiction: Jurisdiction
-    ): List<TaxEvent>
+    ) -> List[TaxEvent]:
+        """Calcula eventos fiscales para una cuenta en una jurisdicción."""
+        pass
     
-    fun calculateCapitalGains(
-        disposals: List<Disposal>
-    ): CapitalGainsReport
+    @abstractmethod
+    def calculate_capital_gains(
+        self,
+        disposals: List[Disposal]
+    ) -> CapitalGainsReport:
+        """Calcula ganancias de capital desde disposiciones."""
+        pass
     
-    fun validateTaxCalculations(
+    @abstractmethod
+    def validate_tax_calculations(
+        self,
         reported: TaxReport,
         calculated: TaxReport
-    ): TaxValidationResult
-}
+    ) -> TaxValidationResult:
+        """Valida cálculos fiscales reportados vs calculados."""
+        pass
 ```
 
 ### 6. **AuditOrchestrationService**
 
 Orquesta auditoría completa.
 
-```kotlin
-interface AuditOrchestrationService {
-    fun executeAudit(
+```python
+from abc import ABC, abstractmethod
+from typing import Dict, List
+
+class AuditOrchestrationService(ABC):
+    """Servicio para orquestación de auditorías."""
+    
+    @abstractmethod
+    def execute_audit(
+        self,
         account: Account,
         configuration: AuditConfiguration
-    ): Audit
+    ) -> Audit:
+        """Ejecuta una auditoría completa."""
+        pass
     
-    fun synthesizeFindings(
-        engineResults: Map<String, List<Finding>>
-    ): List<Finding>
-}
+    @abstractmethod
+    def synthesize_findings(
+        self,
+        engine_results: Dict[str, List[Finding]]
+    ) -> List[Finding]:
+        """Sintetiza hallazgos de múltiples motores."""
+        pass
 ```
 
 ### 7. **ReportGenerationService**
 
 Genera reportes en múltiples formatos.
 
-```kotlin
-interface ReportGenerationService {
-    fun generateReport(
+```python
+from abc import ABC, abstractmethod
+
+class ReportGenerationService(ABC):
+    """Servicio para generación de reportes."""
+    
+    @abstractmethod
+    def generate_report(
+        self,
         audit: Audit,
         format: ReportFormat
-    ): Report
+    ) -> Report:
+        """Genera un reporte en el formato especificado."""
+        pass
     
-    fun generateExecutiveSummary(
-        audit: Audit
-    ): String
-}
+    @abstractmethod
+    def generate_executive_summary(self, audit: Audit) -> str:
+        """Genera un resumen ejecutivo."""
+        pass
 ```
 
 ---
 
 ## Interfaces de Repositorio
 
-```kotlin
-interface TransactionRepository {
-    fun save(transaction: Transaction): TransactionId
-    fun findById(id: TransactionId): Transaction?
-    fun findByAccountId(accountId: AccountId): List<Transaction>
-    fun findByAsset(asset: Asset): List<Transaction>
-    fun findByTimestampRange(
+```python
+from abc import ABC, abstractmethod
+from typing import Optional, List
+
+class TransactionRepository(ABC):
+    """Repositorio para transacciones."""
+    
+    @abstractmethod
+    def save(self, transaction: Transaction) -> TransactionId:
+        pass
+    
+    @abstractmethod
+    def find_by_id(self, transaction_id: TransactionId) -> Optional[Transaction]:
+        pass
+    
+    @abstractmethod
+    def find_by_account_id(self, account_id: AccountId) -> List[Transaction]:
+        pass
+    
+    @abstractmethod
+    def find_by_asset(self, asset: Asset) -> List[Transaction]:
+        pass
+    
+    @abstractmethod
+    def find_by_timestamp_range(
+        self,
         start: Timestamp,
         end: Timestamp
-    ): List<Transaction>
-    fun update(transaction: Transaction)
-    fun delete(id: TransactionId)
-}
+    ) -> List[Transaction]:
+        pass
+    
+    @abstractmethod
+    def update(self, transaction: Transaction) -> None:
+        pass
+    
+    @abstractmethod
+    def delete(self, transaction_id: TransactionId) -> None:
+        pass
 
-interface AssetRepository {
-    fun save(asset: Asset): Asset
-    fun findBySymbol(symbol: AssetSymbol): Asset?
-    fun findByNetwork(network: Network): List<Asset>
-    fun findAll(): List<Asset>
-}
 
-interface ExchangeRepository {
-    fun save(exchange: Exchange): ExchangeId
-    fun findById(id: ExchangeId): Exchange?
-    fun findAll(): List<Exchange>
-}
+class AssetRepository(ABC):
+    """Repositorio para activos."""
+    
+    @abstractmethod
+    def save(self, asset: Asset) -> Asset:
+        pass
+    
+    @abstractmethod
+    def find_by_symbol(self, symbol: AssetSymbol) -> Optional[Asset]:
+        pass
+    
+    @abstractmethod
+    def find_by_network(self, network: Network) -> List[Asset]:
+        pass
+    
+    @abstractmethod
+    def find_all(self) -> List[Asset]:
+        pass
 
-interface WalletRepository {
-    fun save(wallet: Wallet): WalletId
-    fun findById(id: WalletId): Wallet?
-    fun findByNetwork(network: Network): List<Wallet>
-    fun findByAddress(address: Address): Wallet?
-}
 
-interface LedgerRepository {
-    fun save(ledger: Ledger): LedgerId
-    fun findByAccountId(accountId: AccountId): Ledger?
-    fun update(ledger: Ledger)
-}
+class ExchangeRepository(ABC):
+    """Repositorio para exchanges."""
+    
+    @abstractmethod
+    def save(self, exchange: Exchange) -> ExchangeId:
+        pass
+    
+    @abstractmethod
+    def find_by_id(self, exchange_id: ExchangeId) -> Optional[Exchange]:
+        pass
+    
+    @abstractmethod
+    def find_all(self) -> List[Exchange]:
+        pass
 
-interface HoldingRepository {
-    fun save(holding: Holding): HoldingId
-    fun findByAccountId(accountId: AccountId): List<Holding>
-    fun findByAsset(asset: Asset): List<Holding>
-}
 
-interface FindingRepository {
-    fun save(finding: Finding): FindingId
-    fun findByAuditId(auditId: AuditId): List<Finding>
-    fun findBySeverity(severity: Severity): List<Finding>
-    fun update(finding: Finding)
-}
+class WalletRepository(ABC):
+    """Repositorio para billeteras."""
+    
+    @abstractmethod
+    def save(self, wallet: Wallet) -> WalletId:
+        pass
+    
+    @abstractmethod
+    def find_by_id(self, wallet_id: WalletId) -> Optional[Wallet]:
+        pass
+    
+    @abstractmethod
+    def find_by_network(self, network: Network) -> List[Wallet]:
+        pass
+    
+    @abstractmethod
+    def find_by_address(self, address: Address) -> Optional[Wallet]:
+        pass
 
-interface AcquisitionLotRepository {
-    fun save(lot: AcquisitionLot): AcquisitionLotId
-    fun findByHoldingId(holdingId: HoldingId): List<AcquisitionLot>
-    fun findByAccount(accountId: AccountId): List<AcquisitionLot>
-}
 
-interface ReportRepository {
-    fun save(report: Report): ReportId
-    fun findByAuditId(auditId: AuditId): List<Report>
-    fun findById(id: ReportId): Report?
-}
+class LedgerRepository(ABC):
+    """Repositorio para libros mayores."""
+    
+    @abstractmethod
+    def save(self, ledger: Ledger) -> LedgerId:
+        pass
+    
+    @abstractmethod
+    def find_by_account_id(self, account_id: AccountId) -> Optional[Ledger]:
+        pass
+    
+    @abstractmethod
+    def update(self, ledger: Ledger) -> None:
+        pass
+
+
+class HoldingRepository(ABC):
+    """Repositorio para tenencias."""
+    
+    @abstractmethod
+    def save(self, holding: Holding) -> HoldingId:
+        pass
+    
+    @abstractmethod
+    def find_by_account_id(self, account_id: AccountId) -> List[Holding]:
+        pass
+    
+    @abstractmethod
+    def find_by_asset(self, asset: Asset) -> List[Holding]:
+        pass
+
+
+class FindingRepository(ABC):
+    """Repositorio para hallazgos de auditoría."""
+    
+    @abstractmethod
+    def save(self, finding: Finding) -> FindingId:
+        pass
+    
+    @abstractmethod
+    def find_by_audit_id(self, audit_id: AuditId) -> List[Finding]:
+        pass
+    
+    @abstractmethod
+    def find_by_severity(self, severity: Severity) -> List[Finding]:
+        pass
+    
+    @abstractmethod
+    def update(self, finding: Finding) -> None:
+        pass
+
+
+class AcquisitionLotRepository(ABC):
+    """Repositorio para lotes de adquisición."""
+    
+    @abstractmethod
+    def save(self, lot: AcquisitionLot) -> AcquisitionLotId:
+        pass
+    
+    @abstractmethod
+    def find_by_holding_id(self, holding_id: HoldingId) -> List[AcquisitionLot]:
+        pass
+    
+    @abstractmethod
+    def find_by_account_id(self, account_id: AccountId) -> List[AcquisitionLot]:
+        pass
+
+
+class ReportRepository(ABC):
+    """Repositorio para reportes."""
+    
+    @abstractmethod
+    def save(self, report: Report) -> ReportId:
+        pass
+    
+    @abstractmethod
+    def find_by_audit_id(self, audit_id: AuditId) -> List[Report]:
+        pass
+    
+    @abstractmethod
+    def find_by_id(self, report_id: ReportId) -> Optional[Report]:
+        pass
 ```
 
 ---
@@ -2685,62 +3050,96 @@ interface ReportRepository {
 
 Los eventos del dominio representan hechos significativos que ocurrieron.
 
-```kotlin
-sealed class DomainEvent {
-    val occurredAt: Timestamp = Timestamp.now()
-    val aggregateId: Any
-}
+```python
+from dataclasses import dataclass
+from abc import ABC, abstractmethod
+from typing import Any, List
 
-data class TransactionImportedEvent(
-    val transactionId: TransactionId,
-    val accountId: AccountId,
-    val source: DataSource
-) : DomainEvent()
+@dataclass
+class DomainEvent(ABC):
+    """Evento de dominio base."""
+    occurred_at: Timestamp
+    aggregate_id: Any
+    
+    def __post_init__(self):
+        if not self.occurred_at:
+            self.occurred_at = Timestamp.now()
 
-data class TransactionValidatedEvent(
-    val transactionId: TransactionId,
-    val isValid: Boolean
-) : DomainEvent()
 
-data class DuplicateDetectedEvent(
-    val transaction1Id: TransactionId,
-    val transaction2Id: TransactionId,
-    val auditId: AuditId
-) : DomainEvent()
+@dataclass
+class TransactionImportedEvent(DomainEvent):
+    """Transacción importada."""
+    transaction_id: TransactionId
+    account_id: AccountId
+    source: DataSource
 
-data class TransferMatchedEvent(
-    val transferId: TransferId,
-    val withdrawalId: TransactionId,
-    val depositId: TransactionId
-) : DomainEvent()
 
-data class TransferOrphanedEvent(
-    val transactionId: TransactionId,
-    val accountId: AccountId
-) : DomainEvent()
+@dataclass
+class TransactionValidatedEvent(DomainEvent):
+    """Transacción validada."""
+    transaction_id: TransactionId
+    is_valid: bool
 
-data class NegativeBalanceDetectedEvent(
-    val accountId: AccountId,
-    val asset: Asset,
-    val balance: Quantity
-) : DomainEvent()
 
-data class AuditCompletedEvent(
-    val auditId: AuditId,
-    val findingCount: Int,
-    val criticalCount: Int
-) : DomainEvent()
+@dataclass
+class DuplicateDetectedEvent(DomainEvent):
+    """Duplicado detectado."""
+    transaction1_id: TransactionId
+    transaction2_id: TransactionId
+    audit_id: AuditId
 
-data class ReportGeneratedEvent(
-    val reportId: ReportId,
-    val auditId: AuditId,
-    val format: ReportFormat
-) : DomainEvent()
 
-interface DomainEventPublisher {
-    fun publish(event: DomainEvent)
-    fun publishAll(events: List<DomainEvent>)
-}
+@dataclass
+class TransferMatchedEvent(DomainEvent):
+    """Transferencia emparejada."""
+    transfer_id: TransferId
+    withdrawal_id: TransactionId
+    deposit_id: TransactionId
+
+
+@dataclass
+class TransferOrphanedEvent(DomainEvent):
+    """Transferencia huérfana."""
+    transaction_id: TransactionId
+    account_id: AccountId
+
+
+@dataclass
+class NegativeBalanceDetectedEvent(DomainEvent):
+    """Balance negativo detectado."""
+    account_id: AccountId
+    asset: Asset
+    balance: Quantity
+
+
+@dataclass
+class AuditCompletedEvent(DomainEvent):
+    """Auditoría completada."""
+    audit_id: AuditId
+    finding_count: int
+    critical_count: int
+
+
+@dataclass
+class ReportGeneratedEvent(DomainEvent):
+    """Reporte generado."""
+    report_id: ReportId
+    audit_id: AuditId
+    format: ReportFormat
+
+
+class DomainEventPublisher(ABC):
+    """Publicador de eventos del dominio."""
+    
+    @abstractmethod
+    def publish(self, event: DomainEvent) -> None:
+        """Publica un evento único."""
+        pass
+    
+    @abstractmethod
+    def publish_all(self, events: List[DomainEvent]) -> None:
+        """Publica múltiples eventos."""
+        pass
 ```
 
 ---
@@ -2751,94 +3150,160 @@ interface DomainEventPublisher {
 
 #### Transaction
 
-```kotlin
-class TransactionValidator {
-    fun validate(transaction: Transaction): ValidationResult {
-        return ValidationResult(
-            errors = listOfNotNull(
-                if (transaction.quantity == 0) 
-                    "Quantity cannot be zero" else null,
-                if (!isValidTimestamp(transaction.timestamp))
-                    "Invalid timestamp" else null,
-                if (transaction.fee != null && transaction.fee.amount < 0)
-                    "Fee cannot be negative" else null,
-                validateQuantityConsistency(transaction),
-                validateFeeAssetIfPresent(transaction)
-            )
-        )
-    }
+```python
+from dataclasses import dataclass
+from typing import List, Optional
+
+@dataclass
+class ValidationResult:
+    """Resultado de validación."""
+    errors: List[str]
     
-    private fun validateQuantityConsistency(t: Transaction): String? {
-        return when (t.transactionType) {
-            BUY -> if (t.quantity <= 0) "BUY quantity must be positive" else null
-            SELL -> if (t.quantity >= 0) "SELL quantity must be negative" else null
-            DEPOSIT -> if (t.quantity <= 0) "DEPOSIT quantity must be positive" else null
-            WITHDRAWAL -> if (t.quantity >= 0) "WITHDRAWAL quantity must be negative" else null
-            else -> null
-        }
-    }
-}
+    @property
+    def is_valid(self) -> bool:
+        """Devuelve True si no hay errores."""
+        return len(self.errors) == 0
+
+
+class TransactionValidator:
+    """Validador de transacciones."""
+    
+    @staticmethod
+    def validate(transaction: Transaction) -> ValidationResult:
+        """Valida una transacción."""
+        errors = []
+        
+        if transaction.quantity == 0:
+            errors.append("La cantidad no puede ser cero")
+        
+        if not TransactionValidator._is_valid_timestamp(transaction.timestamp):
+            errors.append("Timestamp inválido")
+        
+        if transaction.fee and transaction.fee.amount < 0:
+            errors.append("La comisión no puede ser negativa")
+        
+        quantity_error = TransactionValidator._validate_quantity_consistency(transaction)
+        if quantity_error:
+            errors.append(quantity_error)
+        
+        return ValidationResult(errors=errors)
+    
+    @staticmethod
+    def _validate_quantity_consistency(t: Transaction) -> Optional[str]:
+        """Valida que la cantidad sea consistente con el tipo."""
+        if t.transaction_type == TransactionType.BUY:
+            if t.quantity <= 0:
+                return "Cantidad de BUY debe ser positiva"
+        elif t.transaction_type == TransactionType.SELL:
+            if t.quantity >= 0:
+                return "Cantidad de SELL debe ser negativa"
+        elif t.transaction_type == TransactionType.DEPOSIT:
+            if t.quantity <= 0:
+                return "Cantidad de DEPOSIT debe ser positiva"
+        elif t.transaction_type == TransactionType.WITHDRAWAL:
+            if t.quantity >= 0:
+                return "Cantidad de WITHDRAWAL debe ser negativa"
+        
+        return None
+    
+    @staticmethod
+    def _is_valid_timestamp(timestamp: Timestamp) -> bool:
+        """Valida que el timestamp sea válido."""
+        return timestamp.instant <= Timestamp.now().instant
 ```
 
 #### Account
 
-```kotlin
-class AccountValidator {
-    fun validate(account: Account): ValidationResult {
-        return ValidationResult(
-            errors = listOfNotNull(
-                if (account.transactions.isEmpty() && account.ledger.entries.isNotEmpty())
-                    "Transactions empty but ledger not" else null,
-                if ((account.exchange != null && account.wallet != null))
-                    "Account cannot have both exchange and wallet" else null,
-                validateLedgerConsistency(account),
-                validateTransactionOwnership(account)
-            )
-        )
-    }
+```python
+class AccountValidator:
+    """Validador de cuentas."""
     
-    private fun validateLedgerConsistency(account: Account): String? {
-        val reconstructed = reconstructLedger(account.transactions)
-        return if (reconstructed.entries.size == account.ledger.entries.size)
-            null
-        else
-            "Ledger entries count mismatch"
-    }
-}
+    @staticmethod
+    def validate(account: Account) -> ValidationResult:
+        """Valida una cuenta."""
+        errors = []
+        
+        if not account.transactions and account.ledger.entries:
+            errors.append("Transacciones vacías pero libro mayor no")
+        
+        if account.exchange and account.wallet:
+            errors.append("Una cuenta no puede tener ambos exchange y billetera")
+        
+        consistency_error = AccountValidator._validate_ledger_consistency(account)
+        if consistency_error:
+            errors.append(consistency_error)
+        
+        return ValidationResult(errors=errors)
+    
+    @staticmethod
+    def _validate_ledger_consistency(account: Account) -> Optional[str]:
+        """Valida que el libro mayor sea consistente con las transacciones."""
+        reconstructed = LedgerReconstructionService.reconstruct_ledger(account)
+        if len(reconstructed.entries) != len(account.ledger.entries):
+            return "Desajuste en número de entradas del libro mayor"
+        return None
 ```
 
 #### Ledger
 
-```kotlin
-class LedgerValidator {
-    fun validate(ledger: Ledger): ValidationResult {
-        return ValidationResult(
-            errors = listOfNotNull(
-                validateChronologicalOrder(ledger),
-                validateBalanceCalculations(ledger),
-                detectNegativeBalances(ledger)
-            ).flatten()
-        )
-    }
+```python
+from decimal import Decimal
+from typing import List
+
+class LedgerValidator:
+    """Validador de libro mayor."""
     
-    private fun validateBalanceCalculations(ledger: Ledger): List<String> {
-        val errors = mutableListOf<String>()
-        var previousBalance = BigDecimal.ZERO
+    @staticmethod
+    def validate(ledger: Ledger) -> ValidationResult:
+        """Valida un libro mayor."""
+        errors = []
         
-        for (entry in ledger.entries) {
-            if (entry.balanceBefore != previousBalance) {
-                errors.add("Balance mismatch at entry ${entry.id}")
-            }
-            val expected = entry.balanceBefore + entry.quantity
-            if (entry.balanceAfter != expected) {
-                errors.add("Balance calculation error at ${entry.id}")
-            }
-            previousBalance = entry.balanceAfter
-        }
+        chrono_errors = LedgerValidator._validate_chronological_order(ledger)
+        errors.extend(chrono_errors)
+        
+        calc_errors = LedgerValidator._validate_balance_calculations(ledger)
+        errors.extend(calc_errors)
+        
+        negative_errors = LedgerValidator._detect_negative_balances(ledger)
+        errors.extend(negative_errors)
+        
+        return ValidationResult(errors=errors)
+    
+    @staticmethod
+    def _validate_balance_calculations(ledger: Ledger) -> List[str]:
+        """Valida que los cálculos de balance sean correctos."""
+        errors = []
+        previous_balance = Decimal('0')
+        
+        for entry in ledger.entries:
+            if entry.balance_before != previous_balance:
+                errors.append(f"Desajuste de balance en entrada {entry.id}")
+            
+            expected_balance_after = entry.balance_before + entry.quantity
+            if entry.balance_after != expected_balance_after:
+                errors.append(f"Error de cálculo de balance en {entry.id}")
+            
+            previous_balance = entry.balance_after
         
         return errors
-    }
-}
+    
+    @staticmethod
+    def _validate_chronological_order(ledger: Ledger) -> List[str]:
+        """Valida que los entries estén en orden cronológico."""
+        errors = []
+        for i in range(1, len(ledger.entries)):
+            if ledger.entries[i].timestamp < ledger.entries[i-1].timestamp:
+                errors.append(f"Orden cronológico incorrecto en entrada {ledger.entries[i].id}")
+        return errors
+    
+    @staticmethod
+    def _detect_negative_balances(ledger: Ledger) -> List[str]:
+        """Detecta balances negativos (estados imposibles)."""
+        errors = []
+        for entry in ledger.entries:
+            if entry.balance_after < 0:
+                errors.append(f"Balance negativo detectado en entrada {entry.id}: {entry.balance_after}")
+        return errors
 ```
 
 ---

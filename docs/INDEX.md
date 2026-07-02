@@ -1,32 +1,32 @@
-# Documentation Index
+# Índice de documentación
 
-**Complete Guide to CoinTracking Expert Documentation**
+**Guía completa para la documentación de CoinTracking Expert**
 
-This index provides quick access to all documentation resources for the CoinTracking Expert project. Documentation is organized by topic and purpose to help developers, contributors, and users find what they need quickly.
+Este índice proporciona acceso rápido a todos los recursos de documentación del proyecto CoinTracking Expert. La documentación está organizada por tema y propósito para ayudar a desarrolladores, contribuidores y usuarios a encontrar rápidamente lo que necesitan.
 
-## Project Overview
+## Descripción general del proyecto
 
-- [Project Charter](../PROJECT_CHARTER.md) - Vision, mission, objectives, and governance
-- [Roadmap](../ROADMAP.md) - Development phases and planned features
-- [Architecture](../ARCHITECTURE.md) - System design and component overview
+- [Carta de proyecto](../PROJECT_CHARTER.md) - Visión, misión, objetivos y gobernanza
+- [Hoja de ruta](../ROADMAP.md) - Fases de desarrollo e hitos planificados
+- [Arquitectura](../ARCHITECTURE.md) - Diseño del sistema y descripción general de componentes
 
-## Getting Started
+## Comenzar
 
-- [Development Guide](DEVELOPMENT_GUIDE.md) - Setup, development environment, and workflows
-- [Contributing Guide](../CONTRIBUTING.md) - How to contribute to the project
+- [Guía de desarrollo](DEVELOPMENT_GUIDE.md) - Configuración, ambiente de desarrollo y workflows
+- [Directrices de contribución](../CONTRIBUTING.md) - Cómo contribuir al proyecto
 
-## Domain Knowledge
+## Conocimiento de dominio
 
-- [Project Manifesto](PROJECT_MANIFESTO.md) - Principles and philosophy
-- [Glossary](GLOSSARY.md) - Terminology and definitions
-- [Knowledge Base](../knowledge/) - Detailed reference materials by topic
+- [Manifiesto del proyecto](PROJECT_MANIFESTO.md) - Principios y filosofía
+- [Glosario](GLOSSARY.md) - Terminología y definiciones
+- [Base de conocimiento](../knowledge/) - Materiales de referencia detallados por tema
 
-## Implementation
+## Implementación
 
-- [Engine Specifications](../engines/) - Detailed specifications for each audit engine
-- [Data Schemas](../schemas/) - Data models and validation rules
+- [Especificaciones de motores](../engines/) - Especificaciones detalladas para cada motor de auditoría
+- [Esquemas de datos](../schemas/) - Modelos de datos y reglas de validación
 
-## Examples & Cases
+## Ejemplos y casos
 
-- [Examples](../examples/) - Usage examples and tutorials
-- [Audit Cases](../cases/) - Real-world case studies and scenarios
+- [Ejemplos](../examples/) - Ejemplos de uso y tutoriales
+- [Casos de auditoría](../cases/) - Estudios de casos reales y escenarios

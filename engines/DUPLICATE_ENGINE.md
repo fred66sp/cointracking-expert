@@ -1,45 +1,45 @@
-# Duplicate Engine Specification
+# Especificación del motor de duplicados
 
-**Transaction Duplicate Detection**
+**Detección de duplicados de transacciones**
 
-The Duplicate Engine identifies duplicate transactions resulting from multiple import sources, API failures, manual re-entry, or data corruption. It supports exact matching and probabilistic detection.
+El motor de duplicados identifica transacciones duplicadas resultantes de múltiples fuentes de importación, fallos de API, re-entrada manual o corrupción de datos. Soporta matching exacto y detección probabilística.
 
-## Purpose
+## Propósito
 
-Identify and report duplicate transactions with varying confidence levels, supporting manual review and remediation.
+Identificar y reportar transacciones duplicadas con niveles variados de confianza, soportando revisión manual y remediación.
 
-## Inputs
+## Entradas
 
-- Complete transaction dataset
-- Duplicate detection rules and thresholds
-- Transaction source metadata (CSV, API, manual, etc.)
+- Dataset de transacciones completo
+- Reglas de detección de duplicados y umbrales
+- Metadatos de fuente de transacción (CSV, API, manual, etc.)
 
-## Outputs
+## Salidas
 
-- Exact duplicates list
-- Probable duplicates list with confidence scores
-- Duplicate impact analysis (which transactions cause issues)
+- Lista de duplicados exactos
+- Lista de duplicados probables con puntuaciones de confianza
+- Análisis de impacto de duplicados (qué transacciones causan problemas)
 
-## Responsibilities
+## Responsabilidades
 
-1. Detect exact duplicates (identical all fields)
-2. Detect probable duplicates (similar but not identical)
-3. Detect cross-source duplicates (CSV + API + manual)
-4. Quantify impact of duplicates on balances and holdings
-5. Suggest remediation (which to remove)
+1. Detectar duplicados exactos (idénticos todos los campos)
+2. Detectar duplicados probables (similares pero no idénticos)
+3. Detectar duplicados entre fuentes (CSV + API + manual)
+4. Cuantificar impacto de duplicados en balances y tenencias
+5. Sugerir remediación (cuál remover)
 
-## Key Algorithms
+## Algoritmos clave
 
-- Exact matching on transaction characteristics
-- Fuzzy matching for probabilistic detection
-- Cross-source duplicate detection
-- Impact analysis
+- Matching exacto en características de transacción
+- Matching difuso para detección probabilística
+- Detección de duplicados entre fuentes
+- Análisis de impacto
 
-## Edge Cases
+## Casos extremos
 
-- Partial duplicates (some fields differ)
-- Fees recorded separately
-- Rounding differences
-- Timestamp differences
-- Split transactions vs. single transactions
-- Deposits vs. "buy" transactions (same action, different labeling)
+- Duplicados parciales (algunos campos difieren)
+- Comisiones registradas separadamente
+- Diferencias de redondeo
+- Diferencias de timestamp
+- Transacciones divididas vs. transacciones única
+- Depósitos vs. transacciones "compra" (misma acción, diferente etiqueta)

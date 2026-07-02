@@ -1,62 +1,62 @@
-# System Architecture
+# Arquitectura del sistema
 
-**CoinTracking Expert Framework Design**
+**Diseño del Framework CoinTracking Expert**
 
-This document describes the overall architecture of the CoinTracking Expert framework, including component responsibilities, data flow, interfaces, and design principles. The architecture emphasizes modularity, reproducibility, and clean separation of concerns.
+Este documento describe la arquitectura general del framework CoinTracking Expert, incluyendo responsabilidades de componentes, flujo de datos, interfaces y principios de diseño. La arquitectura enfatiza modularidad, reproducibilidad y separación limpia de responsabilidades.
 
-## High-Level Overview
+## Descripción general de alto nivel
 
-The framework is organized as a pipeline of independent engines that process transaction data through progressive stages of validation and analysis. Each engine has well-defined inputs, outputs, and responsibility boundaries.
+El framework está organizado como un pipeline de motores independientes que procesan datos de transacciones a través de etapas progresivas de validación y análisis. Cada motor tiene entradas, salidas y límites de responsabilidad bien definidos.
 
 ```
-CoinTracking Export → Normalization → Audit Engine → Validation Engines → Report Generation
-                                              ↓
-                                    ├─ Duplicate Engine
-                                    ├─ Transfer Engine
-                                    ├─ Ledger Engine
-                                    ├─ Holdings Engine
-                                    ├─ FIFO Engine
-                                    └─ Tax Engine
+Exportación de CoinTracking → Normalización → Motor de auditoría → Motores de validación → Generación de reportes
+                                                     ↓
+                                           ├─ Motor de duplicados
+                                           ├─ Motor de transferencias
+                                           ├─ Motor de libro mayor
+                                           ├─ Motor de tenencias
+                                           ├─ Motor FIFO
+                                           └─ Motor de impuestos
 ```
 
-## Core Principles
+## Principios principales
 
-1. **Modularity**: Each engine is independent and testable
-2. **Reproducibility**: Same input always produces same output
-3. **Evidence-First**: All conclusions backed by transaction data
-4. **Transparency**: Every issue includes cause, impact, and evidence
-5. **Minimal Intervention**: Never modify without justification
+1. **Modularidad**: Cada motor es independiente y testeable
+2. **Reproducibilidad**: La misma entrada siempre produce la misma salida
+3. **Basado en evidencia**: Todas las conclusiones respaldadas por datos de transacciones
+4. **Transparencia**: Cada problema incluye causa, impacto y evidencia
+5. **Intervención mínima**: Nunca modificar sin justificación
 
-## Component Structure
+## Estructura de componentes
 
-### Import & Normalization Layer
+### Capa de importación y normalización
 
-Responsible for reading data from various sources (CoinTracking CSV, API, manual input) and normalizing to canonical representation. Handles format conversion, data cleaning, and schema validation.
+Responsable de leer datos de varias fuentes (CSV de CoinTracking, API, entrada manual) y normalizarlos a representación canónica. Maneja conversión de formato, limpieza de datos y validación de esquema.
 
-### Audit Engine
+### Motor de auditoría
 
-Orchestrates the audit process, manages workflow, and coordinates between specialized engines. Detects inconsistencies and produces audit reports.
+Orquesta el proceso de auditoría, administra el flujo de trabajo y coordina entre motores especializados. Detecta inconsistencias y produce informes de auditoría.
 
-### Specialized Engines
+### Motores especializados
 
-- **Duplicate Engine**: Identifies exact and probabilistic transaction duplicates
-- **Transfer Engine**: Matches deposits and withdrawals between accounts
-- **Ledger Engine**: Reconstructs balances chronologically
-- **Holdings Engine**: Rebuilds expected holdings from transaction history
-- **FIFO Engine**: Computes acquisition lots and missing purchase history
-- **Tax Engine**: Validates tax calculations and generates reports
+- **Motor de duplicados**: Identifica duplicados exactos y probabilísticos de transacciones
+- **Motor de transferencias**: Empareja depósitos y retiros entre cuentas
+- **Motor de libro mayor**: Reconstruye balances cronológicamente
+- **Motor de tenencias**: Reconstruye tenencias esperadas desde historial de transacciones
+- **Motor FIFO**: Calcula lotes de adquisición e historial de compras faltante
+- **Motor de impuestos**: Valida cálculos fiscales y genera informes
 
-### Report Generation
+### Generación de reportes
 
-Produces audit reports in multiple formats (Markdown, HTML, Excel, JSON) with configurable detail levels.
+Produce reportes de auditoría en múltiples formatos (Markdown, HTML, Excel, JSON) con niveles de detalle configurables.
 
-## Data Structures
+## Estructuras de datos
 
-All major components use standardized data structures defined in schemas/. These ensure consistency across imports, engines, and exports.
+Todos los componentes principales utilizan estructuras de datos estandarizadas definidas en schemas/. Estas garantizan consistencia en importaciones, motores y exportaciones.
 
-## Quality Goals
+## Objetivos de calidad
 
-- Zero false positives whenever reasonably achievable
-- Deterministic and reproducible results
-- Complete traceability and audit trails
-- Human-readable and machine-readable output
+- Cero falsos positivos cuando sea razonablemente posible
+- Resultados deterministas y reproducibles
+- Trazabilidad y registros de auditoría completos
+- Salida legible por humanos y por máquinas
