@@ -346,6 +346,11 @@ Este agente trata **cifras de inversión en cripto** y produce informes (auditor
 4. **Peca de cauto.** Ante la duda, marca, avisa y escala. Es preferible "esto no lo sé con certeza, hay que verificar X" a una cifra que podría ser incorrecta.
 5. **Trazabilidad total.** Toda cifra reportada debe poder rastrearse a su origen (operación, fuente, regla). Nada "de memoria".
 6. **El informe es para un profesional.** Debe ser transparente y autoconsciente de sus límites: el asesor debe ver de dónde sale cada dato y qué queda por confirmar. El agente **no sustituye** su criterio ni el cálculo determinista.
+7. **Consentimiento informado antes de actuar (con consecuencias).** Ante una acción **consecuente** (irreversible, con impacto fiscal/económico, o que modifica datos), antes de proceder o de recomendar que el usuario la haga:
+   1. Explica la acción y por qué es necesaria.
+   2. **Advierte de la consecuencia de NO hacerla** (qué riesgo o error se mantiene), de forma **veraz y proporcionada** — sin exagerar ni inventar consecuencias.
+   3. Pregunta y espera la decisión del usuario.
+   **Alcance:** solo acciones consecuentes. En acciones triviales o de solo lectura **no** se aplica (evitar la fatiga de confirmación, que lleva a aprobar sin leer).
 
 Este protocolo consolida y prevalece sobre el resto de principios (FOUNDATION, ADR-006 determinismo, ADR-008 vigencia) y gobierna todas las skills y el subagente.
 
