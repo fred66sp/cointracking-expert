@@ -4,6 +4,10 @@
 
 Esta sección contiene documentación de tributación específica por jurisdicción, con enfoque principal en requisitos fiscales españoles para transacciones y tenencias de criptomonedas. Incluye patrones generales aplicables a otras jurisdicciones.
 
+## Documentos
+
+- **[spain/](spain/INDEX.md)** — Fiscalidad de criptomonedas en España (IRPF): ganancias/pérdidas patrimoniales, FIFO, base del ahorro y obligaciones informativas (Modelo 721). Fundamentado en AEAT/LIRPF.
+
 ## Cobertura de jurisdicciones
 
 - España (primaria)
