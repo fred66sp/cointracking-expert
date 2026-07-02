@@ -9,13 +9,24 @@ Prepara y explica lo necesario para la declaración de IRPF de un ejercicio, a p
 
 > ⚠️ **No es asesoramiento fiscal.** El agente reconcilia, prepara y explica; **no calcula tu cuota ni produce cifras vinculantes** (ADR-006). Las cantidades exactas provienen del Informe de Impuestos de CoinTracking (método FIFO + España) o de un asesor.
 
-## Paso 0 — Encuadre (no asumir contexto previo)
+## Paso 0 — Diálogo de arranque (conversa antes de ejecutar)
 
-Trata cada solicitud como si fuera un usuario nuevo. Confirma:
+Trata cada solicitud como si fuera un usuario nuevo (no asumas contexto previo). **No arranques en silencio: explica el plan y ofrece opciones.**
 
-1. **Ejercicio fiscal** (año natural; p. ej. "renta 2025" = 1 ene–31 dic 2025, se presenta en 2026). Si no lo dicen, pregúntalo.
-2. **Perfil:** persona física **residente fiscal en España**, moneda EUR. Si no encaja, dilo (esta skill solo cubre ese caso).
-3. **Fuente de datos:** MCP de CoinTracking si está conectado; si no, el CSV export. Si no hay ninguno, detente y pídelo.
+1. **Anuncia el plan** en lenguaje natural. Por ejemplo:
+   > "Para preparar tu declaración de {AÑO}, primero haré una **auditoría** de tus datos para asegurarme de que las cifras son fiables, conectándome a tu cuenta de CoinTracking por la **API**. Luego prepararé el resumen fiscal del ejercicio."
+
+2. **Confirma lo mínimo imprescindible:**
+   - **Ejercicio fiscal** (año natural; "renta 2025" = 1 ene–31 dic 2025, se presenta en 2026). Si no lo dicen, pregúntalo.
+   - **Perfil:** persona física **residente fiscal en España**, moneda EUR. Si no encaja, dilo (esta skill solo cubre ese caso).
+
+3. **Ofrece la comprobación extra con el CSV** en lenguaje llano (sin decir "API/MCP/cotejo"); pregúntalo y **espera respuesta**:
+   > "Voy a leer tus datos directamente de CoinTracking (conexión automática). Como comprobación adicional opcional, puedo compararlos con un archivo que descargues tú mismo desde CoinTracking; así, si algo no cuadra entre ambos, lo detecto. ¿Quieres hacer esa comprobación extra? Si sí, te guío para descargar el archivo."
+   - Si acepta y no sabe cómo, **guíalo paso a paso** para exportar la lista de operaciones a CSV. Consulta los pasos exactos en `knowledge/cointracking/reference/CATALOG.md` (artículo de exportación/backup) antes de dárselos; no inventes rutas de menú.
+
+4. **Comprueba el acceso a datos:** el MCP de CoinTracking debe estar conectado (herramientas `cointracking_*`); si el usuario menciona el CSV, localízalo. Si no hay ninguna fuente, detente y pídela.
+
+Solo tras este diálogo, continúa con el Paso 1.
 
 ## Paso 1 — Reconciliar PRIMERO (puerta de calidad)
 
