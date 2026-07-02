@@ -10,6 +10,17 @@ Esta sección contiene documentación exhaustiva sobre la plataforma CoinTrackin
 - **[COST_BASIS_AND_VALIDATION.md](COST_BASIS_AND_VALIDATION.md)** — Cómo CoinTracking calcula la base de coste ("purchase pool") y detecta inconsistencias. Conocimiento destilado de fuentes oficiales, base para los motores fiscal, FIFO, de transferencias y reconciliación.
 - **[reference/CATALOG.md](reference/CATALOG.md)** — Índice de los 205 artículos oficiales del centro de ayuda de CoinTracking (título, URL pública, categoría, relevancia). Fuente para destilar más conocimiento propio.
 
+## Mantenimiento y vigencia (ADR-008)
+
+CoinTracking evoluciona. **Revisar periódicamente** y actualizar la "Vigencia" de cada documento cuando cambien:
+
+- **Formato del CSV export** (columnas, tipos de transacción, formato de fecha) — `CSV_FORMAT.md`.
+- **Tickers y sufijos de colisión** (nuevos activos, p. ej. `SOL2`, `WLD3`) — `CSV_FORMAT.md` §8.
+- **Herramientas y parámetros del MCP / API** y límites de tasa — `MCP_API.md`.
+- **Comportamiento de la plataforma** (purchase pool, avisos, métodos de coste) — `COST_BASIS_AND_VALIDATION.md`.
+
+Fuente autorizada: el **centro de ayuda oficial** (URLs en `reference/CATALOG.md`) y, sobre el formato real, **los propios datos del usuario** (CSV/MCP mandan). Ante la duda, el agente contrasta con los datos reales antes de asumir.
+
 ## Contenidos
 
 Este directorio contendrá documentación detallada cubriendo:

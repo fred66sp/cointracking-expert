@@ -3,6 +3,7 @@
 **Estado:** Validado contra datos reales
 **Fuente:** Exportación real "Trade Table" de una cuenta CoinTracking (1.828 operaciones, rango 2024-03-01 → 2026-07-01, 6 cuentas)
 **Fecha de validación:** 2026-07-02
+**Vigencia:** formato observado en 2026-07 (exportación "Trade Table", locale ES). CoinTracking puede cambiar columnas, tipos o tickers — ante la duda, **los datos reales del usuario mandan**; reverificar contra el CSV/MCP actual y el centro de ayuda (ADR-008).
 
 Este documento describe el formato **real** de la exportación "Trade Table" de CoinTracking, verificado contra una exportación de producción. Conforme a ADR-004, es la referencia autoritativa para la capa de importación: ninguna suposición sobre el formato debe cerrarse sin contrastarla aquí.
 

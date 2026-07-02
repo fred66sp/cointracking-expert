@@ -3,6 +3,7 @@
 **Jurisdicción:** España
 **Fuentes:** AEAT — Modelo 721 (declaración informativa sobre monedas virtuales situadas en el extranjero) y preguntas frecuentes; Modelos 172 y 173
 **Última verificación:** 2026-07-02
+**Vigencia:** umbrales y plazos vigentes a 2026-07. Pueden cambiar por año — reverificar (AEAT) el umbral (50.000 €), la regla de repetición (+20.000 €) y los plazos si esta fecha es antigua (ADR-008).
 **Estado:** Fundamentado en fuente oficial
 
 > ⚠️ Base técnica, **no asesoramiento fiscal**. Ver disclaimer en INDEX.md.

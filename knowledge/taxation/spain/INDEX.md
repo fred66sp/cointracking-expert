@@ -27,6 +27,17 @@ Esta sección documenta el tratamiento fiscal de las criptomonedas ("monedas vir
 - El **motor fiscal** consume estas reglas para calcular ganancias/pérdidas y su integración en la base del ahorro.
 - El **motor de reportes** produce el detalle trazable por operación (evidencia), no la declaración.
 
+## Mantenimiento y vigencia (ADR-008)
+
+La normativa fiscal cambia cada año. **Revisar anualmente** (idealmente antes de la campaña de renta) y actualizar la "Última verificación"/"Vigencia" de cada documento:
+
+- **Tramos y tipos** de la base del ahorro y de la base general (`CAPITAL_GAINS.md` §6).
+- **Modelo 721:** umbral (50.000 €), regla de repetición (+20.000 €) y plazos (`INFORMATIVE_OBLIGATIONS.md`).
+- **Criterios DGT** sobre staking, airdrops, lending, recompensas (`CAPITAL_INCOME.md`): nuevas consultas o matices.
+- **Método FIFO** y reglas de compensación de pérdidas: cambios legislativos.
+
+Ante cualquier dato dependiente del ejercicio, el agente debe comprobar la vigencia y, si procede, reverificar contra AEAT/BOE/DGT antes de afirmar.
+
 ## Fuentes principales
 
 - Agencia Tributaria — Manual práctico IRPF 2025, cap. 11 (ganancias y pérdidas patrimoniales), sección monedas virtuales

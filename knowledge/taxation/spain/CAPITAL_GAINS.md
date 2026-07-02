@@ -3,6 +3,7 @@
 **Jurisdicción:** España — IRPF, personas físicas residentes
 **Fuentes:** Manual práctico IRPF 2025 (AEAT); LIRPF arts. 14, 33, 35, 37.1.h, 46.b, 49
 **Última verificación:** 2026-07-02
+**Vigencia:** cifras y criterios del ejercicio **2025**. La normativa cambia cada año — reverificar (AEAT/BOE/DGT) para otros ejercicios o si esta fecha es antigua (ADR-008).
 **Estado:** Fundamentado en fuente oficial
 
 > ⚠️ Base técnica para cálculo y reconciliación, **no asesoramiento fiscal**. Ver disclaimer en INDEX.md.

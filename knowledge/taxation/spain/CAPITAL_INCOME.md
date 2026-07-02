@@ -3,6 +3,7 @@
 **Jurisdicción:** España — IRPF, personas físicas residentes
 **Fuentes:** Consultas DGT V1766-22 (staking), 0018-23 (airdrops), V1948-21 (recompensas por actividades comerciales); LIRPF arts. 25, 27, 33-34; doctrina de firmas fiscales
 **Última verificación:** 2026-07-02
+**Vigencia:** criterios DGT vigentes a 2026-07 aplicables al ejercicio **2025**. Las consultas DGT pueden matizarse/superarse — reverificar para otros ejercicios o si esta fecha es antigua (ADR-008).
 **Estado:** Fundamentado en fuente oficial, con puntos marcados `[VERIFICAR]`
 
 Cubre las rentas de cripto que **no** son ganancias/pérdidas por transmisión (esas están en `CAPITAL_GAINS.md`): staking, lending/intereses, airdrops, recompensas/bonificaciones y minería.

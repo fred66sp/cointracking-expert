@@ -3,6 +3,7 @@
 **Tipo:** Conocimiento propio destilado de fuentes oficiales de CoinTracking
 **Fuentes:** Centro de ayuda de CoinTracking (ver enlaces al pie); catálogo en `reference/CATALOG.md`
 **Última verificación:** 2026-07-02
+**Vigencia:** destilado del centro de ayuda de CoinTracking a 2026-07. El comportamiento de la plataforma (purchase pool, avisos, métodos) puede cambiar — reverificar contra las URLs de `reference/CATALOG.md` si esta fecha es antigua (ADR-008).
 **Estado:** Destilado y reelaborado (no copia verbatim)
 
 Este documento explica, **con nuestras propias palabras**, cómo CoinTracking calcula la base de coste y detecta inconsistencias. Es conocimiento crítico para los motores fiscal, FIFO, de transferencias y de reconciliación, porque define cómo se comporta la plataforma cuyos datos auditamos.

@@ -3,6 +3,7 @@
 **Tipo:** Documentación de integración (obra propia)
 **Servidor MCP:** `cointracking-mcp` (proyecto externo de terceros, MIT, de Alessandro Melazzini)
 **Última verificación:** 2026-07-02
+**Vigencia:** herramientas y parámetros del MCP y límites de la API observados a 2026-07. Pueden cambiar con nuevas versiones del servidor/API — reverificar contra las herramientas `cointracking_*` realmente disponibles en la sesión si esta fecha es antigua (ADR-008).
 **Estado:** Documentado; requiere credenciales para operar
 
 Esta es la vía de **datos en vivo** del agente auditor (ADR-006), complementaria al CSV export. El servidor MCP es **solo lectura** y expone la API de usuario de CoinTracking como herramientas `cointracking_*`.

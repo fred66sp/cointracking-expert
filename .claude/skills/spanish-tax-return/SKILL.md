@@ -9,6 +9,8 @@ Prepara y explica lo necesario para la declaración de IRPF de un ejercicio, a p
 
 > ⚠️ **No es asesoramiento fiscal.** El agente reconcilia, prepara y explica; **no calcula tu cuota ni produce cifras vinculantes** (ADR-006). Las cantidades exactas provienen del Informe de Impuestos de CoinTracking (método FIFO + España) o de un asesor.
 
+> 🗓️ **Vigencia (ADR-008).** Comprueba que el conocimiento fiscal está al día para el **ejercicio solicitado**: contrasta la "Vigencia" de los documentos de `knowledge/taxation/spain/` con el año y la fecha de hoy. Si el ejercicio no está cubierto o la verificación es antigua, **avísalo y reverifica** tramos, umbrales y criterios contra AEAT/BOE/DGT antes de darlos.
+
 ## Paso 0 — Diálogo de arranque (conversa antes de ejecutar)
 
 Trata cada solicitud como si fuera un usuario nuevo (no asumas contexto previo). **No arranques en silencio: explica el plan y ofrece opciones.**
