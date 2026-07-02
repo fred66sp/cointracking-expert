@@ -63,3 +63,8 @@ reports/output/
 # Contienen historial financiero personal. Usar fixtures anonimizados en tests/.
 *.csv
 !tests/fixtures/**/*.csv
+
+# Material fuente propietario (IP de terceros) — referencia local, no se commitea.
+# Base de conocimiento oficial de CoinTracking usada para destilar nuestros
+# propios documentos (ver knowledge/cointracking/reference/CATALOG.md).
+ALFREDO/
