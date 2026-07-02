@@ -57,10 +57,17 @@ Con `cointracking_get_trades` acotado a `start`/`end` del año (UNIX **segundos*
 
 ## Paso 4 — Rendimientos: staking, recompensas, airdrops, intereses
 
-> 🔴 **Hueco de conocimiento.** La calificación fiscal de staking/recompensas/airdrops **no está fundamentada** en `knowledge/taxation/spain/` (`CAPITAL_INCOME.md` pendiente). Si el ejercicio contiene estas operaciones (tipos `Staking`, `Recompensa / Bonificación`, `Ingresos por intereses`):
-> - **Cuantifícalas** (importes y fechas) para que consten.
-> - **NO calcules su tributación** ni la inventes.
-> - Advierte de que es un punto pendiente de fundamentar y remite a un profesional hasta cerrarlo.
+Aplica **[CAPITAL_INCOME.md](../../../knowledge/taxation/spain/CAPITAL_INCOME.md)** (fundamentado en consultas DGT). Clasifica cada operación del ejercicio y sepáralas por base:
+
+- **`Staking`** → RCM, **base del ahorro** (DGT V1766-22). `[VERIFICAR]` si es staking delegado (pools).
+- **`Ingresos por intereses`** (lending/earn) → RCM, **base del ahorro**.
+- **`Recompensa / Bonificación`** → según origen: promocional/referido/airdrop → ganancia patrimonial, **base general** (DGT 0018-23 / V1948-21); recompensa de staking/earn → RCM, base del ahorro. **Inspecciona el origen de cada una.**
+- **Minería** (si aplica) → actividad económica, **base general**.
+
+Reglas de oro:
+- **Valoración:** valor de mercado en EUR a la fecha de recepción.
+- **Regla transversal (CAPITAL_INCOME §7):** ese valor es el **coste de adquisición** de esas monedas para el futuro FIFO. Verifica que CoinTracking lo haya registrado así (si no, aparecerán "ventas sin base de coste").
+- **No calcules cifras vinculantes** (ADR-006); da estimaciones y remite al Informe oficial / asesor. En los puntos `[VERIFICAR]`, dilo y recomienda confirmación profesional.
 
 ## Paso 5 — Obligación informativa: Modelo 721
 
