@@ -51,7 +51,9 @@ Este documento describe el formato **real** de la exportación "Trade Table" de 
 
 > ⚠️ **Riesgo (identificado en ARCHITECTURE_REVIEW §7.4):** sin zona horaria explícita, dos exportaciones con distinta configuración regional producen instantes distintos para la misma operación → rompe la reproducibilidad.
 >
-> **Decisión pendiente (candidata a ADR):** la capa de importación debe requerir que el usuario declare la zona horaria de su exportación (o asumir UTC de forma explícita y documentada), y normalizar internamente a UTC. Ver §10.
+> ✅ **Resuelto en ADR-005:** la zona de origen es un **parámetro obligatorio de importación**; la marca temporal se interpreta como hora local en la zona IANA declarada y se normaliza a **UTC**. Para la cuenta de referencia, la zona es `Europe/Madrid` (CET/CEST, **con horario de verano**). Se usa `zoneinfo` (DST-aware); **nunca** un offset fijo `+01:00`, que desplazaría 1 h las operaciones de verano.
+>
+> ⚠️ **Verificación pendiente:** confirmar que CoinTracking aplica DST al exportar (lo esperado) y no un offset fijo. Método definitivo: comparar una transferencia con `Tx Hash` contra su marca temporal on-chain (UTC). Ej.: retirada FARM del `01.07.2026 08:47:54` local (verano) debería ser `06:47:54 UTC` si hay DST, o `07:47:54 UTC` si offset fijo.
 
 ---
 
@@ -169,7 +171,7 @@ CoinTracking **desambigua símbolos repetidos añadiendo un dígito**. Tickers r
 
 1. Leer con `utf-8-sig`, parsear **por posición** (no por nombre de columna).
 2. Números: `Decimal(valor)` (ADR-002); hasta 8 decimales; sin separador de miles. Vacío → ausente, no cero.
-3. Fecha: `strptime("%d.%m.%Y %H:%M:%S")` → normalizar a UTC (**requiere decidir la zona de origen**, §2).
+3. Fecha: `strptime("%d.%m.%Y %H:%M:%S")` → interpretar en la zona IANA declarada (parámetro obligatorio; `Europe/Madrid` para la cuenta de referencia) y normalizar a UTC con `zoneinfo`, DST incluido (ADR-005, §2).
 4. `Tipo`: mapear literales español → enum canónico interno (inglés); tolerar desconocidos.
 5. Comisión: `(Decimal, moneda)` independiente; puede faltar o estar en tercera moneda.
 6. Activo: usar el ticker **completo** (con sufijo); nunca fusionar por símbolo base.
@@ -182,7 +184,7 @@ CoinTracking **desambigua símbolos repetidos añadiendo un dígito**. Tickers r
 
 Estas cuestiones deberían resolverse (candidatas a ADR o a spec de motor) antes de cerrar las specs correspondientes:
 
-1. **Zona horaria de las fechas** (§2): ¿exigir declaración del usuario? ¿asumir UTC? → afecta a reproducibilidad. **Bloqueante para el motor de libro mayor.**
+1. ~~**Zona horaria de las fechas**~~ → ✅ **Resuelto en ADR-005**: zona declarada por el usuario (`Europe/Madrid` para la cuenta de referencia), interpretación DST-aware y normalización a UTC. Queda solo verificar el DST contra datos on-chain (§2).
 2. **Umbrales del emparejamiento heurístico de transferencias** (§7): ventana temporal máxima, tolerancia de importe. → definir con más datos reales.
 3. **Política ante duplicados exactos** (§9): criterios para distinguir repetición legítima de error.
 4. **Otras variantes de exportación**: este documento cubre "Trade Table" en español. Documentar otras (idiomas, "Full Data Table", API) cuando se disponga de muestras.
