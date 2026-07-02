@@ -23,6 +23,11 @@ Nada importante del flujo se queda solo en el chat:
 - **Contexto durable → memoria:** rutas de fuentes de datos del usuario, estado de la auditoría (cuentas hechas/pendientes), decisiones tomadas por chat.
 - **Al retomar en una sesión nueva:** lee primero la **memoria** y `reports/output/` para recuperar el estado antes de actuar.
 
+## Quién hace qué (ADR-012)
+
+- **Claude Code (esta herramienta) — gestiona el agente:** modifica código, conocimiento, reglas, ADRs, skills, tool, plantillas y config, con gobernanza (ADR/commit).
+- **GitHub Copilot (Sonnet) — explota el agente:** lo usa para auditar y declarar, sin modificarlo. Sus instrucciones están en `.github/copilot-instructions.md`; sus peticiones de cambio llegan por `AGENT_CHANGE_REQUESTS.md` (que Claude Code procesa).
+
 ## Qué es este proyecto
 
 Un **agente de IA auditor de CoinTracking** que vive en Claude Code (ADR-006). Se apoya en una base de conocimiento propia y accede a los datos del usuario por dos vías: el **MCP de la API de CoinTracking** y/o el **CSV export** ("Trade Table"). Encuentra y explica problemas de reconciliación y fiscalidad española, **guía al usuario paso a paso para corregirlos en la web de CoinTracking** y prepara lo necesario para la declaración.

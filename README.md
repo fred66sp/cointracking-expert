@@ -53,6 +53,11 @@ Dos vías (ADR-006):
 
 El agente está construido, conectado a la API y validado con datos reales. La base de conocimiento cubre el formato de CoinTracking, su modelo de coste y la fiscalidad española; quedan puntos marcados como `[PENDIENTE DE FUNDAMENTAR]` (p. ej. fiscalidad de staking).
 
+## Quién mantiene y quién usa (ADR-012)
+
+- **Claude Code** mantiene el agente (código, conocimiento, reglas, ADRs, skills, tool). Instrucciones en `CLAUDE.md`.
+- **GitHub Copilot** lo explota (auditar, declarar, generar informes) **sin modificarlo**. Instrucciones en `.github/copilot-instructions.md`; MCP en `.vscode/mcp.json`; prompts en `.github/prompts/`. Peticiones de cambio → `AGENT_CHANGE_REQUESTS.md`.
+
 ## Licencia
 
 Ver [LICENSE](LICENSE).
