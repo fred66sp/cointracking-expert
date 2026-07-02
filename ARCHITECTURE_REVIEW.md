@@ -5,6 +5,8 @@
 **Fase del proyecto:** Fase 1 (Fundación del proyecto)  
 **Estado:** Etapa temprana (v0.1.0)  
 
+> **Nota (2026-07-02):** Este es un documento **asesor**, no vinculante. Su recomendación de "implementar primero" fue evaluada y **no adoptada**: el proyecto mantiene la estrategia de documentación primero. Ver **ADR-004** en `DECISIONS.md`, que también recoge las mitigaciones adoptadas frente a los riesgos aquí señalados. Las demás observaciones de esta revisión siguen siendo válidas.
+
 ---
 
 ## Resumen ejecutivo

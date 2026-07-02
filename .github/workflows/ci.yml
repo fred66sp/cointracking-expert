@@ -38,7 +38,10 @@ jobs:
 
     - name: Run tests with pytest
       run: |
-        pytest tests/ --cov=src --cov-report=xml
+        # Durante la fase de documentación (ADR-004) aún no existen pruebas.
+        # pytest devuelve el código 5 ("no se recogieron pruebas"); lo toleramos
+        # hasta que comience la implementación (Fase 4).
+        pytest tests/ --cov=src --cov-report=xml || [ $? -eq 5 ]
 
     - name: Upload coverage
       uses: codecov/codecov-action@v3
