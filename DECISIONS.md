@@ -444,6 +444,45 @@ El proyecto del agente lo **construye y mantiene Claude Code**; la **explotació
 
 ---
 
+## ADR-013: Estructura multi-proyecto (framework compartido + instancias) — PROPUESTO
+
+**Estado:** 🟡 Propuesto (no implementado; implementar cuando haya un 2.º caso)
+
+**Fecha:** 2026-07-02
+
+**Contexto:**
+
+Hoy el repo mezcla **el agente** (conocimiento, tool, skills, reglas, ADRs — compartido) con **el trabajo de un único caso** (datos en `USER_INPUT/`, informes en `reports/output/`, estado en memoria). Para auditar **varias cuentas/personas/ejercicios/clientes** en paralelo, conviene separar el framework de las instancias.
+
+**Propuesta:**
+
+- **Framework del agente** (compartido, lo mantiene Claude Code): `knowledge/`, `tools/`, `.claude/`, `templates/`, `DECISIONS.md`, `CLAUDE.md`, `.github/`, `tests/`.
+- **Instancias de proyecto**, una por caso, p. ej. `projects/<nombre>/` con:
+  - `input/` (los CSV u otras fuentes del caso; gitignored),
+  - `reports/` (informes + `REGISTRO-CAMBIOS.md` del caso; gitignored),
+  - `estado.md` (estado del proyecto: cuentas hechas/pendientes; legible por Copilot, sustituye a la memoria global para el estado).
+- **Auto-creación:** si el usuario da una orden y no hay proyecto activo, el agente **crea** el scaffold de un proyecto y todo se acumula ahí.
+- **Proyecto activo** seleccionable; posibilidad de varios en paralelo.
+
+**Beneficios:**
+
+- Aislamiento y privacidad por caso; paralelismo; estado por proyecto **visible para Copilot** (mejora ADR-011/012); reutilización del agente único.
+
+**Cuestiones abiertas (resolver al implementar):**
+
+1. ¿Proyectos dentro del repo (`projects/`, gitignored) o carpetas/repos separados?
+2. Convención de nombres y cómo se marca el **proyecto activo**.
+3. ¿Un manifiesto por proyecto (`proyecto.md`) con metadatos (titular, ejercicio, cuentas)?
+4. Migrar el caso actual (cuenta única) a `projects/<...>/` sin romper rutas.
+5. Cómo se relaciona con la memoria global (que pasaría a ser mínima; el estado vive en el proyecto).
+
+**Consecuencias si se adopta:**
+
+- ✅ Escala a múltiples casos; privacidad reforzada; estado portable a Copilot
+- ⚠️ Refactor de rutas y de las skills (para ser "project-aware"); sobre-ingeniería si solo hay un caso
+
+---
+
 ## Plantilla para futuros ADRs
 
 ```
@@ -494,6 +533,7 @@ El proyecto del agente lo **construye y mantiene Claude Code**; la **explotació
 - ADR-010: Eficiencia de tokens y caché de datos de CoinTracking ✅ Decidido
 - ADR-011: Persistencia y trazabilidad del flujo (nada sin dejar rastro) ✅ Decidido
 - ADR-012: División de responsabilidades (Claude Code gestiona, Copilot explota) ✅ Decidido
+- ADR-013: Estructura multi-proyecto (framework + instancias) 🟡 Propuesto
 
 ---
 

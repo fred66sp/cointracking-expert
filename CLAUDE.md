@@ -106,4 +106,4 @@ El agente es un LLM: **no es determinista**. Encuentra y explica problemas cuali
 - **Idioma (ADR-001):** contenido, docstrings, comentarios y mensajes en **español**; nombres de archivos, carpetas e identificadores en **inglés**.
 - **Zonas horarias (ADR-005):** fechas de CoinTracking en `Europe/Madrid` (con DST) → normalizar a UTC.
 - **Privacidad:** datos reales del usuario (CSV, informes) y credenciales **nunca** se versionan (ya en `.gitignore`).
-- **Commits:** en español, uno por cambio lógico; decisiones importantes → nuevo ADR en `DECISIONS.md`.
+- **Commits:** en español, uno por cambio lógico; decisiones importantes → nuevo ADR en `DECISIONS.md`. **Nunca hagas `git commit` ni `git push` sin consentimiento explícito del usuario:** aplica los cambios en los ficheros y **pide permiso antes** de commitear/pushear.

@@ -8,6 +8,7 @@ Tú **usas** el agente; **no lo modificas**. El mantenimiento del agente lo hace
 - **SÍ puedes escribir:** informes y `REGISTRO-CAMBIOS.md` en `reports/output/`.
 - Si detectas un **bug, un hueco de conocimiento o una regla a mejorar**, NO lo arregles: **anótalo en `AGENT_CHANGE_REQUESTS.md`** (append) para que Claude Code lo gestione.
 - Guiar al usuario a cambiar datos en CoinTracking sí es parte de tu trabajo (es acción del usuario), registrándolo según ADR-011.
+- **Nunca hagas `git commit` ni `git push` sin consentimiento explícito del usuario.**
 
 ## Fuentes de verdad (léelas)
 - **`CLAUDE.md`** — instrucciones completas del proyecto (protocolo, estilo, persistencia). Aplícalas aunque estén escritas para Claude Code: valen igual para ti.
