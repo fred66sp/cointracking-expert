@@ -5,7 +5,9 @@
 **Artículos catalogados:** 205
 **Última actualización del catálogo:** 2026-07-02
 
-> ⚠️ **Propiedad intelectual:** los artículos originales son **contenido propietario de CoinTracking**. NO se copian verbatim en este repositorio. Los ficheros scrapeados se conservan solo como **material fuente local** (carpeta `ALFREDO/`, excluida por `.gitignore`). Este catálogo enlaza a las URLs públicas oficiales y sirve para localizar y **destilar** conocimiento propio en español (citando la fuente), conforme a la filosofía del proyecto (basado en evidencia) y a ADR-001.
+> ⚠️ **Propiedad intelectual:** los artículos originales son **contenido propietario de CoinTracking**. NO se copian verbatim en este repositorio. El material fuente scrapeado **no se conserva** en el repositorio; este catálogo enlaza a las **URLs públicas oficiales** y sirve para localizar y **destilar** conocimiento propio en español (citando la fuente), conforme a la filosofía del proyecto (basado en evidencia) y a ADR-001.
+>
+> **Destilado hasta la fecha:** ver `../COST_BASIS_AND_VALIDATION.md` (base de coste, purchase pool y validación). El resto queda pendiente de destilar bajo demanda desde las URLs de este catálogo.
 
 La columna **Relevancia** indica la prioridad de destilado para nuestros motores de auditoría/reconciliación/fiscal.
 

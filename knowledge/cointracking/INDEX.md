@@ -7,6 +7,8 @@ Esta sección contiene documentación exhaustiva sobre la plataforma CoinTrackin
 ## Documentos
 
 - **[CSV_FORMAT.md](CSV_FORMAT.md)** — Formato de la exportación "Trade Table", validado contra datos reales. Referencia autoritativa para la capa de importación (columnas, tipos, fechas, comisiones, emparejamiento de transferencias, colisión de tickers, duplicados).
+- **[COST_BASIS_AND_VALIDATION.md](COST_BASIS_AND_VALIDATION.md)** — Cómo CoinTracking calcula la base de coste ("purchase pool") y detecta inconsistencias. Conocimiento destilado de fuentes oficiales, base para los motores fiscal, FIFO, de transferencias y reconciliación.
+- **[reference/CATALOG.md](reference/CATALOG.md)** — Índice de los 205 artículos oficiales del centro de ayuda de CoinTracking (título, URL pública, categoría, relevancia). Fuente para destilar más conocimiento propio.
 
 ## Contenidos
 
