@@ -7,10 +7,16 @@ Todos los cambios notables en el proyecto CoinTracking Expert se documentan en e
 ## [No lanzado]
 
 ### Agregado
-- Estructura inicial del proyecto y documentación
-- Carta de proyecto y modelo de gobernanza
-- Documentación de arquitectura
-- Hoja de ruta de desarrollo
+- Agente auditor de CoinTracking en Claude Code (subagente + skill `/audit-cointracking`)
+- Base de conocimiento: formato CSV, modelo de coste, integración MCP y fiscalidad española (IRPF)
+- Integración con la API de CoinTracking vía MCP (solo lectura)
+- Registro de decisiones (ADR-001…007)
+
+### Cambiado
+- Giro de alcance: de framework/SDK de motores deterministas a agente de IA (ADR-006)
+
+### Eliminado
+- Andamiaje del SDK descartado: paquetes Python vacíos, specs de motores, CI de pytest y documentos de la visión de framework (ADR-007)
 
 ### Cambiado
 - N/A
@@ -45,4 +51,4 @@ Cada lanzamiento incluye:
 
 ## Lanzamientos futuros
 
-Los lanzamientos planificados seguirán las fases de la hoja de ruta de desarrollo descritas en [ROADMAP.md](ROADMAP.md).
+La dirección del proyecto se registra en las decisiones arquitectónicas de [DECISIONS.md](DECISIONS.md).

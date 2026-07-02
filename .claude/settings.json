@@ -4,7 +4,10 @@
       "WebSearch",
       "WebFetch(domain:sede.agenciatributaria.gob.es)",
       "Bash(git commit -m ' *)",
-      "Edit(/.claude/skills/audit-cointracking/**)"
+      "Edit(/.claude/skills/audit-cointracking/**)",
+      "Bash(node --env-file=.env_cointracking --input-type=module -e ' *)",
+      "mcp__cointracking__cointracking_get_grouped_balance",
+      "mcp__cointracking__cointracking_get_balance"
     ]
   }
 }

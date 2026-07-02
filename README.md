@@ -1,54 +1,51 @@
 # CoinTracking Expert
 
-**Motor profesional de gestión de carteras de criptomonedas e informes fiscales**
+**Agente de IA auditor de CoinTracking** para reconciliación de criptomonedas y fiscalidad española (IRPF).
 
-CoinTracking Expert es una plataforma sofisticada y de código abierto diseñada para ayudar a inversores individuales, traders y profesionales fiscales a gestionar, reconciliar e informar sobre tenencias de criptomonedas con precisión de nivel institucional. Construida con principios de arquitectura limpia, proporciona motores especializados para auditar transacciones, calcular pasivos fiscales, reconciliar libros mayores y generar informes listos para cumplimiento en múltiples exchanges y blockchains.
+El agente vive en Claude Code, se apoya en una base de conocimiento propia y audita los datos de una cuenta de CoinTracking —accediendo por la API (vía MCP) o por el CSV export— para detectar y **explicar** problemas: transferencias huérfanas, ventas sin base de coste, duplicados, saldos imposibles e incoherencias fiscales.
 
-## Características principales
+> ⚠️ Herramienta de reconciliación y diagnóstico, **no asesoramiento fiscal**. El agente encuentra y explica; no produce cifras fiscales vinculantes (ver `DECISIONS.md`, ADR-006).
 
-- **Reconciliación de transacciones**: Verifica completitud y consistencia de registros de transacciones en todas las fuentes
-- **Reconstrucción de libro mayor**: Reconstruye tenencias cronológicamente desde historial de transacciones
-- **Detección de duplicados**: Identifica duplicados exactos y probabilísticos en importaciones CSV y API
-- **Emparejamiento de transferencias**: Empareja depósitos y retiros entre exchanges y billeteras
-- **Contabilidad FIFO**: Calcula lotes de adquisición y detecta historial de compras faltante
-- **Validación fiscal**: Valida cálculos fiscales y genera informes de auditoría profesionales
-- **Análisis basado en evidencia**: Cada hallazgo respaldado por datos de transacciones con causa, impacto y remediación claros
-- **Soporte multi-exchange**: Soporte inicial para Binance, Coinbase, Kraken, Bybit, OKX, KuCoin, BingX y billeteras hardware
-- **Informes fiscales españoles**: Base de conocimiento especializada para cumplimiento fiscal español
+## Cómo funciona
 
-## Documentación
+1. Invocas la skill **`/audit-cointracking`** en Claude Code.
+2. El agente carga su conocimiento (`knowledge/`), obtiene los datos (MCP en vivo o CSV) y aplica su playbook de chequeos.
+3. Devuelve un informe con formato **evidencia → causa → impacto → recomendación**, citando la regla aplicada.
 
-- [Carta de proyecto](PROJECT_CHARTER.md) - Visión, misión y gobernanza del proyecto
-- [Hoja de ruta](ROADMAP.md) - Fases de desarrollo e hitos
-- [Arquitectura](ARCHITECTURE.md) - Diseño del sistema y descripción general de componentes
-- [Contribuir](CONTRIBUTING.md) - Cómo contribuir al proyecto
-- [Docs](docs/) - Documentación completa y guías
-
-## Estructura del repositorio
+## Estructura
 
 ```
-cointracking-expert/
-├── docs/                        # Documentación y guías
-├── knowledge/                   # Base de conocimiento del dominio
-├── engines/                     # Especificaciones de motores
-├── src/                         # Código fuente Python
-├── tests/                       # Suites de pruebas
-├── schemas/                     # Esquemas de datos y modelos
-├── examples/                    # Ejemplos de uso
-├── cases/                       # Casos de auditoría del mundo real
-├── scripts/                     # Scripts de utilidad
-├── reports/                     # Informes generados
-└── prompts/                     # Plantillas de prompts de IA
+.claude/
+  agents/cointracking-auditor.md      # El subagente auditor (rol y principios)
+  skills/audit-cointracking/          # El playbook invocable (/audit-cointracking)
+knowledge/                            # El "cerebro" del agente (fuente de verdad)
+  cointracking/                       # Formato CSV, modelo de coste, integración MCP, catálogo
+  taxation/spain/                     # Fiscalidad IRPF: ganancias, FIFO, Modelo 721
+docs/GLOSSARY.md                      # Glosario de términos
+templates/AUDIT_REPORT.md             # Plantilla de informe de auditoría
+reports/output/                       # Informes generados (ignorado por git)
+DECISIONS.md                          # Registro de decisiones (ADR-001…007)
+FOUNDATION.md                         # Principios de ingeniería del proyecto
+CLAUDE.md                             # Instrucciones para Claude Code
+.mcp.json                             # Configuración del servidor MCP de CoinTracking
 ```
+
+## Acceso a los datos
+
+Dos vías (ADR-006):
+
+- **MCP de la API de CoinTracking** (datos en vivo, solo lectura). Servidor externo instalado localmente; se configura en `.mcp.json` con credenciales cargadas por `node --env-file` (nunca en el repo). Ver `knowledge/cointracking/MCP_API.md`.
+- **CSV export** ("Trade Table"). Ver el formato validado en `knowledge/cointracking/CSV_FORMAT.md`.
+
+## Privacidad y seguridad
+
+- Los datos financieros reales (CSV, informes en `reports/output/`) y las credenciales de la API **nunca** se versionan (excluidos en `.gitignore`).
+- El servidor MCP es de solo lectura.
+
+## Estado
+
+El agente está construido, conectado a la API y validado con datos reales. La base de conocimiento cubre el formato de CoinTracking, su modelo de coste y la fiscalidad española; quedan puntos marcados como `[PENDIENTE DE FUNDAMENTAR]` (p. ej. fiscalidad de staking).
 
 ## Licencia
 
-Ver archivo [LICENSE](LICENSE) para detalles.
-
-## Aviso legal
-
-Este proyecto proporciona orientación técnica y educativa y no es sustituto de asesoramiento legal o fiscal profesional. Los usuarios son responsables de verificar la precisión de cualquier informe generado antes de presentarlo ante las autoridades fiscales.
-
-## Contacto
-
-Para preguntas y contribuciones, por favor abre un issue o pull request en GitHub.
+Ver [LICENSE](LICENSE).

@@ -8,7 +8,7 @@ Esta sección documenta el tratamiento fiscal de las criptomonedas ("monedas vir
 
 > ⚠️ **Regla del proyecto (FOUNDATION.md):** *nunca se inventan reglas fiscales*. Todo contenido de esta sección debe estar respaldado por una fuente oficial citada (BOE/LIRPF, manuales AEAT, consultas DGT). Lo no verificado se marca explícitamente como **[PENDIENTE DE FUNDAMENTAR]**.
 >
-> ⚠️ **Aviso:** Este material es una base de conocimiento técnica para reconciliación y cálculo, **no asesoramiento fiscal**. La calificación final de cada operación puede depender de circunstancias particulares y debe validarla un profesional. El framework *genera datos y cálculos trazables*; no presenta declaraciones (ver PROJECT_CHARTER §5, fuera de alcance).
+> ⚠️ **Aviso:** Este material es una base de conocimiento técnica para reconciliación y cálculo, **no asesoramiento fiscal**. La calificación final de cada operación puede depender de circunstancias particulares y debe validarla un profesional. El agente *genera datos y análisis trazables*; no presenta declaraciones ni produce cifras vinculantes (ver ADR-006, límite de determinismo).
 
 ## Alcance
 

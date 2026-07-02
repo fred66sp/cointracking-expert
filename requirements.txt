@@ -1,7 +1,0 @@
-# Dependencias de tiempo de ejecución de CoinTracking Expert
-# Stack definido en DECISIONS.md (ADR-002): Pydantic v2 + Decimal + SQLite
-#
-# Nota: SQLite y decimal forman parte de la biblioteca estándar de Python,
-# por lo que no requieren entradas aquí.
-
-pydantic>=2.6,<3.0

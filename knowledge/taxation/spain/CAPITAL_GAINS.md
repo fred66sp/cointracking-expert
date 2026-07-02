@@ -105,7 +105,7 @@ Escala **estatal en su totalidad** (no cedida a CCAA): aplica igual en toda Espa
 | 200.000 – 300.000 € | 27 % |
 | Más de 300.000 € | **30 %** |
 
-> ⚠️ **Cambio 2025:** el último tramo (> 300.000 €) subió del 28 % (ejercicios anteriores) al **30 %**. El motor fiscal debe **versionar los tramos por ejercicio** (ver ARCHITECTURE_REVIEW §7.3, compatibilidad de versión): no cablear tipos; seleccionarlos según el año fiscal de la operación.
+> ⚠️ **Cambio 2025:** el último tramo (> 300.000 €) subió del 28 % (ejercicios anteriores) al **30 %**. El cálculo fiscal debe **versionar los tramos por ejercicio**: no cablear tipos; seleccionarlos según el año fiscal de la operación.
 
 ---
 

@@ -49,7 +49,7 @@ Este documento describe el formato **real** de la exportación "Trade Table" de 
 - Parseo: `datetime.strptime(valor, "%d.%m.%Y %H:%M:%S")`
 - **No incluye zona horaria.** La exportación usa la zona configurada en la cuenta de CoinTracking, que el CSV no revela.
 
-> ⚠️ **Riesgo (identificado en ARCHITECTURE_REVIEW §7.4):** sin zona horaria explícita, dos exportaciones con distinta configuración regional producen instantes distintos para la misma operación → rompe la reproducibilidad.
+> ⚠️ **Riesgo de determinismo:** sin zona horaria explícita, dos exportaciones con distinta configuración regional producen instantes distintos para la misma operación → rompe la reproducibilidad.
 >
 > ✅ **Resuelto en ADR-005:** la zona de origen es un **parámetro obligatorio de importación**; la marca temporal se interpreta como hora local en la zona IANA declarada y se normaliza a **UTC**. Para la cuenta de referencia, la zona es `Europe/Madrid` (CET/CEST, **con horario de verano**). Se usa `zoneinfo` (DST-aware); **nunca** un offset fijo `+01:00`, que desplazaría 1 h las operaciones de verano.
 >
