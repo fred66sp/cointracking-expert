@@ -129,7 +129,7 @@ El modelo de dominio se implementará con **Pydantic v2**, en coherencia con ADR
 
 ---
 
-## ADR-004: Estrategia de desarrollo (documentación primero)
+## ADR-004: Estrategia de desarrollo (híbrido pragmático)
 
 **Estado:** Decidido
 
@@ -142,29 +142,42 @@ Existía una contradicción entre dos documentos del repositorio:
 - `ROADMAP.md` define un enfoque **documentación primero**: completar especificaciones y base de conocimiento antes de escribir código (sin implementación hasta la Fase 4).
 - `ARCHITECTURE_REVIEW.md` recomienda lo contrario: **implementar primero**, validar con datos reales de CoinTracking y refinar las especificaciones de forma iterativa, para evitar la divergencia especificación-realidad.
 
-Ambas estrategias no pueden gobernar simultáneamente.
+El riesgo central que motiva esta decisión: **nadie conoce los datos reales de CoinTracking hasta que los mira**. Una especificación de import, duplicados o transferencias escrita sobre suposiciones puede resultar incorrecta al enfrentarse a un CSV real (comisiones que descuadran cantidades, zonas horarias distintas, movimientos en el mismo segundo). Documentar mucho sobre datos no vistos genera trabajo que luego hay que descartar.
+
+Al mismo tiempo, hay partes del dominio que **sí** están definidas por fuentes externas estables (reglas fiscales españolas, principios de arquitectura) y se benefician de especificarse por completo antes de programar.
 
 **Opciones consideradas:**
 
-1. **Documentación primero**: especificaciones completas antes de implementar. Más predecible; riesgo de "agotamiento de especificación" y de specs no validadas contra datos reales.
-2. **Implementación temprana (iterativa)**: código del núcleo cuanto antes, validado con datos reales. Menor riesgo de divergencia; entrega valor antes.
+1. **Documentación primero (puro)**: todas las specs completas antes de cualquier código. Predecible, pero con alto riesgo de specs de datos no validadas contra la realidad.
+2. **Implementación temprana (iterativa)**: código del núcleo cuanto antes, validado con datos reales. Menor riesgo de divergencia; menos énfasis documental.
+3. **Híbrido pragmático**: documentación primero para lo estable; validación con datos reales antes de cerrar las specs que dependen de datos desordenados.
 
 **Decisión:**
 
-Se mantiene el enfoque **documentación primero**, tal como define `ROADMAP.md`. `ARCHITECTURE_REVIEW.md` queda como una revisión asesora (una instantánea de opinión), no como estrategia vinculante.
+Se adopta el **híbrido pragmático**:
 
-**Mitigaciones adoptadas** (para neutralizar los riesgos que señala la revisión):
+- **Documentación primero** para el dominio estable y de fuente externa:
+  - Reglas de tributación (definidas por normativa; no se "descubren" programando)
+  - Principios, arquitectura y contratos entre motores
+  - Metodología de auditoría
+- **Validación con datos reales antes de cerrar la spec** para el dominio de datos desordenados:
+  - Formato CSV de CoinTracking, importación y normalización
+  - Detección de duplicados, emparejamiento de transferencias, reconstrucción de libro mayor
+  - Peculiaridades por exchange
+  - → Estas specs se redactan en borrador, se contrastan contra **exportaciones reales de CoinTracking** y solo entonces se dan por cerradas.
+- **Especificar cada motor justo antes de implementarlo**, no los nueve por adelantado, para evitar el agotamiento de especificación.
+- **Las specs son documentos vivos**: se refinan si la implementación o los datos reales revelan supuestos incorrectos.
 
-- Obtener exportaciones reales de CoinTracking **temprano**, para validar las especificaciones antes de darlas por cerradas
-- Especificar cada motor **justo antes** de su implementación, no todos por adelantado, para evitar el agotamiento de especificación
-- Mantener las specs como documentos vivos: se refinan si la implementación revela supuestos incorrectos
+`ARCHITECTURE_REVIEW.md` queda como una revisión asesora (una instantánea de opinión), no como estrategia vinculante.
 
 **Consecuencias:**
 
 - ✅ El repositorio deja de contradecirse: hay una única estrategia vinculante
-- ✅ Se preserva la fortaleza del proyecto (disciplina de documentación)
-- ⚠️ Riesgo de divergencia especificación-realidad: mitigado con datos reales tempranos
-- ⚠️ La entrega de software funcional llega más tarde que en el enfoque iterativo
+- ✅ Se preserva la fortaleza del proyecto (disciplina de documentación) donde aporta valor
+- ✅ Se neutraliza el riesgo de divergencia especificación-realidad en las partes sensibles a datos
+- ✅ Se evita el agotamiento de especificación (specs por motor, justo a tiempo)
+- ⚠️ Requiere conseguir exportaciones reales de CoinTracking pronto — es una dependencia crítica, no opcional
+- ⚠️ Exige disciplina para clasificar cada pieza como "estable" vs "sensible a datos"
 
 ---
 
@@ -209,7 +222,7 @@ Se mantiene el enfoque **documentación primero**, tal como define `ROADMAP.md`.
 - ADR-001: Idioma del repositorio (contenido en español, identificadores en inglés) ✅ Decidido
 - ADR-002: Stack de tecnología Python (Pydantic v2 + Decimal + SQLite) ✅ Decidido
 - ADR-003: Representación del modelo de dominio en Python (Pydantic v2) ✅ Decidido
-- ADR-004: Estrategia de desarrollo (documentación primero) ✅ Decidido
+- ADR-004: Estrategia de desarrollo (híbrido pragmático) ✅ Decidido
 
 ---
 

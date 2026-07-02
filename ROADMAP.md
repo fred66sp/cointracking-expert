@@ -12,6 +12,8 @@ Establecer infraestructura del proyecto, gobernanza y organización de la base d
 
 Construir conocimiento de dominio integral cubriendo CoinTracking, exchanges, billeteras, blockchains, tributación y patrones de reconciliación. Esta fase puebla los directorios de conocimiento con documentación estructurada y casos de auditoría del mundo real.
 
+**Dependencia crítica (ADR-004):** obtener exportaciones reales de CoinTracking cuanto antes. Las especificaciones sensibles a datos (formato CSV, importación, duplicados, transferencias) se redactan en borrador y se validan contra esos datos reales antes de darse por cerradas. No se cierran specs de datos sobre suposiciones.
+
 ## Fase 3: Especificaciones de motores
 
 Documentar especificaciones funcionales completas para todos los motores (Auditoría, Reconciliación, Libro mayor, FIFO, Tenencias, Transferencia, Duplicados, Impuestos, Reporte). Cada especificación incluye entradas, salidas, algoritmos, casos extremos y escenarios de prueba.
