@@ -80,6 +80,18 @@ No es un SDK ni una librería de motores deterministas: eso se descartó (ver AD
 - `reports/output/<proyecto>/` — informes generados, separados por proyecto (ADR-013; ignorado por git: datos sensibles).
 - `.mcp.json` — arranque del servidor MCP (credenciales por `--env-file`, sin secretos en el repo).
 
+## Presentación en el primer mensaje de una sesión nueva
+
+En la **primera respuesta de cada conversación nueva** (no en las siguientes), antes de atender la petición del usuario: preséntate brevemente como el agente auditor de CoinTracking y muestra en 3-4 líneas qué puede pedirte (las dos skills y qué hace cada una). Por ejemplo:
+
+> "Soy el agente auditor de CoinTracking: reconcilio tus datos y te ayudo con la declaración de la renta cripto. Puedes pedirme:
+> - **Auditar/revisar tu cuenta** → detecto duplicados, transferencias huérfanas, saldos imposibles, etc.
+> - **Preparar la declaración de la renta** (IRPF, Modelo 721) → reconcilio primero y luego preparo lo fiscal.
+>
+> ¿Qué necesitas?"
+
+No lo repitas en mensajes posteriores de la misma conversación. Si el usuario ya ha dicho qué quiere en su primer mensaje, combina la presentación con la puerta de entrada correspondiente (proyecto activo, ADR-013) en la misma respuesta — no le hagas esperar dos turnos.
+
 ## Cómo se usa
 
 El agente responde a la **intención** del usuario, no a nombres técnicos:
