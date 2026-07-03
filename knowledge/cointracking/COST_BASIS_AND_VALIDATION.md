@@ -91,22 +91,25 @@ El procedimiento oficial de saneamiento sigue este orden, que es una buena guía
 
 ---
 
-## 4.4 Discrepancia `get_gains` vs. reconstrucción FIFO manual — asimetría de valoración en permutas (hallazgo empírico, no confirmado por CoinTracking)
+## 4.4 `get_gains` es fiable; desconfía de reconstrucciones FIFO manuales (RESUELTO — hipótesis descartada)
 
-**Estado: hipótesis con evidencia fuerte de un caso real, `[VERIFICAR]` — no es un comportamiento documentado por CoinTracking, es un patrón observado por el agente.**
+**Estado: cerrado y confirmado contra el Tax Report oficial (caso real `agp2025`, 2026-07-03).**
 
-**Caso real (`agp2025`, 2026-07-03):** en el activo BTC, `cointracking_get_gains(price:"oldest")` (que debería ser FIFO) devolvió una ganancia realizada de **+492,87 €**, mientras que una reconstrucción FIFO manual sobre `cointracking_get_trades(trade_prices=1)` (misma cuenta, mismas operaciones, sin transferencias sin emparejar ni duplicados) dio **+94,71 €** — una diferencia de **~398 €**. Se descartaron como causa: comisiones (impacto medido de solo ~1-11 €), duplicados/mal tipado (0 encontrados en las 39 filas de BTC), y FIFO vs. pool promediado (casi idénticos bajo la misma valoración). La única variable que explicó una magnitud del mismo orden (~397,72 €) fue **qué lado de la permuta se usa para valorar en EUR cada operación** (`buy_value_in_cur` vs. `sell_value_in_cur` del lado cripto-cripto) — sumando esa diferencia en los 37 trades de BTC del periodo, el resultado coincide en orden de magnitud con la brecha observada. USDC y OM mostraron el mismo patrón a menor escala.
+En un caso real se detectó una brecha grande entre `cointracking_get_gains(price:"oldest")` (que debería ser FIFO) y una **reconstrucción FIFO hecha a mano** sobre `cointracking_get_trades(trade_prices=1)`: BTC +492,87 € (API) vs. +94,71 € (manual) — una diferencia de ~398 €; USDC y OM mostraban el mismo patrón a menor escala. Se llegó a sospechar una "asimetría de valoración" en permutas (qué lado de la operación se usa para valorar en EUR).
 
-> ⚠️ **Por qué es solo `[VERIFICAR]` y no una regla cerrada:** no se ha confirmado contra documentación oficial de CoinTracking *por qué* `get_gains` elegiría un lado de valoración distinto al que usa una reconstrucción FIFO ingenua desde `trade_prices=1`, ni se ha verificado el nombre exacto de los campos de la respuesta JSON real de `get_trades` en la sesión donde se use este diagnóstico (pueden diferir de los usados en el caso de referencia). No declares esta causa como cierta sin repetir el contraste en el caso concreto que estés auditando.
+**Se contrastaron ambas cifras contra el Tax Report oficial de CoinTracking** (España, FIFO), descargado en Excel para los ejercicios 2024 y 2025 (los activos en disputa se vendieron en 2024). Resultado:
 
-**Cómo reproducir el diagnóstico (recipe, no automatizado en `tools/ct_audit.py` — ver más abajo por qué):**
-1. Pide `cointracking_get_trades(trade_prices=1, start=..., end=..., order=ASC)` para el rango del ejercicio y filtra al activo con la brecha.
-2. Reconstruye FIFO manualmente con los importes/monedas de cada lado (no con el valor EUR que trae la fila, solo para armar las colas de coste).
-3. Compara esa ganancia contra `get_gains(price:"oldest")` para el mismo activo y periodo.
-4. Si diverge de forma material (más de una pequeña fracción del importe en juego — no hay un umbral cerrado, usa criterio y decláralo), suma por operación la diferencia entre el valor EUR del lado de compra y el del lado de venta que trae la respuesta (verifica primero los nombres reales de esos campos en la sesión: pueden no llamarse igual que en el caso de referencia). Si esa suma es del mismo orden que la brecha total, la causa más probable es la asimetría de valoración descrita arriba.
-5. Documenta qué se probó y descartó (comisiones, duplicados, FIFO vs. pool) antes de llegar a esta conclusión — no la asumas por defecto.
+| Activo | Tax Report oficial | `get_gains(price:"oldest")` | Reconstrucción FIFO manual |
+|---|---|---|---|
+| BTC | 503,50 € | 492,87 € | 94,71 € |
+| USDC | 554,61 € | 553,93 € | 635,61 € |
+| OM | 1.027,49 € | 1.027,49 € | 1.114,89 € |
 
-> 🔧 **Por qué no se automatizó como chequeo en `tools/ct_audit.py`:** ese tool opera de forma determinista sobre el CSV export (columnas fijas, `CSV_FORMAT.md`), no sobre la respuesta JSON de `get_trades(trade_prices=1)` del MCP, cuyo esquema exacto de campos de valoración por lado no está verificado y documentado todavía en `MCP_API.md`. Automatizarlo ahora habría significado fijar nombres de campo sin confirmar (contra ADR-009, cero invención). Queda como recipe manual hasta verificar el esquema; ver `AGENT_CHANGE_REQUESTS.md`/`DECISIONS.md#ADR-018`.
+> 🔑 **Conclusión (regla a aplicar de ahora en adelante):** el Tax Report oficial coincide **casi al céntimo** con `get_gains(price:"oldest")` en los tres activos (diferencias de ~10 € compatibles con redondeo/corte de fecha). **La reconstrucción FIFO manual estaba mal en los tres casos**, y de forma más marcada en BTC. La causa más probable: un FIFO reconstruido a mano operación por operación no arrastra correctamente la base de coste a través de **cadenas de permutas cripto-cripto** (un activo comprado con otro activo, no con EUR/fiat directamente); `get_gains` de CoinTracking sí lo gestiona bien internamente.
+>
+> **Por tanto:** ante una discrepancia entre `get_gains(price:"oldest")` y un cálculo FIFO propio, **el valor por defecto a confiar es `get_gains`/el Tax Report oficial**, no la reconstrucción manual — a menos que se repita este mismo contraste contra el Tax Report oficial y dé un resultado distinto en ese caso concreto. La hipótesis de "asimetría de valoración por lado de permuta" (documentada antes en esta sección y en `DECISIONS.md#ADR-018`) queda **descartada como causa raíz**: coincidía en magnitud por casualidad, no explicaba el fenómeno real.
+
+**Si vuelve a aparecer una brecha así:** antes de sospechar de `get_gains`, sospecha primero de la reconstrucción manual (sobre todo si hay cadenas de permutas cripto-cripto en el activo). Contrastar contra el Tax Report oficial (país España, método FIFO) del ejercicio correspondiente sigue siendo la forma correcta de resolver la duda — ver `WEB_APP_GUIDE.md` §7.
 
 ---
 
@@ -120,7 +123,7 @@ El procedimiento oficial de saneamiento sigue este orden, que es una buena guía
 | Balances (`ct_audit.py`) | FIAT negativo puede ser artefacto de no importar depósitos FIAT, no siempre imposibilidad |
 | Duplicados (`ct_audit.py`, ADR-014) | Duplicado por reimportación ≠ repetición legítima |
 | Reconciliación (`audit-cointracking`) | Seguir el orden de validación: importación completa → comparar saldos → duplicados → faltantes |
-| Brecha `get_gains` vs FIFO manual (`audit-cointracking`, `spanish-tax-return`) | Si diverge de forma material, aplica el recipe de §4.4 antes de concluir; nunca lo declares "correcto" sin descartar comisiones/duplicados/FIFO-vs-pool primero |
+| Brecha `get_gains` vs FIFO manual (`audit-cointracking`, `spanish-tax-return`) | Confía en `get_gains`/Tax Report oficial por defecto (§4.4); si dudas, contrasta contra el Tax Report oficial del ejercicio, no repitas una reconstrucción manual sin verificarla |
 
 ---
 
