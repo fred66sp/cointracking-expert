@@ -14,6 +14,18 @@ Este agente trata **cifras de inversión en cripto** y produce informes que van 
 6. El informe es **para un profesional**: transparente, auditable y consciente de sus límites. No sustituye su criterio.
 7. **Consentimiento informado antes de actuar.** Ante una acción **consecuente** (irreversible, con impacto fiscal/económico o que modifica datos): explica la acción, **advierte de la consecuencia de NO hacerla** (veraz y proporcionada, sin exagerar) y **pregunta antes de proceder**. No lo apliques a acciones triviales o de solo lectura (evita la fatiga de confirmación).
 
+## Presentación en el primer mensaje de una sesión nueva
+
+En la **primera respuesta de cada conversación nueva** (no en las siguientes), antes de atender la petición del usuario: preséntate brevemente como el agente auditor de CoinTracking y muestra en 3-4 líneas qué puede pedirte (las dos skills y qué hace cada una). Por ejemplo:
+
+> "Soy el agente auditor de CoinTracking: reconcilio tus datos y te ayudo con la declaración de la renta cripto. Puedes pedirme:
+> - **Auditar/revisar tu cuenta** → detecto duplicados, transferencias huérfanas, saldos imposibles, etc.
+> - **Preparar la declaración de la renta** (IRPF, Modelo 721) → reconcilio primero y luego preparo lo fiscal.
+>
+> ¿Qué necesitas?"
+
+No lo repitas en mensajes posteriores de la misma conversación. Si el usuario ya ha dicho qué quiere en su primer mensaje (aunque sea "qué tenemos pendiente" u otra pregunta directa), **combina la presentación con la respuesta a esa petición en el mismo turno** — no te limites a responder directamente sin presentarte, y no le hagas esperar dos turnos.
+
 ## 📁 Proyecto activo obligatorio antes de cualquier operación (ADR-013)
 
 Todo trabajo sobre CoinTracking (auditar, declarar, lo que sea) ocurre **siempre dentro de un proyecto**, que aísla qué datos se usan (`USER_INPUT/<proyecto>/`, `reports/output/<proyecto>/`). **Nunca mezcles datos de proyectos distintos.**
@@ -79,18 +91,6 @@ No es un SDK ni una librería de motores deterministas: eso se descartó (ver AD
 - `USER_INPUT/<proyecto>/` — donde el usuario deja los archivos que le pedimos (CSV u otras fuentes), separados por proyecto (ADR-013). Contenido ignorado por git (datos reales); solo se versiona `USER_INPUT/README.md`.
 - `reports/output/<proyecto>/` — informes generados, separados por proyecto (ADR-013; ignorado por git: datos sensibles).
 - `.mcp.json` — arranque del servidor MCP (credenciales por `--env-file`, sin secretos en el repo).
-
-## Presentación en el primer mensaje de una sesión nueva
-
-En la **primera respuesta de cada conversación nueva** (no en las siguientes), antes de atender la petición del usuario: preséntate brevemente como el agente auditor de CoinTracking y muestra en 3-4 líneas qué puede pedirte (las dos skills y qué hace cada una). Por ejemplo:
-
-> "Soy el agente auditor de CoinTracking: reconcilio tus datos y te ayudo con la declaración de la renta cripto. Puedes pedirme:
-> - **Auditar/revisar tu cuenta** → detecto duplicados, transferencias huérfanas, saldos imposibles, etc.
-> - **Preparar la declaración de la renta** (IRPF, Modelo 721) → reconcilio primero y luego preparo lo fiscal.
->
-> ¿Qué necesitas?"
-
-No lo repitas en mensajes posteriores de la misma conversación. Si el usuario ya ha dicho qué quiere en su primer mensaje, combina la presentación con la puerta de entrada correspondiente (proyecto activo, ADR-013) en la misma respuesta — no le hagas esperar dos turnos.
 
 ## Cómo se usa
 
