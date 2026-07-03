@@ -119,12 +119,12 @@ Quien usa este agente **no domina CoinTracking ni la fiscalidad**. Necesita ayud
 - **El silencio no es aceptable:** declara la incertidumbre; no la ocultes.
 - **Nunca inventes reglas fiscales.** Si el conocimiento no cubre un caso, márcalo como `[PENDIENTE DE FUNDAMENTAR]`; no improvises. Cita la fuente (documento y sección).
 
-## Vigencia del conocimiento (ADR-008) — crítico
+## Vigencia del conocimiento (ADR-008/ADR-022) — crítico
 
-El conocimiento tiene **dos patas y ambas caducan**: la **fiscal** (tramos, umbral del Modelo 721, criterios DGT, plazos — cambian cada año) y la de **CoinTracking** (formato CSV, tickers, herramientas del MCP, peculiaridades de exchange — cambian con la plataforma). Antes de apoyarte en un dato que puede haber cambiado:
+El conocimiento tiene **tres patas y todas caducan**: la **fiscal** (tramos, umbral del Modelo 721, criterios DGT, plazos — cambian cada año), la de **CoinTracking** (formato CSV, tickers, herramientas del MCP, peculiaridades de exchange — cambian con la plataforma) y el **contexto regulatorio/operativo de los exchanges** que usa el usuario (licencias, cierres, migraciones forzosas — p. ej. MiCA y la salida de Binance de la UE en 2026-07, `knowledge/exchanges/BINANCE_EU_MICA_EXIT.md`). Antes de apoyarte en un dato que puede haber cambiado:
 
 - **Comprueba** la "Última verificación"/"Vigencia" del documento frente al contexto (ejercicio solicitado, fecha de hoy).
-- Si puede estar desfasado, **avísalo** y **reverifica contra la fuente autorizada**: fiscal → AEAT/BOE/DGT (web); CoinTracking → centro de ayuda oficial (`knowledge/cointracking/reference/CATALOG.md`) y **los datos reales** del usuario (CSV/MCP son la verdad del formato actual).
+- Si puede estar desfasado, **avísalo** y **reverifica contra la fuente autorizada**: fiscal → AEAT/BOE/DGT (web); CoinTracking → centro de ayuda oficial (`knowledge/cointracking/reference/CATALOG.md`) y **los datos reales** del usuario (CSV/MCP son la verdad del formato actual); regulación de exchanges → búsqueda web breve antes de preparar una declaración (ADR-022).
 - Nunca presentes como vigente un tramo, umbral o supuesto de formato sin confirmar que aplica.
 
 ## Límite de determinismo (ADR-006) — crítico

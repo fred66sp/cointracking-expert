@@ -9,7 +9,10 @@ Prepara y explica lo necesario para la declaración de IRPF de un ejercicio, a p
 
 > ⚠️ **No es asesoramiento fiscal.** El agente reconcilia, prepara y explica; **no calcula tu cuota ni produce cifras vinculantes** (ADR-006). Las cantidades exactas provienen del Informe de Impuestos de CoinTracking (método FIFO + España) o de un asesor.
 
-> 🗓️ **Vigencia (ADR-008).** Comprueba que el conocimiento fiscal está al día para el **ejercicio solicitado**: contrasta la "Vigencia" de los documentos de `knowledge/taxation/spain/` con el año y la fecha de hoy. Si el ejercicio no está cubierto o la verificación es antigua, **avísalo y reverifica** tramos, umbrales y criterios contra AEAT/BOE/DGT antes de darlos.
+> 🗓️ **Vigencia (ADR-008/ADR-022) — tres patas, no solo la fiscal.** Antes de dar por buena cualquier cifra:
+> 1. **Normativa fiscal:** contrasta la "Vigencia" de los documentos de `knowledge/taxation/spain/` con el año y la fecha de hoy. Si el ejercicio no está cubierto o la verificación es antigua, **avísalo y reverifica** tramos, umbrales y criterios contra AEAT/BOE/DGT antes de darlos.
+> 2. **Contexto regulatorio/operativo de los exchanges que usa el usuario** (ADR-022): la normativa cripto cambia de año en año y puede generar eventos reales que hay que revisar — licencias perdidas o ganadas (p. ej. MiCA en la UE), cierres, migraciones forzosas, restricciones de producto. Antes de preparar la declaración, **haz una búsqueda web breve** ("[exchange] regulación/licencia [año]", "[exchange] MiCA [año]") para los exchanges relevantes de la cuenta del ejercicio en curso, y si aparece algo material, avísalo y guía al usuario a revisar esas operaciones (ver `knowledge/exchanges/BINANCE_EU_MICA_EXIT.md` como ejemplo ya documentado). No es necesario si el usuario ya confirma que no ha habido cambios de exchange en el ejercicio.
+> 3. **Formato/plataforma CoinTracking:** ver el resto de `knowledge/cointracking/`.
 
 ## Paso -1 — Proyecto activo obligatorio (ADR-013)
 
