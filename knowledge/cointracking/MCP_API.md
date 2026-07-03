@@ -32,6 +32,8 @@ Esta es la vía de **datos en vivo** del agente auditor (ADR-006), complementari
 | `cointracking_invalidate_cache` | Invalida entradas cacheadas por patrón (`getTrades*`, `*`, lista separada por comas). **Úsala siempre que el usuario haya modificado datos en la web de CoinTracking**, antes de volver a consultar — si no, se puede mezclar caché obsoleta con datos frescos (ADR-010). | `pattern` (opcional; vacío o `*` = todo) |
 | `cointracking_cache_stats` | Tamaño de caché, hit rate, llamadas a la API por método, y cuota horaria consumida. Útil para decidir si merece la pena volver a consultar. | — |
 | `cointracking_close_project` | Señala el fin de una sesión de auditoría: vacía la caché de memoria y confirma que está persistida en disco. Llamarla al terminar. | `project_name` (opcional; debe coincidir con el proyecto configurado) |
+| `cointracking_switch_project` | Cambia el proyecto activo del servidor en caliente, sin reiniciar (ADR-016). Llamarla en cuanto se fije el proyecto activo de la conversación, antes de cualquier `cointracking_get_*`. | `project_name` (obligatorio) |
+| `cointracking_delete_project` | Borra permanentemente la caché en disco de un proyecto (ADR-023). El servidor es dueño de sus propios archivos de caché: úsala en vez de `rm -rf` sobre `.cache/cointracking/<proyecto>`, que puede chocar con el archivo SQLite todavía abierto. Rechaza borrar el proyecto activo. | `project_name` (obligatorio; no puede ser el activo) |
 
 ### 🔑 Método de coste y España (crítico)
 

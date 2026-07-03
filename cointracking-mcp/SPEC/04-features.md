@@ -87,6 +87,29 @@ Agente: "El usuario quiere trabajar ahora con el proyecto cliente_b."
 
 ---
 
+### Borrado de Proyecto
+
+```
+Tool: cointracking_delete_project
+Input: {
+  project_name: string  // obligatorio; no puede ser el proyecto activo
+}
+Output: {
+  project: string,
+  path: string,
+  message: string
+}
+```
+
+**Propósito (ADR-023):** el servidor es dueño del ciclo de vida de su propia caché SQLite en disco; borrarla a mano desde fuera (`rm -rf cache-dir/<project>`) puede chocar con el archivo `cointracking-mcp.db` todavía abierto por el proceso y fallar con "file busy" en Windows, incluso después de `cointracking_close_project`. Esta tool borra `cache-dir/<project>` de forma permanente, con reintento corto (backoff) para absorber bloqueos transitorios (antivirus/indexador tras cerrar el handle).
+
+**Comportamiento:**
+- Rechaza borrar el proyecto actualmente activo (cámbiate primero con `cointracking_switch_project`).
+- Nombre de proyecto inválido, o proyecto sin caché existente → error de validación.
+- No borra `USER_INPUT/<project>` ni `reports/output/<project>`: eso vive fuera del MCP y sigue siendo responsabilidad de Claude Code.
+
+---
+
 ## Validaciones Deterministas (Fase 1)
 
 El server puede ejecutar validaciones **deterministas** sobre los datos de CoinTracking, reportando inconsistencias sin necesidad de que el agente re-derive lógica:

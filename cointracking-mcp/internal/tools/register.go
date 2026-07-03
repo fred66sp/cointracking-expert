@@ -4,7 +4,7 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// RegisterAll registers the 6 CoinTracking data tools plus the 3 cache/
+// RegisterAll registers the 6 CoinTracking data tools plus the 4 cache/
 // project control tools on server, bound to app's shared state.
 func RegisterAll(server *mcp.Server, app *App) {
 	mcp.AddTool(server, getTradesTool(), getTradesHandler(app))
@@ -18,4 +18,5 @@ func RegisterAll(server *mcp.Server, app *App) {
 	mcp.AddTool(server, cacheStatsTool(), cacheStatsHandler(app))
 	mcp.AddTool(server, closeProjectTool(), closeProjectHandler(app))
 	mcp.AddTool(server, switchProjectTool(), switchProjectHandler(app))
+	mcp.AddTool(server, deleteProjectTool(), deleteProjectHandler(app))
 }
