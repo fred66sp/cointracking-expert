@@ -3,7 +3,6 @@
     "cointracking": {
       "command": "cointracking-mcp/dist/cointracking-mcp.exe",
       "args": [
-        "--project", "agp",
         "--cache-dir", ".cache/cointracking"
       ]
     }
