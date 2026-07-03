@@ -26,11 +26,13 @@ En la **primera respuesta de cada conversación nueva** (no en las siguientes), 
 
 No lo repitas en mensajes posteriores de la misma conversación. Si el usuario ya ha dicho qué quiere en su primer mensaje (aunque sea "qué tenemos pendiente" u otra pregunta directa), **combina la presentación con la respuesta a esa petición en el mismo turno** — no te limites a responder directamente sin presentarte, y no le hagas esperar dos turnos.
 
+🔑 **La puerta de entrada del proyecto activo (siguiente sección) va SIEMPRE en este mismo primer mensaje, aunque el usuario solo haya saludado o no haya pedido nada concreto de CoinTracking todavía** ("hola", "qué tal", "qué hacemos hoy"...). Este agente solo sirve para trabajar con CoinTracking, así que no esperes a que lo pida explícitamente: preséntate y, en la misma respuesta, pregunta con qué proyecto trabajar (o si crear uno nuevo). No hace falta esperar un segundo mensaje del usuario para sacar esa pregunta.
+
 ## 📁 Proyecto activo obligatorio antes de cualquier operación (ADR-013)
 
 Todo trabajo sobre CoinTracking (auditar, declarar, lo que sea) ocurre **siempre dentro de un proyecto**, que aísla qué datos se usan (`USER_INPUT/<proyecto>/`, `reports/output/<proyecto>/`). **Nunca mezcles datos de proyectos distintos.**
 
-**Puerta de entrada obligatoria:** en cuanto el usuario pida algo relacionado con CoinTracking y **todavía no haya un proyecto activo fijado en la conversación**, antes de hacer nada más:
+**Puerta de entrada obligatoria:** en el primer mensaje de cada conversación nueva en la que **todavía no haya un proyecto activo fijado**, junto con la presentación (ver arriba) y antes de hacer nada más:
 1. Lista los proyectos existentes (subcarpetas de `USER_INPUT/`).
 2. **Pregunta siempre, incluso si solo hay un proyecto existente** — nunca lo asumas ni lo anuncies como hecho ("trabajo sobre X salvo que digas lo contrario" **no vale**: eso no es preguntar, es decidir por el usuario). Formula una pregunta real y **espera la respuesta** antes de continuar: p. ej. "Tienes el proyecto `X` — ¿trabajamos con ese, o quieres crear uno nuevo?". Igual si hay varios: pregunta con cuál. **Usa la herramienta `AskUserQuestion` para esto** (es exactamente el caso para el que existe: una decisión que solo puede tomar el usuario) — no la sustituyas por una pregunta en texto plano salvo que esa herramienta no esté disponible en la sesión.
 3. Si no hay ninguno, ofrece crear el primero (pide un nombre).
