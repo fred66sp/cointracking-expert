@@ -7,7 +7,26 @@
       "Edit(/.claude/skills/audit-cointracking/**)",
       "Bash(node --env-file=.env_cointracking --input-type=module -e ' *)",
       "mcp__cointracking__cointracking_get_grouped_balance",
-      "mcp__cointracking__cointracking_get_balance"
+      "mcp__cointracking__cointracking_get_balance",
+      "Bash(go env *)",
+      "Bash(curl -s https://proxy.golang.org/github.com/anthropics/go-mcp/@latest)",
+      "Bash(curl -s https://proxy.golang.org/github.com/modelcontextprotocol/go-sdk/@latest)",
+      "Bash(curl -s https://proxy.golang.org/github.com/mark3labs/mcp-go/@latest)",
+      "Bash(gcc --version)",
+      "Bash(curl -s https://proxy.golang.org/modernc.org/sqlite/@latest)",
+      "Bash(cd \"H:\\\\cointracking-expert\\\\cointracking-mcp\" && mkdir -p cmd/cointracking-mcp internal/api internal/cache internal/config internal/logging internal/tools internal/mcpserver && ls -la)",
+      "Bash(go mod *)",
+      "Bash(go build *)",
+      "Bash(go get *)",
+      "Bash(go doc *)",
+      "Bash(go test *)",
+      "Bash(which clang *)",
+      "Read(//c/Program Files/mingw64/**)",
+      "Read(//c/msys64/mingw64/**)",
+      "Read(//c/ProgramData/chocolatey/**)"
+    ],
+    "additionalDirectories": [
+      "H:\\cointracking-expert\\cointracking-mcp\\cmd"
     ]
   }
 }

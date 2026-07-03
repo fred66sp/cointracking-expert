@@ -6,6 +6,12 @@ El agente vive en Claude Code, se apoya en una base de conocimiento propia y aud
 
 > ⚠️ Herramienta de reconciliación y diagnóstico, **no asesoramiento fiscal**. El agente encuentra y explica; no produce cifras fiscales vinculantes (ver `DECISIONS.md`, ADR-006).
 
+## Para usuarios
+
+👉 **¿Quieres usar el agente?** Lee [USER_GUIDE.md](USER_GUIDE.md) — guía paso a paso para auditar tus datos y preparar la declaración fiscal. Hay secciones para usuarios nuevos y experimentados.
+
+---
+
 ## Cómo funciona
 
 Le dices lo que quieres y el agente lo enruta:
@@ -29,8 +35,8 @@ docs/GLOSSARY.md                      # Glosario de términos
 templates/AUDIT_REPORT.md             # Plantilla de informe de auditoría
 tools/ct_audit.py                     # Chequeos deterministas vetados (saldos, transferencias, duplicados…)
 tests/fixtures/                       # Caso de prueba de oro (sintético) para regresión del tool
-USER_INPUT/                           # Aquí deja el usuario sus CSV/fuentes (ignorado por git)
-reports/output/                       # Informes generados (ignorado por git)
+USER_INPUT/<proyecto>/                # Aquí deja el usuario sus CSV/fuentes, por proyecto (ignorado por git, ADR-013)
+reports/output/<proyecto>/            # Informes generados, por proyecto (ignorado por git, ADR-013)
 DECISIONS.md                          # Registro de decisiones (ADR-001…007)
 FOUNDATION.md                         # Principios de ingeniería del proyecto
 CLAUDE.md                             # Instrucciones para Claude Code

@@ -2,7 +2,7 @@
 
 **Tipo:** Conocimiento operativo destilado de fuentes oficiales de CoinTracking
 **Fuentes:** Centro de ayuda oficial (URLs al pie y en `reference/CATALOG.md`)
-**Última verificación:** 2026-07-02
+**Última verificación:** 2026-07-03
 **Vigencia:** la **interfaz de CoinTracking cambia**. Los pasos concretos (nombres de menús/botones) pueden variar — **antes de dar instrucciones clic a clic, verifica los pasos vigentes** en el artículo oficial citado (ADR-008). No inventes rutas de menú (ADR-009).
 **Estado:** Destilado y reelaborado (no copia verbatim)
 
@@ -81,6 +81,19 @@ Para corregir muchas operaciones a la vez: cambiar tipo, ajustar hora, fijar pre
 ### 6. Validar la cuenta y transacciones faltantes
 CoinTracking ofrece herramientas de validación y un informe de transacciones faltantes (depósitos sin su retirada emparejada).
 - Fuentes: [Cómo validar mi cuenta](https://cointracking.freshdesk.com/en/support/solutions/articles/29000035339-how-to-validate-my-account-) · [Missing Transactions Report](https://cointracking.freshdesk.com/en/support/solutions/articles/29000048812-missing-transactions-report)
+
+### 7bis. Descargar el CSV de un informe de "Analysis" (Missing Transactions, Double-Entry, Duplicados, Realized/Unrealized, Balance by Exchange…)
+
+Cuando la auditoría necesita uno de los informes adicionales de `DOCUMENT_CHECKLIST.md` §A (no la Trade Table), guía al usuario así:
+
+1. **Patrón general** (visto en la página de Transacciones, §"La página de Transacciones" arriba): casi todos los informes de CoinTracking tienen, sobre la propia tabla del informe, un botón **Export/Exportar** con opciones **CSV**, Excel, PDF. El patrón es: abrir el informe → botón Export → elegir CSV → descargar.
+2. **Dónde está cada informe (confirmado contra el artículo oficial a fecha 2026-07-03; la interfaz puede haber cambiado — reverifica antes de instruir clic a clic, ADR-008/009):**
+   - **Balance by Exchange** — página propia: `cointracking.info/balance_by_exchange.php` (accesible también desde el menú de balances/holdings). Permite exportar en Excel/CSV/PDF.
+   - **Realized and Unrealized Gains Report** — menú **Reports → Realized & Unrealized Gains**.
+   - **Double-Entry List** — dentro de **Analysis → Transactions**; el botón de exportación está sobre la tabla del libro (ledger).
+   - **Missing Transactions Report** y **Duplicate Transactions** — están en la sección **Analysis** del menú, pero el artículo oficial no detalla el nombre exacto del botón/submenú; **antes de dar el paso clic a clic, abre el artículo oficial citado en `DOCUMENT_CHECKLIST.md` y confírmalo en la sesión** (no lo inventes).
+3. **Si no encuentras el botón de export en un informe concreto:** pide al usuario una captura de pantalla del informe (sin acciones que no puedas verificar) o remítelo al artículo oficial correspondiente para que confirme el nombre exacto del botón en su versión de la interfaz.
+- Fuentes: artículos oficiales enlazados en `DOCUMENT_CHECKLIST.md` §A.1 (cada informe tiene el suyo).
 
 ### 7. Generar el informe fiscal de España (con FIFO)
 En la configuración del **Tax Report**: elegir **país = España** y **método de cálculo = FIFO** (España usa FIFO; ver `../taxation/spain/CAPITAL_GAINS.md` §4). El informe muestra: ganancias patrimoniales realizadas (spot, NFT, derivados), rendimientos generales (staking, minería, airdrops), ingresos no gravables, otros pagos, y el detalle de operaciones. Incluye una sección sobre el **Modelo 721**.

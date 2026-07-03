@@ -1,0 +1,715 @@
+# Base de casos curada v2 — patrones de reconciliación de CoinTracking
+#
+# Origen: integración curada de cointracking_casos_extended.yaml (candidato aportado
+# por el agente ChatGPT auxiliar) sobre el esquema canónico definido en el handoff
+# reports/output/2026-07-02_handoff_integracion_casos_chatgpt.md (fases A-D).
+# Ver estado y política de vigencia en knowledge/patterns/INDEX.md.
+#
+# Advertencia (ADR-006/009): estos casos son conocimiento de PATRÓN diagnóstico
+# (cualitativo). No son cifras fiscales vinculantes ni sustituyen la verificación
+# contra los datos reales del usuario o una fuente oficial en cada uso.
+
+- id: CT-001
+  titulo: Transferencia entre exchanges importada solo en origen
+  categoria: transferencias_huerfanas
+  sintomas:
+    - Balance negativo en el exchange destino
+    - Advertencias de transacciones incompletas
+    - Holdings inferiores a los reales
+  causa_probable:
+    hecho: Solo existe el registro del retiro (withdrawal) en el exchange de origen.
+    hipotesis: Falta importar el depósito correspondiente en el exchange destino.
+    supuesto: El exchange destino no fue importado, o su CSV/API no cubre esa fecha.
+  evidencia_minima:
+    - Tx Hash (si es on-chain) o referencia de la operación
+    - Fecha y hora del retiro
+    - Importe y activo exactos
+    - Confirmación de que el depósito no aparece en el exchange destino tras revisar su historial completo
+  pasos_diagnostico:
+    - Revisar la transacción en Transacciones (enter_coins.php) del exchange de origen.
+    - Buscar el mismo importe y activo en el exchange destino, ampliando el rango de fechas de búsqueda.
+    - Comprobar si la importación del destino tiene un filtro temporal que excluya esa fecha.
+    - Revisar si la API o el CSV del destino cubren el periodo del depósito.
+  solucion_recomendada:
+    - Importar el historial faltante del exchange destino (API o CSV).
+    - Si no existe registro de origen, crear la transferencia manualmente enlazando ambos lados (ver knowledge/cointracking/WEB_APP_GUIDE.md §2).
+    - Validar que el balance del activo queda no negativo tras recalcular.
+  anti_patron: null
+  por_que_falso_positivo: null
+  nivel_confianza: verificado
+  nivel_riesgo: alto
+  impacto_fiscal_potencial: Puede provocar ventas sin base de coste y balances erróneos que arrastran el cálculo FIFO.
+  senales_tempranas:
+    - Balance negativo justo tras la fecha de una transferencia
+    - Diferencias entre holdings reales del exchange y los de CoinTracking
+  validacion_antes_despues:
+    antes:
+      - Balance negativo
+    despues:
+      - Balance reconciliado
+      - Sin advertencias de transferencia relacionadas
+  vigencia:
+    fecha_revision: "2026-07-03"
+    motivo_caducidad_potencial: Cambios en los importadores API/CSV de exchanges que alteren cómo se detectan retiros/depósitos.
+    fuente_recomendada_para_revalidar: knowledge/cointracking/CSV_FORMAT.md §7 (Emparejamiento de transferencias) y CoinTracking Help Center
+
+- id: CT-002
+  titulo: Venta sin historial de compra previo (Missing Purchase History)
+  categoria: ventas_sin_base_de_coste
+  sintomas:
+    - Advertencia "No hay una compra adecuada para esta venta"
+    - Ganancias extremadamente elevadas o coste por unidad irreal
+  causa_probable:
+    hecho: Existe una venta registrada para un activo.
+    hipotesis: No existe la compra previa correspondiente en el pool de compras.
+    supuesto: El historial de compras está incompleto (rango de fechas o exchange no importado).
+  evidencia_minima:
+    - Venta registrada con fecha, importe y activo
+    - Ausencia confirmada de compra previa en el pool tras revisar todo el historial importado
+    - Rango de fechas efectivamente cubierto por la importación
+  pasos_diagnostico:
+    - Revisar el detalle de la advertencia "Missing Purchase History" en el informe de ganancias.
+    - Buscar compras anteriores del mismo activo en cualquier exchange/wallet del usuario.
+    - Revisar si el rango temporal importado empieza después de la fecha real de adquisición.
+  solucion_recomendada:
+    - Importar los años/exchanges anteriores que falten.
+    - Registrar manualmente la compra solo si existe evidencia documental (extracto, hash on-chain).
+    - Recalcular el informe de ganancias tras completar el historial.
+  anti_patron: null
+  por_que_falso_positivo: null
+  nivel_confianza: verificado
+  nivel_riesgo: critico
+  impacto_fiscal_potencial: Cálculo incorrecto de ganancias patrimoniales (base de coste inexistente o cero); afecta directamente a la declaración.
+  senales_tempranas:
+    - Advertencia inmediata al generar el informe de ganancias tras importar ventas
+  validacion_antes_despues:
+    antes:
+      - Advertencia "Missing Purchase History"
+    despues:
+      - Advertencia eliminada tras completar el historial
+      - Coste de adquisición > 0 para esa venta
+  vigencia:
+    fecha_revision: "2026-07-03"
+    motivo_caducidad_potencial: Cambios en el algoritmo de cálculo FIFO o en el texto/lógica de la advertencia.
+    fuente_recomendada_para_revalidar: knowledge/cointracking/COST_BASIS_AND_VALIDATION.md §3.1 y §3.2
+
+- id: CT-003
+  titulo: API y CSV importados simultáneamente (duplicado por doble fuente)
+  categoria: duplicados
+  sintomas:
+    - Doble número de operaciones para el mismo periodo
+    - Holdings superiores a los reales
+  causa_probable:
+    hecho: Existen transacciones con los mismos campos (fecha, importe, activo, exchange).
+    hipotesis: Se importó la misma cuenta por API y por CSV sin desactivar una de las dos fuentes.
+    supuesto: No se eliminó la importación previa antes de añadir la segunda.
+  evidencia_minima:
+    - Mismas fecha, importe, activo y exchange en ambas filas
+    - trade_id (si el exchange lo expone vía API) — con trade_id distinto, NO son duplicados (ver ADR-014)
+    - Revisión de Import Statistics para confirmar dos importaciones del mismo origen
+  pasos_diagnostico:
+    - Ordenar las transacciones del exchange por fecha.
+    - Buscar pares con todos los campos idénticos.
+    - Si hay trade_id disponible (API), comparar: distinto → no es duplicado; igual o ausente → aplicar la heurística de conteo de copias.
+    - Revisar Import Statistics para confirmar el origen doble (API + CSV).
+  solucion_recomendada:
+    - Eliminar una de las dos importaciones completas (no filas sueltas) para evitar dejar mitades de operaciones enlazadas.
+    - Recalcular balances tras eliminar.
+    - Antes de borrar, seguir el protocolo de consentimiento de DECISIONS.md#ADR-014 (listar ejemplos concretos y confirmar con el usuario).
+  anti_patron: "Asumir que cualquier fila con todos los campos iguales es automáticamente un duplicado a eliminar."
+  por_que_falso_positivo: "Sin trade_id, campos idénticos pueden corresponder a operaciones reales ejecutadas en el mismo segundo (ver CT-008 y CT-019); solo API+CSV de la misma cuenta en el mismo rango es evidencia suficiente por sí sola."
+  nivel_confianza: verificado
+  nivel_riesgo: alto
+  impacto_fiscal_potencial: Duplica beneficios/pérdidas y movimientos en el informe de ganancias.
+  senales_tempranas:
+    - Holdings duplicados frente al balance real del exchange
+    - Import Statistics muestra dos importaciones solapadas del mismo exchange
+  validacion_antes_despues:
+    antes:
+      - Operaciones repetidas
+    despues:
+      - Totales de balance coincidentes con el exchange real
+  vigencia:
+    fecha_revision: "2026-07-03"
+    motivo_caducidad_potencial: Nuevos detectores de duplicados de CoinTracking o cambios en qué exchanges exponen trade_id por API.
+    fuente_recomendada_para_revalidar: knowledge/cointracking/CSV_FORMAT.md §9 (Duplicados exactos) y DECISIONS.md#ADR-014
+
+- id: CT-004
+  titulo: Balance negativo por orden cronológico incorrecto (zona horaria)
+  categoria: saldos_imposibles_o_negativos
+  sintomas:
+    - Balance negativo temporal que se corrige más adelante en el tiempo
+  causa_probable:
+    hecho: Dos operaciones relacionadas (p. ej. venta y compra previa) aparecen en orden invertido en el libro mayor.
+    hipotesis: El CSV se exportó con una zona horaria distinta a la configurada, desplazando timestamps cerca de la medianoche o de un cambio de DST.
+    supuesto: El usuario no declaró o declaró mal la zona horaria de origen al importar (ver DECISIONS.md#ADR-005).
+  evidencia_minima:
+    - Par de operaciones consecutivas cuyo orden real (confirmado por el exchange) no coincide con el orden en CoinTracking
+    - Hora exacta de ambas operaciones en el exchange de origen
+  pasos_diagnostico:
+    - Revisar el timestamp exacto de las operaciones afectadas.
+    - Comparar con el historial del exchange (que suele mostrar la hora en UTC o en la zona de la cuenta).
+    - Verificar si la fecha cae cerca de un cambio de horario de verano/invierno (riesgo específico de Europe/Madrid, ver ADR-005).
+  solucion_recomendada:
+    - Corregir la fecha/hora de la operación mal ubicada usando el dato real del exchange.
+    - Reimportar si el desplazamiento afecta a muchas filas.
+  anti_patron: null
+  por_que_falso_positivo: null
+  nivel_confianza: probable
+  nivel_riesgo: medio
+  impacto_fiscal_potencial: Puede alterar el orden FIFO y por tanto qué lote de compra se consume en cada venta.
+  senales_tempranas:
+    - Balance negativo puntual que desaparece si se reordenan dos operaciones cercanas en el tiempo
+  validacion_antes_despues:
+    antes:
+      - Operaciones fuera de orden real
+    despues:
+      - Cronología consistente con el exchange de origen
+  vigencia:
+    fecha_revision: "2026-07-03"
+    motivo_caducidad_potencial: Cambios en cómo CoinTracking exporta/importa timestamps, o corrección del riesgo residual de ADR-005.
+    fuente_recomendada_para_revalidar: DECISIONS.md#ADR-005 y knowledge/cointracking/CSV_FORMAT.md §2
+
+- id: CT-005
+  titulo: Recompensas de staking clasificadas como depósito genérico
+  categoria: rendimientos
+  sintomas:
+    - No aparecen ingresos de staking en el resumen de rendimientos, aunque el exchange sí los pagó
+  causa_probable:
+    hecho: Las entradas de staking están registradas con tipo "Deposit" en vez de "Staking"/"Income".
+    hipotesis: El importador (API o CSV) no distingue el subtipo de la operación.
+    supuesto: El exchange no etiqueta la recompensa de forma diferenciada en su export.
+  evidencia_minima:
+    - Historial del exchange mostrando el tipo original de la operación (p. ej. "Staking Reward")
+    - Fecha e importe de cada entrada periódica sospechosa
+  pasos_diagnostico:
+    - Revisar el tipo de transacción asignado en CoinTracking para esas entradas.
+    - Comparar con el historial del exchange para confirmar que son recompensas de staking y no un depósito real.
+  solucion_recomendada:
+    - Reclasificar manualmente como "Staking" o "Income" según corresponda (ver knowledge/cointracking/WEB_APP_GUIDE.md §5, edición masiva por tipo).
+  anti_patron: null
+  por_que_falso_positivo: null
+  nivel_confianza: probable
+  nivel_riesgo: medio
+  impacto_fiscal_potencial: Rendimiento potencialmente mal clasificado a efectos de IRPF; el tratamiento fiscal exacto de staking está marcado como pendiente en knowledge/taxation/spain/PENDIENTES.md — no asumir la calificación sin verificar ese documento.
+  senales_tempranas:
+    - Entradas periódicas de importe pequeño y regular, sin contrapartida de compra
+  validacion_antes_despues:
+    antes:
+      - Tipo "Deposit" incorrecto
+    despues:
+      - Clasificación coherente con el origen real de los fondos
+  vigencia:
+    fecha_revision: "2026-07-03"
+    motivo_caducidad_potencial: Evolución de los tipos de transacción soportados por CoinTracking, o cierre del pendiente fiscal de staking.
+    fuente_recomendada_para_revalidar: CoinTracking Help Center y knowledge/taxation/spain/PENDIENTES.md
+
+- id: CT-006
+  titulo: Binance Convert importado como venta y compra independientes
+  categoria: permutas_complejas
+  sintomas:
+    - Costes de adquisición incoherentes tras usar la función Convert de Binance
+  causa_probable:
+    hecho: La conversión aparece como dos operaciones separadas (una venta y una compra) sin vínculo entre ellas.
+    hipotesis: La importación es parcial o no reconoce el identificador de conversión de Binance.
+    supuesto: El CSV/API de Binance Convert no expone un identificador único que CoinTracking pueda enlazar.
+  evidencia_minima:
+    - Historial de "Convert" de Binance con fecha, par de activos e importes
+    - Las dos filas correspondientes en CoinTracking (venta + compra) con la misma marca temporal
+  pasos_diagnostico:
+    - Comparar la operación en CoinTracking con el historial "Convert" de Binance.
+    - Revisar si el importador tiene un modo específico para Convert (distinto del genérico de Trade).
+  solucion_recomendada:
+    - Si CoinTracking ya trata Convert como una permuta única (Trade), no requiere ajuste; verificarlo antes de tocar nada.
+    - Si aparece como dos filas independientes sin vínculo, ajustar manualmente para que la base de coste de la compra resultante sea el valor de mercado del activo entregado (ver knowledge/cointracking/COST_BASIS_AND_VALIDATION.md §2).
+  anti_patron: null
+  por_que_falso_positivo: null
+  nivel_confianza: probable
+  nivel_riesgo: alto
+  impacto_fiscal_potencial: Base de coste incorrecta en la permuta, que en España tributa como ganancia/pérdida patrimonial en el momento del cambio.
+  senales_tempranas:
+    - Diferencias de coste apreciables justo después de usar Convert
+  validacion_antes_despues:
+    antes:
+      - Permuta con coste inconsistente
+    despues:
+      - Activos conciliados con coste de mercado en el momento del cambio
+  vigencia:
+    fecha_revision: "2026-07-03"
+    motivo_caducidad_potencial: Cambios en el formato de exportación de Binance Convert o en cómo lo interpreta el importador de CoinTracking.
+    fuente_recomendada_para_revalidar: Binance (historial de Convert) y knowledge/cointracking/COST_BASIS_AND_VALIDATION.md §2
+
+- id: CT-007
+  titulo: Transferencia interna confundida con venta
+  categoria: transferencias_huerfanas
+  sintomas:
+    - Ganancia inesperada sin motivo aparente
+  causa_probable:
+    hecho: Una salida de fondos está clasificada como "Trade" (venta) en lugar de "Transfer".
+    hipotesis: Error de clasificación manual al editar la operación, o importación ambigua.
+    supuesto: La operación era en realidad un movimiento entre monederos/exchanges propios del mismo usuario.
+  evidencia_minima:
+    - Historial del exchange/wallet de origen y de destino mostrando el mismo importe y activo
+    - Titularidad de ambas cuentas confirmada como del mismo usuario
+  pasos_diagnostico:
+    - Revisar el tipo asignado a la operación.
+    - Comparar importes y fechas entre origen y destino para confirmar que es el mismo movimiento de fondos.
+  solucion_recomendada:
+    - Cambiar el tipo de la operación a "Transfer" (ver knowledge/cointracking/WEB_APP_GUIDE.md §2).
+  anti_patron: "Asumir que toda salida del exchange implica una venta o transmisión."
+  por_que_falso_positivo: "Una transferencia entre monederos propios del mismo titular no es una transmisión a efectos fiscales; solo lo es si cambia la titularidad económica del activo."
+  nivel_confianza: verificado
+  nivel_riesgo: alto
+  impacto_fiscal_potencial: Ganancia patrimonial ficticia si no se corrige antes de generar el informe fiscal.
+  senales_tempranas:
+    - Beneficio registrado sin una venta real correspondiente en el exchange
+  validacion_antes_despues:
+    antes:
+      - Clasificado como Trade
+    despues:
+      - Clasificado como Transfer
+  vigencia:
+    fecha_revision: "2026-07-03"
+    motivo_caducidad_potencial: Cambios en los tipos de importación soportados o en cómo se infiere el tipo por defecto.
+    fuente_recomendada_para_revalidar: knowledge/cointracking/WEB_APP_GUIDE.md §2
+
+- id: CT-008
+  titulo: Duplicados aparentes por ejecución parcial de una orden
+  categoria: duplicados
+  sintomas:
+    - Varias operaciones muy similares (mismo precio, mismo par) en un intervalo corto
+  causa_probable:
+    hecho: Una orden se ejecutó en varias operaciones parciales (fills) con el mismo precio o precios muy próximos.
+    hipotesis: Se interpretaron como duplicados por tener campos casi idénticos.
+    supuesto: El exchange liquida órdenes grandes en varias ejecuciones (normal en libros de órdenes líquidos).
+  evidencia_minima:
+    - Order ID compartido entre las ejecuciones parciales (si el exchange lo expone)
+    - trade_id distinto para cada ejecución individual (ver DECISIONS.md#ADR-014)
+  pasos_diagnostico:
+    - Revisar si el exchange asocia un Order ID común a las operaciones sospechosas.
+    - Comparar las cantidades parciales: si suman el tamaño de una orden razonable, es indicio de ejecución parcial legítima.
+    - Aplicar la heurística de ADR-014 según el número de copias idénticas (2 = revisar; 3-10 = advertencia, no recomendar eliminar; >10 = probablemente legítimo, requiere confirmación en la API del exchange).
+  solucion_recomendada:
+    - No eliminar ninguna operación de una misma orden parcial.
+    - Si hay duda, verificar en la API del exchange que los trade_id son distintos antes de decidir.
+  anti_patron: "Eliminar automáticamente todas las operaciones con el mismo precio y activo por considerarlas duplicado."
+  por_que_falso_positivo: "Las ejecuciones parciales de una misma orden son un comportamiento normal de los exchanges y no deben tratarse como duplicado."
+  nivel_confianza: verificado
+  nivel_riesgo: medio
+  impacto_fiscal_potencial: Eliminación indebida de operaciones reales, que reduce artificialmente el balance y puede generar saldo negativo (ver CT-019).
+  senales_tempranas:
+    - Varias filas con el mismo Order ID pero trade_id distinto
+  validacion_antes_despues:
+    antes:
+      - Sospecha de duplicado
+    despues:
+      - Orden íntegra conservada, sin eliminar ejecuciones legítimas
+  vigencia:
+    fecha_revision: "2026-07-03"
+    motivo_caducidad_potencial: Cambios en cómo los exchanges exponen Order ID/trade_id vía API.
+    fuente_recomendada_para_revalidar: DECISIONS.md#ADR-014 y documentación de la API del exchange correspondiente
+
+- id: CT-009
+  titulo: Comisión (fee) omitida en la importación
+  categoria: casos_limite_espana
+  sintomas:
+    - Coste de adquisición inferior al esperado tras comparar con el extracto del exchange
+  causa_probable:
+    hecho: La fila importada no tiene valor en el campo de comisión.
+    hipotesis: El CSV exportado por el exchange no incluye la columna de fee, o viene vacía para ese tipo de operación.
+    supuesto: El exchange no reporta la comisión para ese tipo de operación concreto.
+  evidencia_minima:
+    - Extracto oficial del exchange mostrando la comisión cobrada
+    - Fila en CoinTracking con el campo de comisión vacío para la misma operación
+  pasos_diagnostico:
+    - Comparar el campo de comisión de la fila con el extracto oficial del exchange (ver knowledge/cointracking/CSV_FORMAT.md §5).
+  solucion_recomendada:
+    - Añadir la comisión manualmente solo si hay soporte documental (extracto o export oficial); no estimarla.
+  anti_patron: null
+  por_que_falso_positivo: null
+  nivel_confianza: probable
+  nivel_riesgo: medio
+  impacto_fiscal_potencial: Coste de adquisición potencialmente incompleto, lo que infla la ganancia patrimonial calculada.
+  senales_tempranas:
+    - Trades del mismo exchange con comisión vacía de forma sistemática
+  validacion_antes_despues:
+    antes:
+      - Comisión vacía o ausente
+    despues:
+      - Comisión registrada y documentada con su fuente
+  vigencia:
+    fecha_revision: "2026-07-03"
+    motivo_caducidad_potencial: Cambios en el formato de exportación de comisiones de cada exchange.
+    fuente_recomendada_para_revalidar: knowledge/cointracking/CSV_FORMAT.md §5 y guía de exportación del exchange concreto
+
+- id: CT-010
+  titulo: Airdrop registrado como compra con coste artificial
+  categoria: casos_limite_espana
+  sintomas:
+    - El activo recibido por airdrop aparece con un coste de adquisición mayor que cero sin que haya habido pago
+  causa_probable:
+    hecho: La entrada está clasificada con un tipo que implica compra (Trade/Deposit con contravalor).
+    hipotesis: Error de clasificación manual, o el importador no distingue el origen "airdrop" de una compra normal.
+    supuesto: El usuario desconocía el origen exacto del activo al momento de registrarlo.
+  evidencia_minima:
+    - Anuncio o comunicación oficial del proyecto confirmando el airdrop
+    - Fecha y cantidad recibida, contrastada con la wallet/exchange
+  pasos_diagnostico:
+    - Revisar el origen documentado del activo (anuncio del proyecto, explorador on-chain).
+    - Confirmar que no hubo ninguna contraprestación pagada por el usuario.
+  solucion_recomendada:
+    - Reclasificar el tipo de operación acorde al origen documentado (p. ej. "Airdrop"/"Income" si CoinTracking lo soporta).
+    - El tratamiento fiscal exacto del airdrop en IRPF depende de si hubo contraprestación y de la calificación de la AEAT/DGT vigente; no asumir un criterio sin consultar knowledge/taxation/spain/ y, si no está cubierto, marcarlo `[VERIFICAR]` y consultar fuente oficial antes de declarar.
+  anti_patron: "Tratar toda entrada gratuita de un activo exactamente igual (todos los airdrops son lo mismo)."
+  por_que_falso_positivo: "El tratamiento fiscal depende de la naturaleza documentada del ingreso (p. ej. si requirió una acción del usuario, si hubo contraprestación); no puede generalizarse sin verificar caso a caso."
+  nivel_confianza: pendiente_verificar
+  nivel_riesgo: medio
+  impacto_fiscal_potencial: Clasificación fiscal potencialmente incorrecta; requiere verificación con fuente oficial antes de trasladarlo a un informe.
+  senales_tempranas:
+    - Entrada de activo sin pago asociado ni contrapartida de venta
+  validacion_antes_despues:
+    antes:
+      - Registrado como compra con coste artificial
+    despues:
+      - Clasificación revisada y respaldada por documentación del origen
+  vigencia:
+    fecha_revision: "2026-07-03"
+    motivo_caducidad_potencial: Cambios en el criterio interpretativo de la AEAT/DGT sobre airdrops.
+    fuente_recomendada_para_revalidar: Agencia Tributaria (AEAT/DGT) y knowledge/taxation/spain/PENDIENTES.md
+
+- id: CT-011
+  titulo: Lending tratado como transferencia genérica
+  categoria: rendimientos
+  sintomas:
+    - Ingresos por lending ausentes del resumen de rendimientos
+  causa_probable:
+    hecho: Las entradas de lending están clasificadas como "Transfer" en vez de un tipo de rendimiento.
+    hipotesis: Error de importación por un tipo genérico mal mapeado.
+    supuesto: La plataforma de lending no distingue el pago de intereses de un movimiento normal en su export.
+  evidencia_minima:
+    - Historial de la plataforma de lending mostrando los pagos de interés
+    - Fecha e importe de cada entrada periódica
+  pasos_diagnostico:
+    - Revisar el tipo asignado en CoinTracking a esas entradas.
+    - Comparar con el historial de la plataforma para confirmar que son intereses de lending.
+  solucion_recomendada:
+    - Reclasificar como "Income"/tipo de rendimiento correspondiente (ver knowledge/cointracking/WEB_APP_GUIDE.md §5).
+  anti_patron: null
+  por_que_falso_positivo: null
+  nivel_confianza: probable
+  nivel_riesgo: medio
+  impacto_fiscal_potencial: Rendimientos potencialmente omitidos del resumen fiscal si permanecen como Transfer.
+  senales_tempranas:
+    - Entradas periódicas de importe pequeño sin contrapartida de compra
+  validacion_antes_despues:
+    antes:
+      - Clasificado como Transfer
+    despues:
+      - Clasificado como ingreso/rendimiento correcto
+  vigencia:
+    fecha_revision: "2026-07-03"
+    motivo_caducidad_potencial: Nuevos tipos de transacción soportados por CoinTracking para plataformas de lending.
+    fuente_recomendada_para_revalidar: CoinTracking Help Center
+
+- id: CT-012
+  titulo: Balance negativo por importación parcial vía API
+  categoria: saldos_imposibles_o_negativos
+  sintomas:
+    - Balance negativo de un activo concreto
+  causa_probable:
+    hecho: El historial importado por API no cubre el periodo completo de operaciones del usuario.
+    hipotesis: La API del exchange tiene una limitación de rango temporal o de número de resultados.
+    supuesto: Existe una restricción temporal propia de la API de ese exchange.
+  evidencia_minima:
+    - Fecha de la primera operación devuelta por la API
+    - Confirmación (en el propio exchange) de operaciones anteriores a esa fecha
+  pasos_diagnostico:
+    - Comparar la fecha de la primera operación en CoinTracking con la fecha real de apertura de la cuenta en el exchange.
+  solucion_recomendada:
+    - Completar el periodo faltante con un CSV exportado manualmente desde el exchange.
+  anti_patron: null
+  por_que_falso_positivo: null
+  nivel_confianza: verificado
+  nivel_riesgo: alto
+  impacto_fiscal_potencial: Cálculo FIFO incompleto al faltar compras tempranas.
+  senales_tempranas:
+    - La primera compra registrada en CoinTracking es posterior a la primera compra real conocida por el usuario
+  validacion_antes_despues:
+    antes:
+      - Balance negativo
+    despues:
+      - Balance correcto tras completar el historial
+  vigencia:
+    fecha_revision: "2026-07-03"
+    motivo_caducidad_potencial: Cambios en los límites de rango temporal de la API de cada exchange.
+    fuente_recomendada_para_revalidar: knowledge/cointracking/MCP_API.md y documentación de la API del exchange
+
+- id: CT-013
+  titulo: Wallet externa no importada (fondos "desaparecidos")
+  categoria: transferencias_huerfanas
+  sintomas:
+    - Fondos que salieron de un exchange y no aparecen en ningún otro lugar de CoinTracking
+  causa_probable:
+    hecho: Solo existe el registro de la retirada en el exchange de origen.
+    hipotesis: La wallet de destino (autocustodia) no está importada en CoinTracking.
+    supuesto: El usuario mueve el activo a una wallet propia (hardware wallet, wallet de software) que no ha añadido a la cuenta.
+  evidencia_minima:
+    - Tx Hash de la retirada
+    - Dirección de destino visible en el explorador on-chain
+  pasos_diagnostico:
+    - Buscar el depósito correspondiente entre las wallets/exchanges ya importados.
+    - Si no aparece, confirmar con el Tx Hash en un explorador on-chain que la dirección de destino pertenece al usuario.
+  solucion_recomendada:
+    - Registrar la wallet externa en CoinTracking (manual o vía dirección pública) y añadir el depósito correspondiente.
+  anti_patron: "Asumir que toda retirada de un exchange implica una venta."
+  por_que_falso_positivo: "Puede tratarse de un movimiento a autocustodia (wallet propia), que no es una transmisión a efectos fiscales."
+  nivel_confianza: verificado
+  nivel_riesgo: alto
+  impacto_fiscal_potencial: Venta ficticia si se interpreta la retirada como transmisión sin comprobar el destino.
+  senales_tempranas:
+    - Balance del activo inferior al esperado tras una retirada, sin venta registrada
+  validacion_antes_despues:
+    antes:
+      - Movimiento inconsistente (huérfano)
+    despues:
+      - Conciliado con la wallet de destino registrada
+  vigencia:
+    fecha_revision: "2026-07-03"
+    motivo_caducidad_potencial: Nuevos conectores de wallets/exploradores soportados por CoinTracking.
+    fuente_recomendada_para_revalidar: knowledge/cointracking/WEB_APP_GUIDE.md §2
+
+- id: CT-014
+  titulo: Recompensas de minería (mining) registradas como depósito
+  categoria: rendimientos
+  sintomas:
+    - Ingresos por minería no visibles en el resumen de rendimientos
+  causa_probable:
+    hecho: Las entradas del pool de minería están clasificadas como "Deposit".
+    hipotesis: Clasificación errónea por importación genérica.
+    supuesto: El CSV del pool de minería no distingue el tipo de ingreso.
+  evidencia_minima:
+    - Historial del pool de minería con fecha e importe de cada pago
+  pasos_diagnostico:
+    - Comparar el historial del pool de minería con las entradas registradas en CoinTracking.
+  solucion_recomendada:
+    - Reclasificar como "Mining"/tipo de rendimiento correspondiente.
+  anti_patron: null
+  por_que_falso_positivo: null
+  nivel_confianza: probable
+  nivel_riesgo: medio
+  impacto_fiscal_potencial: Clasificación de rendimiento inadecuada en el resumen fiscal.
+  senales_tempranas:
+    - Entradas periódicas de importe variable coincidentes con pagos del pool
+  validacion_antes_despues:
+    antes:
+      - Clasificado como Deposit
+    despues:
+      - Clasificado como Mining/ingreso correcto
+  vigencia:
+    fecha_revision: "2026-07-03"
+    motivo_caducidad_potencial: Nuevos tipos de transacción soportados por CoinTracking para minería.
+    fuente_recomendada_para_revalidar: CoinTracking Help Center
+
+- id: CT-015
+  titulo: Swap DeFi fragmentado en varias operaciones on-chain
+  categoria: permutas_complejas
+  sintomas:
+    - Un único swap del usuario aparece como varias operaciones separadas
+  causa_probable:
+    hecho: El explorador on-chain muestra múltiples eventos (aprobación, paso por token puente, swap final) para una sola acción del usuario.
+    hipotesis: El router del protocolo DeFi divide la operación internamente (p. ej. a través de varios pools o tokens intermedios).
+    supuesto: El usuario solo percibió "un swap", pero on-chain generó varios movimientos técnicos.
+  evidencia_minima:
+    - Hash de la transacción(es) en el explorador on-chain
+    - Secuencia completa de eventos del mismo bloque/transacción
+  pasos_diagnostico:
+    - Seguir el hash de la transacción en el explorador on-chain para ver todos los eventos asociados.
+    - Distinguir aprobaciones (sin efecto económico) de movimientos reales de valor.
+  solucion_recomendada:
+    - Reconstruir el flujo completo y registrar el swap como una única permuta (activo de entrada → activo de salida), no como varias operaciones independientes.
+  anti_patron: "Tratar cada movimiento on-chain visible como una operación fiscal independiente."
+  por_que_falso_positivo: "Un único swap del usuario puede generar múltiples eventos técnicos (aprobación, tokens puente) que no son transmisiones económicas separadas."
+  nivel_confianza: hipotesis
+  nivel_riesgo: alto
+  impacto_fiscal_potencial: Coste de adquisición mal asignado si se tratan los pasos intermedios como permutas independientes.
+  senales_tempranas:
+    - Muchos movimientos en el mismo bloque/transacción para una sola acción del usuario
+  validacion_antes_despues:
+    antes:
+      - Operación fragmentada en varias filas
+    despues:
+      - Swap conciliado como una única permuta
+  vigencia:
+    fecha_revision: "2026-07-03"
+    motivo_caducidad_potencial: Nuevos protocolos DeFi con mecánicas de enrutamiento distintas.
+    fuente_recomendada_para_revalidar: Documentación del protocolo DeFi concreto y explorador on-chain correspondiente
+
+- id: CT-016
+  titulo: Duplicados por reimportación completa del mismo periodo
+  categoria: duplicados
+  sintomas:
+    - Bloque completo de operaciones duplicadas para un mismo rango de fechas
+  causa_probable:
+    hecho: El mismo lote de operaciones aparece dos veces.
+    hipotesis: Se repitió una importación (API o CSV) sin eliminar la anterior.
+    supuesto: Error operativo del usuario al reimportar tras un problema previo.
+  evidencia_minima:
+    - Import Statistics mostrando dos importaciones del mismo exchange y rango de fechas
+    - trade_id repetido en todas las filas del bloque (si está disponible)
+  pasos_diagnostico:
+    - Revisar el historial de importaciones (Import Statistics) para identificar el lote repetido.
+    - Confirmar que corresponde exactamente al mismo rango y no a una superposición parcial legítima.
+  solucion_recomendada:
+    - Eliminar el lote de importación duplicado completo (no filas sueltas), aplicando el consentimiento explícito de DECISIONS.md#ADR-014.
+  anti_patron: null
+  por_que_falso_positivo: null
+  nivel_confianza: verificado
+  nivel_riesgo: alto
+  impacto_fiscal_potencial: Duplicación de resultados (ganancias, pérdidas y volumen) en el informe fiscal.
+  senales_tempranas:
+    - Duplicados masivos concentrados en el mismo rango de fechas de una importación concreta
+  validacion_antes_despues:
+    antes:
+      - Lote duplicado
+    despues:
+      - Lote único, balances coincidentes con el exchange
+  vigencia:
+    fecha_revision: "2026-07-03"
+    motivo_caducidad_potencial: Mejoras del importador de CoinTracking que detecten reimportaciones automáticamente.
+    fuente_recomendada_para_revalidar: knowledge/cointracking/CSV_FORMAT.md §9 y DECISIONS.md#ADR-014
+
+- id: CT-017
+  titulo: Coste cero por compra omitida de ejercicios anteriores
+  categoria: ventas_sin_base_de_coste
+  sintomas:
+    - Ganancia excesiva en una venta concreta
+  causa_probable:
+    hecho: No hay compra registrada para el activo vendido dentro del historial importado.
+    hipotesis: El historial de un ejercicio anterior no se importó (p. ej. tras cambiar de exchange).
+    supuesto: El usuario cambió de plataforma y no trajo el histórico completo de la anterior.
+  evidencia_minima:
+    - Extracto histórico del exchange/plataforma anterior mostrando la compra original
+  pasos_diagnostico:
+    - Buscar el origen real del activo (exchange o wallet anterior).
+    - Revisar el rango de fechas cubierto por la importación actual frente a la fecha de la compra original.
+  solucion_recomendada:
+    - Completar el histórico con la fuente anterior (CSV o API).
+  anti_patron: null
+  por_que_falso_positivo: null
+  nivel_confianza: verificado
+  nivel_riesgo: critico
+  impacto_fiscal_potencial: Coste de adquisición inexistente, lo que sobreestima directamente la ganancia patrimonial declarada.
+  senales_tempranas:
+    - Advertencia "Missing Purchase History" asociada a esa venta
+  validacion_antes_despues:
+    antes:
+      - Coste cero
+    despues:
+      - Coste real recuperado y FIFO correcto
+  vigencia:
+    fecha_revision: "2026-07-03"
+    motivo_caducidad_potencial: Cambios en el algoritmo de cálculo FIFO de CoinTracking.
+    fuente_recomendada_para_revalidar: knowledge/cointracking/COST_BASIS_AND_VALIDATION.md §3.2
+
+- id: CT-018
+  titulo: Token renombrado interpretado como un activo distinto
+  categoria: casos_limite_espana
+  sintomas:
+    - El balance de un proyecto aparece dividido entre dos tickers distintos
+  causa_probable:
+    hecho: Existen dos símbolos distintos para lo que es, económicamente, el mismo activo.
+    hipotesis: El proyecto migró de ticker (rebrand/migración de red) y CoinTracking no fusionó ambos automáticamente.
+    supuesto: El mapeo de activos de CoinTracking no reconoce todavía la migración.
+  evidencia_minima:
+    - Anuncio oficial del proyecto confirmando la migración/rebrand y el ratio de conversión
+  pasos_diagnostico:
+    - Verificar en fuentes oficiales del proyecto que se trata de una migración y no de dos activos distintos.
+    - Revisar si CoinTracking tiene entrada de mapeo para el ticker nuevo.
+  solucion_recomendada:
+    - Actualizar/fusionar el mapeo de activos en CoinTracking siguiendo el ratio oficial de migración (ver también CT-010 de la base legacy sobre colisión de tickers en knowledge/cointracking/CSV_FORMAT.md §8).
+  anti_patron: null
+  por_que_falso_positivo: null
+  nivel_confianza: pendiente_verificar
+  nivel_riesgo: medio
+  impacto_fiscal_potencial: Bases de coste separadas incorrectamente entre los dos tickers, distorsionando el FIFO de cada uno.
+  senales_tempranas:
+    - Dos tickers para lo que el usuario reconoce como un único proyecto/activo
+  validacion_antes_despues:
+    antes:
+      - Balance dividido en dos activos
+    despues:
+      - Balance unificado bajo el ticker vigente
+  vigencia:
+    fecha_revision: "2026-07-03"
+    motivo_caducidad_potencial: Nuevas migraciones de proyectos y actualizaciones del mapeo de tickers de CoinTracking.
+    fuente_recomendada_para_revalidar: Anuncio oficial del proyecto y knowledge/cointracking/CSV_FORMAT.md §8 (colisión de tickers)
+
+- id: CT-019
+  titulo: Balance negativo tras eliminar una compra confundida con duplicado
+  categoria: saldos_imposibles_o_negativos
+  sintomas:
+    - Balance negativo aparecido justo después de que el usuario eliminara una operación "duplicada"
+  causa_probable:
+    hecho: Se eliminó una compra que en realidad era una ejecución parcial legítima o una operación con trade_id distinto.
+    hipotesis: Se aplicó la regla "duplicado = campos idénticos" sin comprobar el trade_id (ver CT-003, CT-008).
+    supuesto: El usuario actuó sobre una detección de duplicados sin verificar contra la API del exchange.
+  evidencia_minima:
+    - Order ID / trade_id de la operación eliminada, si aún es recuperable
+    - Confirmación en la API del exchange de que existían varias operaciones legítimas con esos campos
+  pasos_diagnostico:
+    - Revisar el historial de cambios (REGISTRO-CAMBIOS.md si existe) para identificar qué se eliminó y cuándo.
+    - Verificar en la API del exchange si la operación eliminada tenía un trade_id propio distinto de las que se conservaron.
+  solucion_recomendada:
+    - Restaurar la operación eliminada (reimportar o registrar manualmente) si se confirma que era legítima.
+    - Aplicar en adelante el protocolo de DECISIONS.md#ADR-014 antes de eliminar cualquier duplicado sospechoso.
+  anti_patron: "Eliminar cualquier operación con el mismo importe, activo y fecha por parecerse a otra."
+  por_que_falso_positivo: "Puede tratarse de una ejecución parcial legítima (ver CT-008) o de un batching de operaciones reales en el mismo segundo, como el caso documentado en ADR-014."
+  nivel_confianza: probable
+  nivel_riesgo: alto
+  impacto_fiscal_potencial: FIFO alterado y pérdida real de balance del activo hasta restaurar desde backup.
+  senales_tempranas:
+    - Balance negativo inmediatamente después de una limpieza de duplicados
+  validacion_antes_despues:
+    antes:
+      - Balance negativo
+    despues:
+      - Balance normal tras restaurar la operación legítima
+  vigencia:
+    fecha_revision: "2026-07-03"
+    motivo_caducidad_potencial: Cambios en los importadores o en la disponibilidad de trade_id por exchange.
+    fuente_recomendada_para_revalidar: DECISIONS.md#ADR-014 (incidente de origen documentado el 2026-07-03)
+
+- id: CT-020
+  titulo: Advertencia técnica interpretada como error fiscal definitivo
+  categoria: casos_limite_espana
+  sintomas:
+    - El usuario asume que cualquier warning del informe de ganancias implica una declaración incorrecta
+  causa_probable:
+    hecho: Existe una advertencia técnica visible en el informe (p. ej. sobre FIAT extranjero o pools agotados).
+    hipotesis: La advertencia es preventiva y no siempre implica un error real en los datos.
+    supuesto: Falta revisión manual del caso concreto antes de concluir que hay un problema.
+  evidencia_minima:
+    - Texto exacto del warning
+    - Historial relacionado con la operación o activo señalado
+  pasos_diagnostico:
+    - Leer el detalle completo del warning (no solo el titular).
+    - Contrastar con la evidencia real (balances, historial del exchange) antes de concluir que hay un error.
+    - Verificar balances tras la revisión.
+  solucion_recomendada:
+    - Corregir únicamente cuando exista evidencia suficiente de un problema real; documentar los warnings revisados y descartados como tales.
+  anti_patron: "Asumir que todo warning implica automáticamente una declaración incorrecta."
+  por_que_falso_positivo: "Muchos avisos de CoinTracking son preventivos (p. ej. FIAT negativo, ver knowledge/cointracking/COST_BASIS_AND_VALIDATION.md §4.1) y requieren validación manual antes de concluir que hay un error."
+  nivel_confianza: verificado
+  nivel_riesgo: bajo
+  impacto_fiscal_potencial: Variable según el origen real del warning; no asumir impacto sin verificar el caso concreto.
+  senales_tempranas:
+    - Aparición de advertencias nuevas tras una importación o recálculo
+  validacion_antes_despues:
+    antes:
+      - Warning sin revisar
+    despues:
+      - Diagnóstico documentado (confirmado como error real o descartado como preventivo)
+  vigencia:
+    fecha_revision: "2026-07-03"
+    motivo_caducidad_potencial: Cambios en las reglas de validación/advertencias de CoinTracking.
+    fuente_recomendada_para_revalidar: knowledge/cointracking/COST_BASIS_AND_VALIDATION.md §3-4 y CoinTracking Help Center

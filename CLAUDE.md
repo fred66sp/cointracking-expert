@@ -14,6 +14,36 @@ Este agente trata **cifras de inversión en cripto** y produce informes que van 
 6. El informe es **para un profesional**: transparente, auditable y consciente de sus límites. No sustituye su criterio.
 7. **Consentimiento informado antes de actuar.** Ante una acción **consecuente** (irreversible, con impacto fiscal/económico o que modifica datos): explica la acción, **advierte de la consecuencia de NO hacerla** (veraz y proporcionada, sin exagerar) y **pregunta antes de proceder**. No lo apliques a acciones triviales o de solo lectura (evita la fatiga de confirmación).
 
+## 📁 Proyecto activo obligatorio antes de cualquier operación (ADR-013)
+
+Todo trabajo sobre CoinTracking (auditar, declarar, lo que sea) ocurre **siempre dentro de un proyecto**, que aísla qué datos se usan (`USER_INPUT/<proyecto>/`, `reports/output/<proyecto>/`). **Nunca mezcles datos de proyectos distintos.**
+
+**Puerta de entrada obligatoria:** en cuanto el usuario pida algo relacionado con CoinTracking y **todavía no haya un proyecto activo fijado en la conversación**, antes de hacer nada más:
+1. Lista los proyectos existentes (subcarpetas de `USER_INPUT/`).
+2. Si hay uno o más, **pregunta** con cuál quiere trabajar, o si quiere crear uno nuevo.
+3. Si no hay ninguno, ofrece crear el primero (pide un nombre).
+
+Una vez fijado el proyecto activo en la conversación, reutilízalo el resto de la sesión — no vuelvas a preguntar salvo que el usuario pida cambiar. Esto aplica a ambas skills (`/audit-cointracking`, `/spanish-tax-return`) antes de su propio Paso 0/1.
+
+✅ **MCP sincronizado en caliente (ADR-016):** en cuanto quede fijado el proyecto activo, llama a `cointracking_switch_project(project_name=<proyecto>)` (si el MCP está conectado) antes de cualquier otra tool `cointracking_*`, para que sus datos en vivo correspondan al proyecto activo — sin reiniciar el servidor ni tocar `.mcp.json`. Cada skill ya lo hace en su Paso -1.
+
+## ⚠️ Falsos positivos en duplicados: verificar Tx ID antes de eliminar (ADR-014)
+
+**Hallazgo conocido (2026-07-03):** Cuando Binance hace múltiples pequeñas operaciones en el **mismo segundo** (batching), CoinTracking las muestra con valores 100% idénticos en el CSV. El auditor puede marcarlas como **duplicados erróneamente**.
+
+**Ejemplo real:** 29 `Transaction Buy FLOKI 4570` el 17.03.2024 18:39:11. Parecían duplicadas, pero cada una tenía un **`Trade ID` distinto en Binance API** (identificadores: FLOKIUSDT22086512, FLOKIUSDT100369243, …, FLOKIUSDT100369251) = son **legítimas, no duplicadas**.
+
+**Regla (ADR-014):**
+1. Ante duplicados detectados, el auditor **los lista con ejemplos** pero **pide confirmación explícita** antes de eliminar.
+2. **Antes de confirmar:** verifica en Binance que tengan el MISMO `Trade ID`:
+   - `Trade ID` **distinto** → son legítimas, **NO ELIMINAR**.
+   - `Trade ID` **igual** (o ambos vacíos y otros campos también) → duplicado real, OK eliminar.
+3. Si hay duda, consulta al MCP de CoinTracking (si está conectado) para resolver.
+
+**Cómo verificar en Binance:** Herramientas > Transacciones/Historial > busca la fecha/operación y anota los `Trade ID`. Si son diferentes, son transacciones legítimas.
+
+**Consecuencia de no verificar:** Eliminación accidental de operaciones legítimas → saldo negativo del activo → pérdida de datos que requiere restaurar de backup.
+
 ## 💾 Persistencia y trazabilidad (ADR-011)
 
 Nada importante del flujo se queda solo en el chat:
@@ -42,12 +72,12 @@ No es un SDK ni una librería de motores deterministas: eso se descartó (ver AD
 - `knowledge/` — el **cerebro** del agente (fuente de verdad):
   - `cointracking/` — formato CSV, modelo de coste, integración MCP, guía de uso de la web (remediación), catálogo de referencia.
   - `taxation/spain/` — fiscalidad IRPF (ganancias patrimoniales, FIFO, Modelo 721).
-- `DECISIONS.md` — registro de decisiones (ADR-001…007). Gobernanza vinculante.
+- `DECISIONS.md` — registro de decisiones (ADR-001…015 y siguientes). Gobernanza vinculante.
 - `templates/AUDIT_REPORT.md` — plantilla de informe.
 - `tools/ct_audit.py` — chequeos deterministas vetados sobre el CSV (saldos, negativos, transferencias huérfanas, duplicados, colisiones). El agente lo **ejecuta** en vez de re-derivar la lógica (ADR-006/009/010).
 - `tests/fixtures/` — caso de prueba de oro (`sample_trades.csv` sintético + `EXPECTED.md`) para regresión del tool.
-- `USER_INPUT/` — donde el usuario deja los archivos que le pedimos (CSV u otras fuentes). Contenido ignorado por git (datos reales); solo se versiona su `README.md`.
-- `reports/output/` — informes generados (ignorado por git: datos sensibles).
+- `USER_INPUT/<proyecto>/` — donde el usuario deja los archivos que le pedimos (CSV u otras fuentes), separados por proyecto (ADR-013). Contenido ignorado por git (datos reales); solo se versiona `USER_INPUT/README.md`.
+- `reports/output/<proyecto>/` — informes generados, separados por proyecto (ADR-013; ignorado por git: datos sensibles).
 - `.mcp.json` — arranque del servidor MCP (credenciales por `--env-file`, sin secretos en el repo).
 
 ## Cómo se usa

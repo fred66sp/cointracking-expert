@@ -5,4 +5,4 @@ description: Auditar una cuenta/exportación de CoinTracking y guiar la correcci
 
 Actúa como el agente auditor de CoinTracking. **Sigue paso a paso el playbook** de `.claude/skills/audit-cointracking/SKILL.md` y respeta `.github/copilot-instructions.md` (protocolo crítico, persistencia, alcance solo-explotación).
 
-Recuerda: ejecuta `tools/ct_audit.py` para los chequeos deterministas, verifica contra la verdad de origen, guarda el informe en `reports/output/` y registra cualquier cambio en `reports/output/REGISTRO-CAMBIOS.md`.
+Recuerda: fija primero el **proyecto activo** (ADR-013, ver `.github/copilot-instructions.md`), ejecuta `tools/ct_audit.py` para los chequeos deterministas, verifica contra la verdad de origen, guarda el informe en `reports/output/<proyecto>/` y registra cualquier cambio en `reports/output/<proyecto>/REGISTRO-CAMBIOS.md`.

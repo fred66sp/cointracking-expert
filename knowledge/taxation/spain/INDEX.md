@@ -6,7 +6,7 @@
 
 Esta sección documenta el tratamiento fiscal de las criptomonedas ("monedas virtuales") para **personas físicas residentes** en España, según la normativa del IRPF y la doctrina de la AEAT/DGT.
 
-> ⚠️ **Regla del proyecto (FOUNDATION.md):** *nunca se inventan reglas fiscales*. Todo contenido de esta sección debe estar respaldado por una fuente oficial citada (BOE/LIRPF, manuales AEAT, consultas DGT). Lo no verificado se marca explícitamente como **[PENDIENTE DE FUNDAMENTAR]**.
+> ⚠️ **Regla del proyecto (`FOUNDATION.md`, ADR-009):** *nunca se inventan reglas fiscales*. Todo contenido de esta sección debe estar respaldado por una fuente oficial citada (BOE/LIRPF, manuales AEAT, consultas DGT). Lo no verificado se marca explícitamente como **[PENDIENTE DE FUNDAMENTAR]**.
 >
 > ⚠️ **Aviso:** Este material es una base de conocimiento técnica para reconciliación y cálculo, **no asesoramiento fiscal**. La calificación final de cada operación puede depender de circunstancias particulares y debe validarla un profesional. El agente *genera datos y análisis trazables*; no presenta declaraciones ni produce cifras vinculantes (ver ADR-006, límite de determinismo).
 
@@ -22,11 +22,13 @@ Esta sección documenta el tratamiento fiscal de las criptomonedas ("monedas vir
 - **[CAPITAL_INCOME.md](CAPITAL_INCOME.md)** — Rendimientos y otras rentas: staking (RCM, base del ahorro, DGT V1766-22), lending/intereses, airdrops (ganancia patrimonial, base general, DGT 0018-23), recompensas/referidos (DGT V1948-21) y minería (actividad económica). Incluye la regla clave: el valor al percibir = coste de adquisición futuro. *(Fundamentado en DGT/LIRPF)*
 - **[PENDIENTES.md](PENDIENTES.md)** — Backlog único de cuestiones abiertas (FIFO global vs cuenta, precios históricos EUR, staking delegado, autocustodia 721…) que el agente no debe afirmar sin cerrar contra fuente oficial.
 
-## Relación con los motores
+## Relación con el agente y el cálculo fiscal (ADR-006)
 
-- El **motor FIFO** implementa el criterio de identificación de unidades exigido por la AEAT (ver CAPITAL_GAINS §4).
-- El **motor fiscal** consume estas reglas para calcular ganancias/pérdidas y su integración en la base del ahorro.
-- El **motor de reportes** produce el detalle trazable por operación (evidencia), no la declaración.
+El agente **no calcula** por sí mismo la cifra fiscal vinculante; aplica estas reglas de forma cualitativa y delega el cálculo exacto:
+
+- **Identificación de unidades FIFO:** exigida por la AEAT (ver `CAPITAL_GAINS.md` §4). El cálculo determinista lo hace el **Informe de Impuestos de CoinTracking** (método FIFO + España) o `cointracking_get_gains(price:"oldest")` como verificación de coherencia (nunca como cifra vinculante).
+- **Clasificación de eventos imponibles:** la skill `spanish-tax-return` consume estas reglas para separar ganancias/pérdidas patrimoniales (base del ahorro) de rendimientos (`CAPITAL_INCOME.md`), citando la fuente de cada regla.
+- **Detalle trazable por operación:** lo produce el informe de la skill (`templates/TAX_SUMMARY_ES.md`), con evidencia de cada cifra — no sustituye a la declaración ni al Informe de Impuestos oficial.
 
 ## Mantenimiento y vigencia (ADR-008)
 

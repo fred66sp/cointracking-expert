@@ -26,7 +26,7 @@ Según la AEAT, generan **ganancia o pérdida patrimonial** (que se imputa en el
 - **Mantener** (holding) sin transmitir
 - **Transferencias entre cuentas/monederos del propio titular** (no hay transmisión a un tercero; solo mueven el activo)
 
-> 🔑 **Implicación para el motor fiscal:** solo las **transmisiones** (venta, permuta, pago) son eventos fiscales de ganancia/pérdida. Las transferencias internas emparejadas por el motor de transferencias **no** son hechos imponibles — deben excluirse del cálculo de ganancias, aunque sí trasladan el valor de adquisición (coste) entre cuentas.
+> 🔑 **Implicación para la clasificación de eventos:** solo las **transmisiones** (venta, permuta, pago) son eventos fiscales de ganancia/pérdida. Las transferencias internas ya emparejadas en la auditoría (`tools/ct_audit.py`, `knowledge/cointracking/CSV_FORMAT.md` §7) **no** son hechos imponibles — deben excluirse del cálculo de ganancias, aunque sí trasladan el valor de adquisición (coste) entre cuentas.
 
 > ⚠️ Otras rentas (staking, lending, intereses, airdrops, minería) **no** son ganancias patrimoniales por transmisión, sino que se califican como rendimientos u otras rentas. Su tratamiento está en **[CAPITAL_INCOME.md](CAPITAL_INCOME.md)**. Regla clave (CAPITAL_INCOME §7): el valor por el que tributan al percibirse pasa a ser su **coste de adquisición** aquí.
 
@@ -39,7 +39,7 @@ Según la AEAT, generan **ganancia o pérdida patrimonial** (que se imputa en el
 - **Valor de adquisición:** importe real de compra en euros (aplicando el tipo de cambio de la fecha de compra si se pagó en otra divisa) **+ gastos y comisiones** inherentes a la adquisición.
 - **Valor de transmisión:** importe real de la venta en euros **− gastos y comisiones** inherentes a la transmisión.
 
-> 🔧 Las **comisiones** (columna `Comisión` del CSV) forman parte de la valoración: suman al coste de adquisición y restan del valor de transmisión. El motor fiscal debe convertir cada comisión a EUR a la fecha correspondiente (ver §5 sobre divisas).
+> 🔧 Las **comisiones** (columna `Comisión` del CSV) forman parte de la valoración: suman al coste de adquisición y restan del valor de transmisión. Al preparar la declaración, el agente debe convertir cada comisión a EUR a la fecha correspondiente (ver §5 sobre divisas).
 
 ---
 
@@ -50,7 +50,7 @@ El intercambio de una cripto por otra es una **permuta**. La ganancia/pérdida e
 - el **valor de adquisición** de la moneda entregada, y
 - **el mayor** de estos dos: el **valor de mercado** de la moneda entregada **o** el **valor de mercado** de la moneda recibida.
 
-> 🔑 **Consecuencia clave:** en una permuta cripto-cripto **se realiza la ganancia/pérdida acumulada** de la cripto entregada, valorada en EUR a la fecha de la permuta, aunque no se haya pasado por dinero fiat. Es el error fiscal más común de los inversores. El motor fiscal debe tratar toda `Operación` cripto↔cripto como evento imponible, no solo las ventas a EUR.
+> 🔑 **Consecuencia clave:** en una permuta cripto-cripto **se realiza la ganancia/pérdida acumulada** de la cripto entregada, valorada en EUR a la fecha de la permuta, aunque no se haya pasado por dinero fiat. Es el error fiscal más común de los inversores. El agente debe tratar toda `Operación` cripto↔cripto como evento imponible, no solo las ventas a EUR (ver skill `spanish-tax-return` Paso 2).
 
 > 🔧 Requiere **precio de mercado en EUR** de ambos activos en la fecha/hora de la operación. Esto crea una dependencia de datos de precio histórico (fuente a definir; candidata a spec propia y a conocimiento en `knowledge/`).
 
@@ -62,7 +62,7 @@ En transmisiones parciales de monedas virtuales **homogéneas** adquiridas en di
 
 > 🔑 **Homogéneas = mismo activo.** Recuérdese (ver `knowledge/cointracking/CSV_FORMAT.md` §8) que CoinTracking desambigua símbolos repetidos con sufijo (`SOL` vs `SOL2`): son activos **distintos**, cada uno con su propia cola FIFO.
 
-> ❓ **Cuestión abierta:** ¿el FIFO se aplica por **cartera global** del contribuyente (todas las cuentas juntas) o **por exchange/cuenta**? El criterio general de la AEAT apunta al conjunto del mismo activo del contribuyente, con independencia de dónde se custodie. **[PENDIENTE DE FUNDAMENTAR con consulta DGT específica]** antes de cerrar la spec del motor FIFO.
+> ❓ **Cuestión abierta:** ¿el FIFO se aplica por **cartera global** del contribuyente (todas las cuentas juntas) o **por exchange/cuenta**? El criterio general de la AEAT apunta al conjunto del mismo activo del contribuyente, con independencia de dónde se custodie. **[PENDIENTE DE FUNDAMENTAR con consulta DGT específica]** antes de afirmarlo al usuario.
 
 ### Ejemplo (ilustrativo)
 
@@ -118,13 +118,13 @@ Las pérdidas patrimoniales de la base del ahorro se compensan con ganancias de 
 
 ---
 
-## 8. Resumen para el motor fiscal
+## 8. Resumen para la skill `spanish-tax-return`
 
 1. Clasificar cada operación: transmisión (venta/permuta/pago) vs no imponible (compra, holding, transferencia interna).
-2. Para cada transmisión, aplicar **FIFO** por activo (identidad = ticker completo) para obtener el coste.
+2. Para cada transmisión, aplicar **FIFO** por activo (identidad = ticker completo) para obtener el coste — cálculo determinista vía el Informe de Impuestos de CoinTracking, no por el LLM (ADR-006).
 3. Valorar en **EUR** a la fecha (venta: importe real; permuta: regla del Art. 37.1.h).
 4. Incluir comisiones en la valoración.
 5. Sumar ganancias/pérdidas del ejercicio e integrarlas en la **base del ahorro** con los **tramos del año correspondiente**.
-6. Producir detalle trazable por operación (evidencia), no la declaración.
+6. Producir detalle trazable por operación (evidencia) en el informe de la skill, no la declaración.
 
 **Cuestiones abiertas:** ámbito del FIFO (global vs por cuenta) §4; fuente de precios históricos EUR §5; reglas exactas de compensación de pérdidas §7. El tratamiento de staking/lending/airdrops/minería ya está fundamentado en **[CAPITAL_INCOME.md](CAPITAL_INCOME.md)** (con sus propios `[VERIFICAR]`).

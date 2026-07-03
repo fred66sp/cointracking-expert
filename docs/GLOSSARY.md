@@ -2,7 +2,7 @@
 
 **Terminología y definiciones para CoinTracking Expert**
 
-Este glosario define términos clave y conceptos usados a lo largo del proyecto CoinTracking Expert. Entender estos términos es esencial para trabajar con el framework y su documentación.
+Este glosario define términos clave y conceptos usados a lo largo del proyecto CoinTracking Expert (un **agente de IA auditor** en Claude Code, no un framework de motores; ver `DECISIONS.md#ADR-006`). Entender estos términos es esencial para trabajar con el agente y su base de conocimiento (`knowledge/`).
 
 ## Auditoría
 
@@ -50,4 +50,4 @@ Proceso de verificar datos para consistencia, completitud y cumplimiento con reg
 
 ## CoinTracking
 
-Plataforma tercera de contabilidad de criptomonedas y tracking de portfolio. Este framework valida bases de datos de CoinTracking.
+Plataforma tercera de contabilidad de criptomonedas y tracking de portfolio. Este agente audita y valida los datos de una cuenta de CoinTracking.

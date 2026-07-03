@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-ct_audit.py — Chequeos deterministas sobre una exportación "Trade Table" de CoinTracking.
+ct_audit.py — Chequeos deterministas sobre una exportación de CoinTracking (dos variantes soportadas).
 
 Objetivo (ADR-006, ADR-009): que el agente ejecute lógica de auditoría **vetada y
 reproducible** en vez de re-derivarla cada vez (donde puede equivocarse, p. ej.
@@ -9,7 +9,13 @@ doble-contando comisiones). Devuelve resultados compactos (ADR-010): no vuelca e
 Regla de saldo VETADA (ver knowledge/cointracking/CSV_FORMAT.md y COST_BASIS_AND_VALIDATION.md):
     saldo(activo) = Σ Compra[activo] − Σ Venta[activo]
 La columna **Comisión NO se resta**: es informativa; el fee real ya está incluido en
-Venta (retiradas/gastos) o llega como una fila aparte "Otras comisiones".
+Venta (retiradas/gastos) o llega como una fila aparte "Otras comisiones"/"Other Fee".
+
+Formatos soportados (detectados automáticamente por la cabecera; ver CSV_FORMAT.md):
+  - "es_trade_table": export "CSV" simple, locale español, 16 columnas, tipos en español,
+    fecha DD.MM.YYYY.
+  - "en_full_export": export "CSV (Exportación Completa)", locale inglés, 13 columnas
+    (con columna LPN, sin columnas de dirección), tipos en inglés, fecha YYYY-MM-DD.
 
 Uso:
     python tools/ct_audit.py <csv> [--exchange NOMBRE] [--check balances|transfers|duplicates|collisions|all]
@@ -21,16 +27,67 @@ import csv, sys, json, argparse
 from decimal import Decimal, getcontext
 from datetime import datetime, timedelta
 
+# En Windows, stdout usa por defecto cp1252 y corrompería tildes/ñ del Comentario al
+# volcar JSON (ensure_ascii=False). Forzar UTF-8 con independencia de la consola/entorno.
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+
 getcontext().prec = 40
 TOL = Decimal("0.00000001")  # tolerancia de cuadre
 
-# Índices de columna (parsear por POSICIÓN: hay 3 columnas 'Cur.' con el mismo nombre)
+# Índices de columna comunes a ambos formatos (parsear por POSICIÓN: hay columnas 'Cur.' repetidas)
 C_TIPO, C_BUY, C_BUYCUR, C_SELL, C_SELLCUR, C_FEE, C_FEECUR = 0, 1, 2, 3, 4, 5, 6
-C_EXCH, C_GROUP, C_COMMENT, C_DATE, C_TXHASH = 7, 8, 9, 10, 13
+C_EXCH, C_GROUP, C_COMMENT, C_DATE = 7, 8, 9, 10
 
-DEPOSIT_TYPES = {"Depósito"}
-WITHDRAWAL_TYPES = {"Retirada"}
 FIAT = {"EUR", "USD", "GBP"}
+
+# Formatos conocidos: cabecera esperada (columna 0), índice de Tx Hash/Tx-ID, tipos de
+# depósito/retirada y formato de fecha. Ver knowledge/cointracking/CSV_FORMAT.md.
+FORMATS = {
+    "es_trade_table": {
+        "header0": "Tipo",
+        "min_cols": 16,
+        "c_txhash": 13,
+        "deposit_types": {"Depósito"},
+        "withdrawal_types": {"Retirada"},
+        "date_fmt": "%d.%m.%Y %H:%M:%S",
+    },
+    "en_full_export": {
+        "header0": "Type",
+        "min_cols": 13,
+        "c_txhash": 12,
+        "deposit_types": {"Deposit"},
+        "withdrawal_types": {"Withdrawal"},
+        "date_fmt": "%Y-%m-%d %H:%M:%S",
+    },
+}
+
+# Estado del formato activo (fijado por detect_format() antes de auditar)
+C_TXHASH = None
+DEPOSIT_TYPES = None
+WITHDRAWAL_TYPES = None
+DATE_FMT = None
+
+
+def detect_format(header):
+    """Identifica la variante de export por la cabecera. Falla explícitamente si no la reconoce
+    (ADR-009: no improvisar índices de columna sobre un formato no verificado)."""
+    for name, spec in FORMATS.items():
+        if len(header) >= spec["min_cols"] and header[0].strip() == spec["header0"]:
+            return name, spec
+    raise ValueError(
+        f"Formato de CSV no reconocido (cabecera: {header}). "
+        "No es ninguna de las variantes verificadas en knowledge/cointracking/CSV_FORMAT.md "
+        "(es_trade_table, en_full_export). No se audita sin confirmar el formato antes."
+    )
+
+
+def configure_format(spec):
+    global C_TXHASH, DEPOSIT_TYPES, WITHDRAWAL_TYPES, DATE_FMT
+    C_TXHASH = spec["c_txhash"]
+    DEPOSIT_TYPES = spec["deposit_types"]
+    WITHDRAWAL_TYPES = spec["withdrawal_types"]
+    DATE_FMT = spec["date_fmt"]
 
 
 def D(x):
@@ -40,13 +97,16 @@ def D(x):
 
 def parse_date(s):
     s = (s or "").strip()
-    return datetime.strptime(s, "%d.%m.%Y %H:%M:%S") if s else None
+    return datetime.strptime(s, DATE_FMT) if s else None
 
 
 def load_rows(path):
     with open(path, encoding="utf-8-sig", newline="") as f:
         rows = list(csv.reader(f))
-    return rows[1:]  # sin cabecera
+    header, body = rows[0], rows[1:]
+    fmt_name, spec = detect_format(header)
+    configure_format(spec)
+    return fmt_name, body
 
 
 def _rows_for(rows, exchange=None):
@@ -156,8 +216,8 @@ def main():
                     help='JSON {"Cuenta":{"ACTIVO":"saldo"}} para validar la reconstrucción')
     args = ap.parse_args()
 
-    rows = load_rows(args.csv)
-    out = {"filas": len(rows), "exchange": args.exchange or "(todas)"}
+    fmt_name, rows = load_rows(args.csv)
+    out = {"filas": len(rows), "exchange": args.exchange or "(todas)", "formato_detectado": fmt_name}
 
     if args.check in ("balances", "all"):
         bal = reconstruct_balances(rows, args.exchange)

@@ -11,6 +11,12 @@ Prepara y explica lo necesario para la declaración de IRPF de un ejercicio, a p
 
 > 🗓️ **Vigencia (ADR-008).** Comprueba que el conocimiento fiscal está al día para el **ejercicio solicitado**: contrasta la "Vigencia" de los documentos de `knowledge/taxation/spain/` con el año y la fecha de hoy. Si el ejercicio no está cubierto o la verificación es antigua, **avísalo y reverifica** tramos, umbrales y criterios contra AEAT/BOE/DGT antes de darlos.
 
+## Paso -1 — Proyecto activo obligatorio (ADR-013)
+
+**Antes de cualquier otra cosa**, si esta conversación todavía no tiene un proyecto activo fijado: lista las subcarpetas de `USER_INPUT/` (los proyectos existentes) y pregunta al usuario con cuál quiere trabajar, o si quiere crear uno nuevo (pide un nombre). Ver `CLAUDE.md` §"Proyecto activo obligatorio". Una vez fijado, reutilízalo el resto de la conversación (y si `/audit-cointracking` ya fijó uno antes en la misma conversación, reutiliza ese, no vuelvas a preguntar).
+
+En cuanto quede fijado (o si ya lo estaba de una skill anterior en la misma conversación pero el MCP no se ha sincronizado aún), y si hay herramientas `cointracking_*` disponibles: llama a `cointracking_switch_project(project_name=<proyecto activo>)` antes de cualquier otra tool `cointracking_*`. Alinea en caliente el proyecto del MCP con el proyecto de datos activo, sin reiniciar el servidor (ADR-016). Si la respuesta trae `already_active: true`, no hace falta avisar de nada; si cambia de proyecto, ya no hace falta la advertencia de aislamiento que existía antes de ADR-016.
+
 ## Paso 0 — Diálogo de arranque (conversa antes de ejecutar)
 
 Trata cada solicitud como si fuera un usuario nuevo (no asumas contexto previo). **No arranques en silencio: explica el plan y ofrece opciones.**
@@ -24,9 +30,9 @@ Trata cada solicitud como si fuera un usuario nuevo (no asumas contexto previo).
 
 3. **Ofrece la comprobación extra con el CSV** en lenguaje llano (sin decir "API/MCP/cotejo"); pregúntalo y **espera respuesta**:
    > "Voy a leer tus datos directamente de CoinTracking (conexión automática). Como comprobación adicional opcional, puedo compararlos con un archivo que descargues tú mismo desde CoinTracking; así, si algo no cuadra entre ambos, lo detecto. ¿Quieres hacer esa comprobación extra? Si sí, te guío para descargar el archivo."
-   - Si acepta y no sabe cómo, **guíalo paso a paso** para exportar la lista de operaciones a CSV. Consulta los pasos exactos en `knowledge/cointracking/reference/CATALOG.md` (artículo de exportación/backup) antes de dárselos; no inventes rutas de menú. Pídele que **deje el archivo en la carpeta `USER_INPUT/`**.
+   - Si acepta y no sabe cómo, **guíalo paso a paso** para exportar la lista de operaciones a CSV. Consulta los pasos exactos en `knowledge/cointracking/reference/CATALOG.md` (artículo de exportación/backup) antes de dárselos; no inventes rutas de menú. Pídele que **deje el archivo en la carpeta `USER_INPUT/<proyecto>/`** (el proyecto activo fijado en el Paso -1).
 
-4. **Comprueba el acceso a datos:** el MCP de CoinTracking debe estar conectado (herramientas `cointracking_*`); y/o busca el CSV en **`USER_INPUT/`**. Si no hay ninguna fuente, detente y pide al usuario que deje el archivo en `USER_INPUT/` (o que conecte el MCP).
+4. **Comprueba el acceso a datos:** el MCP de CoinTracking debe estar conectado (herramientas `cointracking_*`); y/o busca el CSV en **`USER_INPUT/<proyecto>/`**. Si no hay ninguna fuente, detente y pide al usuario que deje el archivo ahí (o que conecte el MCP).
 
 Solo tras este diálogo, continúa con el Paso 1.
 
@@ -83,7 +89,7 @@ Comprueba si a **31/12 del ejercicio** el valor conjunto de criptos en **custodi
 
 Usa `templates/TAX_SUMMARY_ES.md`. Incluye: ejercicio y perfil; estado de reconciliación (bloqueantes); eventos imponibles del año; ganancia/pérdida **estimada** de base del ahorro (no vinculante, y de dónde sale la cifra exacta); rendimientos cuantificados pero **sin calificar** donde proceda; Modelo 721; y disclaimer + recomendación de validación profesional.
 
-**Guárdalo** en `reports/output/AAAA-MM-DD_declaracion_<ejercicio>.md` (ADR-011); no lo dejes solo en el chat. Registra en `reports/output/REGISTRO-CAMBIOS.md` cualquier cambio aplicado y actualiza la memoria (`audit_state`).
+**Guárdalo** en `reports/output/<proyecto>/AAAA-MM-DD_declaracion_<ejercicio>.md` (ADR-011); no lo dejes solo en el chat. Registra en `reports/output/<proyecto>/REGISTRO-CAMBIOS.md` cualquier cambio aplicado y actualiza la memoria (`audit_state`).
 
 ## Recordatorio de límite de determinismo (ADR-006)
 

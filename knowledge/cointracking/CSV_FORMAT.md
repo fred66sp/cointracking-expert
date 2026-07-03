@@ -1,13 +1,13 @@
 # Formato CSV de CoinTracking (Trade Table)
 
-**Estado:** Validado contra datos reales
-**Fuente:** Exportación real "Trade Table" de una cuenta CoinTracking (1.828 operaciones, rango 2024-03-01 → 2026-07-01, 6 cuentas)
-**Fecha de validación:** 2026-07-02
-**Vigencia:** formato observado en 2026-07 (exportación "Trade Table", locale ES). CoinTracking puede cambiar columnas, tipos o tickers — ante la duda, **los datos reales del usuario mandan**; reverificar contra el CSV/MCP actual y el centro de ayuda (ADR-008).
+**Estado:** Validado contra datos reales — **dos variantes** documentadas (§1-10 y §12)
+**Fuentes:** (a) Exportación "Trade Table"/CSV simple, locale ES (1.828 operaciones, rango 2024-03-01 → 2026-07-01, 6 cuentas); (b) Exportación "CSV (Exportación Completa)", locale inglés (proyecto `binance-2025`, 1.821 operaciones, 2024-04 → 2025)
+**Fecha de validación:** 2026-07-02 (variante ES) · 2026-07-03 (variante EN, §12)
+**Vigencia:** formatos observados en 2026-07. CoinTracking puede cambiar columnas, tipos o tickers — ante la duda, **los datos reales del usuario mandan**; reverificar contra el CSV/MCP actual y el centro de ayuda (ADR-008).
 
-Este documento describe el formato **real** de la exportación "Trade Table" de CoinTracking, verificado contra una exportación de producción. Conforme a ADR-004, es la referencia autoritativa para la capa de importación: ninguna suposición sobre el formato debe cerrarse sin contrastarla aquí.
+Este documento describe el formato **real** de las exportaciones de operaciones de CoinTracking, verificado contra exportaciones de producción. Conforme a ADR-004, es la referencia autoritativa para la capa de importación: ninguna suposición sobre el formato debe cerrarse sin contrastarla aquí. `tools/ct_audit.py` detecta automáticamente cuál de las dos variantes recibe (§12 "Detección automática").
 
-> ⚠️ **Aviso de alcance:** Esta es UNA variante de exportación (Trade Table) con la configuración regional en español y separador de fecha europeo. CoinTracking permite otros idiomas, formatos de fecha y conjuntos de columnas. Las peculiaridades dependientes de configuración están marcadas como **[config]**.
+> ⚠️ **Aviso de alcance:** §1-10 documentan la variante con configuración regional en español (botón **CSV**); §12 documenta la variante en inglés con más columnas de metadatos (botón **CSV (Exportación Completa)**). CoinTracking permite otros idiomas y conjuntos de columnas aún no muestreados. Las peculiaridades dependientes de configuración están marcadas como **[config]**.
 
 ---
 
@@ -91,7 +91,7 @@ Valores observados en datos reales **[config: español]** y su frecuencia:
 
 Valores reales: `Binance` (1191), `Binance Earn` (330), `BingX` (243), `Coinbase` (35), `Ledger Live` (21), `Metamask` (8).
 
-> 🔑 **Hallazgo clave:** `Binance Earn` aparece como **cuenta distinta** de `Binance`. Los traspasos entre productos Earn y spot se registran como pares Depósito/Retirada entre "Binance" y "Binance Earn". El motor de transferencias debe tratar cada valor de `Intercambio` como una identidad de cuenta independiente.
+> 🔑 **Hallazgo clave:** `Binance Earn` aparece como **cuenta distinta** de `Binance`. Los traspasos entre productos Earn y spot se registran como pares Depósito/Retirada entre "Binance" y "Binance Earn". La detección de transferencias debe tratar cada valor de `Intercambio` como una identidad de cuenta independiente.
 
 ---
 
@@ -103,7 +103,7 @@ Valores reales: `Binance` (1191), `Binance Earn` (330), `BingX` (243), `Coinbase
   - Operación `BTC/USDC` con comisión `19.18 EUR`
   - Operación `AGIX/USDT` con comisión `0.00585300 ETH`
 
-> 🔧 El modelo de dominio debe tratar la comisión como un `(importe, moneda)` **independiente**, nunca asumir que coincide con el activo comprado o vendido.
+> 🔧 Debe tratarse la comisión como un `(importe, moneda)` **independiente** (así lo hace `tools/ct_audit.py`), nunca asumir que coincide con el activo comprado o vendido.
 
 ---
 
@@ -140,12 +140,12 @@ Son sobre todo movimientos internos (p. ej. Binance ↔ Binance Earn: redencione
 - El match exacto por `(moneda, importe idéntico, misma fecha-hora)` **solo resolvió 3 de 37**.
 - El resto requiere heurística tolerante: misma moneda, importe compatible con `retirada − comisión ≈ depósito`, ventana temporal (los timestamps difieren, p. ej. 32 s entre retirada y depósito), y cuentas distintas.
 
-> 🔧 **Diseño obligado del Motor de Transferencias (en niveles):**
+> 🔧 **Diseño obligado de la detección de transferencias (en niveles), tal como lo aplica `tools/ct_audit.py` y la skill `audit-cointracking`:**
 > 1. **Determinista fuerte:** casar por `Tx Hash` cuando exista (alta confianza).
 > 2. **Heurístico:** para el resto, casar por `moneda` + `importe ≈ retirada − comisión` + ventana temporal + cuentas distintas, con puntuación de confianza.
 > 3. **Reportar huérfanos** explícitamente (principio "el silencio no es aceptable").
 >
-> Una spec basada solo en Tx Hash habría cubierto <20% de los casos.
+> Una regla basada solo en Tx Hash habría cubierto <20% de los casos.
 
 ---
 
@@ -154,7 +154,7 @@ Son sobre todo movimientos internos (p. ej. Binance ↔ Binance Earn: redencione
 CoinTracking **desambigua símbolos repetidos añadiendo un dígito**. Tickers reales observados:
 `ICP2`, `ID2`, `PEPE4`, `PRIME3`, `SEI2`, `SOL2`, `THETA2`, `WLD3`.
 
-> 🔑 **Crítico:** `SOL2` **no es** `SOL`; `WLD3` **no es** `WLD`. Son activos distintos que comparten símbolo base. El motor de duplicados y la normalización de activos **no deben** fusionar `SOL` con `SOL2`, ni asumir que el sufijo es un error tipográfico. La identidad de activo de CoinTracking es el ticker completo, sufijo incluido.
+> 🔑 **Crítico:** `SOL2` **no es** `SOL`; `WLD3` **no es** `WLD`. Son activos distintos que comparten símbolo base. La detección de duplicados y la normalización de activos **no deben** fusionar `SOL` con `SOL2`, ni asumir que el sufijo es un error tipográfico. La identidad de activo de CoinTracking es el ticker completo, sufijo incluido.
 
 ---
 
@@ -164,7 +164,7 @@ CoinTracking **desambigua símbolos repetidos añadiendo un dígito**. Tickers r
   - `Otras comisiones · 0.00009792 BNB · Binance · 19.12.2024 18:49:12` ×3
   - `Depósito · 3.07724282 RDNT · Binance · 19.06.2025 00:16:00` ×2
 
-> 🔧 Filas idénticas **no implican** error de importación: comisiones pequeñas recurrentes, recompensas periódicas y micro-movimientos pueden repetirse legítimamente en el mismo segundo. El motor de duplicados debe **señalar para revisión**, no eliminar automáticamente, y considerar contexto (tipo, si hay una operación que las justifique).
+> 🔧 Filas idénticas **no implican** error de importación: comisiones pequeñas recurrentes, recompensas periódicas y micro-movimientos pueden repetirse legítimamente en el mismo segundo. La detección de duplicados (`tools/ct_audit.py`, ADR-014) debe **señalar para revisión**, no eliminar automáticamente, y considerar contexto (tipo, `trade_id`, si hay una operación que las justifique).
 
 ---
 
@@ -183,9 +183,68 @@ CoinTracking **desambigua símbolos repetidos añadiendo un dígito**. Tickers r
 
 ## 11. Decisiones abiertas que este análisis genera
 
-Estas cuestiones deberían resolverse (candidatas a ADR o a spec de motor) antes de cerrar las specs correspondientes:
+Estas cuestiones deberían resolverse (candidatas a ADR o a nueva regla en `tools/ct_audit.py`) antes de darlas por cerradas:
 
 1. ~~**Zona horaria de las fechas**~~ → ✅ **Resuelto en ADR-005**: zona declarada por el usuario (`Europe/Madrid` para la cuenta de referencia), interpretación DST-aware y normalización a UTC. Queda solo verificar el DST contra datos on-chain (§2).
 2. **Umbrales del emparejamiento heurístico de transferencias** (§7): ventana temporal máxima, tolerancia de importe. → definir con más datos reales.
 3. **Política ante duplicados exactos** (§9): criterios para distinguir repetición legítima de error.
-4. **Otras variantes de exportación**: este documento cubre "Trade Table" en español. Documentar otras (idiomas, "Full Data Table", API) cuando se disponga de muestras.
+4. ~~**Otras variantes de exportación**~~ → ✅ Ver §12: variante `en_full_export` (botón "CSV (Exportación Completa)", locale inglés) documentada y soportada por `tools/ct_audit.py`.
+
+---
+
+## 12. Variante "en_full_export" — botón "CSV (Exportación Completa)", locale inglés
+
+**Fuente:** exportación real de un usuario (proyecto `binance-2025`, 1.821 operaciones, 2024-04 → 2025), obtenida desde **Transacciones → Export → CSV (Exportación Completa)** (ver `WEB_APP_GUIDE.md`).
+**Fecha de validación:** 2026-07-03.
+
+Esta variante es **distinta** de la "Trade Table" simple descrita en §1-10 (esa se obtiene con el botón **CSV** normal). Diferencias:
+
+| | `es_trade_table` (§1-10) | `en_full_export` (esta sección) |
+|---|---|---|
+| Botón de export | CSV | **CSV (Exportación Completa)** |
+| Nº de columnas | 16 | **13** |
+| Idioma cabecera/valores | Español (`Tipo`, `Depósito`, `Retirada`…) | **Inglés** (`Type`, `Deposit`, `Withdrawal`…) |
+| Formato de fecha | `DD.MM.YYYY HH:MM:SS` | **`YYYY-MM-DD HH:MM:SS`** |
+| Columnas de dirección (`From/To/Sell Address`) | Sí (3) | **No** |
+| Columna `LPN` | No existe | Sí (presente pero **vacía en el 100%** de la muestra; propósito no confirmado) |
+| Cobertura de `Tx-ID` en transferencias | ~16-24% | **~85%** (1.552/1.821 filas en la muestra; más alta también fuera de depósitos/retiradas) |
+
+### Columnas (en orden), 0-indexadas
+
+| # | Nombre en CSV | Equivale a (§1) |
+|---|---|---|
+| 0 | `Type` | `Tipo` |
+| 1 | `Buy` | `Compra` |
+| 2 | `Cur.` | `Cur.` (moneda de Buy) |
+| 3 | `Sell` | `Venta` |
+| 4 | `Cur.` | `Cur.` (moneda de Sell) |
+| 5 | `Fee` | `Comisión` |
+| 6 | `Cur.` | `Cur.` (moneda de Fee) |
+| 7 | `Exchange` | `Intercambio` |
+| 8 | `Group` | `Grupo` |
+| 9 | `Comment` | `Comentario` |
+| 10 | `Date` | `Fecha` |
+| 11 | `LPN` | *(sin equivalente; siempre vacía en la muestra)* |
+| 12 | `Tx-ID` | `Tx Hash` |
+
+### Tipos de transacción observados (columna `Type`)
+
+| Valor CSV | Frecuencia (muestra) | Equivale a (§3) |
+|---|---:|---|
+| `Trade` | 667 | `Operación` |
+| `Other Fee` | 404 | `Otras comisiones` |
+| `Reward / Bonus` | 324 | `Recompensa / Bonificación` |
+| `Staking` | 150 | `Staking` |
+| `Derivatives / Futures Loss` | 114 | `Pérdidas por Derivados / Futuros` |
+| `Derivatives / Futures Profit` | 82 | `Beneficio de Derivados / Futuros` |
+| `Deposit` | 40 | `Depósito` |
+| `Withdrawal` | 25 | `Retirada` |
+| `Interest Income` | 9 | `Ingresos por intereses` |
+| `Income` | 5 | `Ingresos` |
+| `Spend` | 1 | `Gasto` |
+
+### Detección automática
+
+`tools/ct_audit.py` detecta la variante por la cabecera (`header[0] == "Type"` + ≥13 columnas → `en_full_export`; `header[0] == "Tipo"` + ≥16 columnas → `es_trade_table`) y ajusta índices de columna, tipos de depósito/retirada y formato de fecha en consecuencia (`detect_format()`/`configure_format()`). Si la cabecera no coincide con ninguna variante conocida, **falla explícitamente** en vez de adivinar (ADR-009).
+
+> 🔧 Todas las reglas de §5-9 (comisiones, comentario sucio, colisión de tickers, duplicados) aplican igual en esta variante; solo cambian los literales de columna/tipo y el parseo de fecha.

@@ -381,6 +381,7 @@ Las respuestas de CoinTracking (MCP/API) pueden ser muy grandes (historial de mi
 4. **Procesa lo grande con código, no en el contexto.** Para volúmenes grandes (p. ej. historial de operaciones), vuelca a un fichero y usa **scripts** (python/bash) para filtrar/agregar; sube al contexto **solo el resultado compacto** (conteos, totales, filas relevantes), nunca el JSON crudo completo. Cuando sea posible, obtén los datos con utilidades que **escriban directamente a disco** para que no pasen por el contexto.
 5. **Nada de JSON crudo en salidas.** Informes y respuestas resumen y citan totales/ejemplos; no pegan volcados completos.
 6. **Invalidación por cambios (CRÍTICO).** En cuanto pidas al usuario **modificar algo en CoinTracking** (editar/borrar/añadir operaciones, reimportar, corregir tipos), la caché queda **obsoleta**: márcala como inválida y **no la reutilices**. Antes de volver a dar cifras o informes, **confirma con el usuario que hizo el cambio** y **refresca** los datos (nueva consulta/volcado). Nunca mezcles hallazgos calculados con datos antiguos y datos nuevos.
+7. **Verificación de remediaciones por lote, no una a una.** Al guiar al usuario para corregir varios hallazgos en la web de CoinTracking, **no llames al MCP después de cada corrección individual** para comprobarla. Guía el lote completo de correcciones aplicables primero (confirmando por chat, sin consultar la API entre medias); solo cuando el usuario indique que ha terminado la ronda, invalida la caché **una vez** y verifica **todos** los hallazgos corregidos con una consulta agregada. Si el usuario prefiere ir uno a uno, respétalo pero explica el coste extra de cuota (límite 60/hora).
 
 **Consecuencias:**
 
@@ -444,42 +445,41 @@ El proyecto del agente lo **construye y mantiene Claude Code**; la **explotació
 
 ---
 
-## ADR-013: Estructura multi-proyecto (framework compartido + instancias) — PROPUESTO
+## ADR-013: Estructura multi-proyecto obligatoria (datos de usuario y estado; MCP pospuesto)
 
-**Estado:** 🟡 Propuesto (no implementado; implementar cuando haya un 2.º caso)
+**Estado:** ✅ Decidido para la **fase 1** (aislamiento de `USER_INPUT/`, `reports/output/` y estado); el aislamiento del **MCP por proyecto queda pospuesto** (ver "Cuestión abierta" abajo).
 
-**Fecha:** 2026-07-02
+**Fecha:** 2026-07-02 (propuesta inicial) — **revisado y redecidido 2026-07-03** tras corrección del usuario sobre el alcance real.
 
 **Contexto:**
 
-Hoy el repo mezcla **el agente** (conocimiento, tool, skills, reglas, ADRs — compartido) con **el trabajo de un único caso** (datos en `USER_INPUT/`, informes en `reports/output/`, estado en memoria). Para auditar **varias cuentas/personas/ejercicios/clientes** en paralelo, conviene separar el framework de las instancias.
+La propuesta original (v1, 2026-07-02) planteaba esto como una mejora "nice to have" a implementar cuando hubiera un segundo caso. El usuario corrigió el enfoque el 2026-07-03: **no es opcional ni futuro** — todo trabajo del agente sobre CoinTracking (auditar, declarar, lo que sea) debe ocurrir **siempre** dentro de un **proyecto activo**, porque eso es lo que aísla qué CSV y qué datos se usan. Sin esto, el agente puede mezclar sin querer datos de casos distintos.
 
-**Propuesta:**
+**Decisión (fase 1 — sin tocar el MCP):**
 
-- **Framework del agente** (compartido, lo mantiene Claude Code): `knowledge/`, `tools/`, `.claude/`, `templates/`, `DECISIONS.md`, `CLAUDE.md`, `.github/`, `tests/`.
-- **Instancias de proyecto**, una por caso, p. ej. `projects/<nombre>/` con:
-  - `input/` (los CSV u otras fuentes del caso; gitignored),
-  - `reports/` (informes + `REGISTRO-CAMBIOS.md` del caso; gitignored),
-  - `estado.md` (estado del proyecto: cuentas hechas/pendientes; legible por Copilot, sustituye a la memoria global para el estado).
-- **Auto-creación:** si el usuario da una orden y no hay proyecto activo, el agente **crea** el scaffold de un proyecto y todo se acumula ahí.
-- **Proyecto activo** seleccionable; posibilidad de varios en paralelo.
+1. **Estructura por proyecto**, dentro del repo (gitignored, salvo los `README.md`):
+   - `USER_INPUT/<nombre_proyecto>/` — CSV y otras fuentes del caso (sustituye el uso plano anterior de `USER_INPUT/`).
+   - `reports/output/<nombre_proyecto>/` — informes y `REGISTRO-CAMBIOS.md` del caso (sustituye el uso plano anterior de `reports/output/`).
+   - Estado del proyecto: por ahora se sigue usando la memoria global (`audit_state` en `~/.claude`), pero **prefijada por proyecto**; migrar a un `estado.md` por proyecto queda como mejora futura si hace falta que Copilot lo lea directamente sin memoria (ADR-011/012).
+2. **Puerta de entrada obligatoria (lo nuevo de la corrección):** en cualquier conversación, en cuanto el usuario pida algo relacionado con CoinTracking y **todavía no haya un proyecto activo fijado en esa conversación**, el agente debe, antes de ejecutar nada más:
+   1. Listar los proyectos existentes (subcarpetas de `USER_INPUT/`).
+   2. Si hay uno o más, **preguntar** con cuál trabajar, o si se quiere crear uno nuevo.
+   3. Si no hay ninguno, ofrecer crear el primero (pidiendo un nombre).
+   - Una vez fijado el proyecto activo en la conversación, se reutiliza para el resto de la sesión (no se vuelve a preguntar salvo que el usuario pida cambiar de proyecto).
+3. **Migración del caso existente:** los datos que vivían en `USER_INPUT/` y `reports/output/` planos se migraron a `USER_INPUT/agp/` y `reports/output/agp/` el 2026-07-03 (nombre elegido por coincidir con el `--project agp` ya usado en `.mcp.json`).
 
-**Beneficios:**
+**Cuestión abierta — MCP no aislado por proyecto todavía:**
 
-- Aislamiento y privacidad por caso; paralelismo; estado por proyecto **visible para Copilot** (mejora ADR-011/012); reutilización del agente único.
+El servidor MCP (`cointracking-mcp/`) solo admite el proyecto como **flag de arranque del proceso** (`--project`, ver `cointracking-mcp/SPEC/06-configuration.md`); ninguna tool acepta hoy un parámetro `project_name` en tiempo de ejecución. Cambiar de proyecto en el MCP implicaría reiniciar el servidor (y por tanto Claude Code). El usuario decidió explícitamente **posponer esto**: por ahora el proyecto de datos de usuario (CSV) y el `--project` del MCP **no están enlazados** — el MCP sigue usando el valor fijo de `.mcp.json` (`agp`) con independencia del proyecto de datos activo en la conversación. Si en el futuro se trabaja con un segundo proyecto real, resolver esto (opción más probable: añadir `project_name` como parámetro a las tools existentes del servidor Go) antes de confiar en el MCP para ese segundo proyecto.
 
-**Cuestiones abiertas (resolver al implementar):**
+**✅ Resuelta 2026-07-03 — ver ADR-016.** El MCP ya expone `cointracking_switch_project` para cambiar de proyecto activo en caliente, sin reiniciar el servidor.
 
-1. ¿Proyectos dentro del repo (`projects/`, gitignored) o carpetas/repos separados?
-2. Convención de nombres y cómo se marca el **proyecto activo**.
-3. ¿Un manifiesto por proyecto (`proyecto.md`) con metadatos (titular, ejercicio, cuentas)?
-4. Migrar el caso actual (cuenta única) a `projects/<...>/` sin romper rutas.
-5. Cómo se relaciona con la memoria global (que pasaría a ser mínima; el estado vive en el proyecto).
+**Consecuencias:**
 
-**Consecuencias si se adopta:**
-
-- ✅ Escala a múltiples casos; privacidad reforzada; estado portable a Copilot
-- ⚠️ Refactor de rutas y de las skills (para ser "project-aware"); sobre-ingeniería si solo hay un caso
+- ✅ Aislamiento real entre casos en la capa de datos de usuario (CSV) e informes/estado
+- ✅ Flujo predecible: nunca se opera "a ciegas" sin saber en qué proyecto se está
+- ✅ El MCP ya está aislado por proyecto en caliente desde ADR-016 (antes de ADR-016, sus datos en vivo seguían siendo los de `--project agp` fijo con independencia del proyecto de datos activo)
+- ⚠️ Requirió migrar rutas existentes (`USER_INPUT/`, `reports/output/`) y actualizar ambas skills y `CLAUDE.md` para aplicar la puerta de entrada
 
 ---
 
@@ -519,6 +519,129 @@ Hoy el repo mezcla **el agente** (conocimiento, tool, skills, reglas, ADRs — c
 
 ---
 
+## ADR-014: Validación de duplicados con trade_id y consentimiento explícito
+
+**Estado:** Decidido
+
+**Fecha:** 2026-07-03
+
+**Contexto:**
+
+El 2026-07-03, al auditar CoinTracking, se detectaron como "duplicados exactos" operaciones FLOKI del 17.03.2024 que eran legítimas. El algoritmo comparaba solo campos del CSV (`(tipo, buy_amount, buy_currency, sell_amount, sell_currency, fee, exchange, fecha)`); como múltiples operaciones reales de Binance ocurrieron en el mismo segundo (batching), todas parecían idénticas. Basándose en ello, el usuario eliminó 29 copias que en realidad eran transacciones distintas (con trade_ids distintos en Binance API). El resultado: ~1,6 millones de FLOKI se perdieron del saldo hasta restaurar de backup.
+
+**Raíz:** ct_audit.py no disponía de trade_id para distinguir operaciones; el CSV de CoinTracking tampoco lo incluye en todas las filas. La lógica de "duplicado = campos 100% idénticos" falló en presencia de transacciones legítimas separadas pero aparentemente idénticas.
+
+**Decisión:**
+
+1. **Usar trade_id como identificador único cuando esté disponible (fortaleza):**
+   - Si el CSV incluye trade_id, dos operaciones con trade_ids distintos **nunca son duplicados**, aunque todos los demás campos sean idénticos.
+   - Si trade_id está vacío, caer a la heurística siguiente.
+
+2. **Heurística cautelosa para duplicados sin trade_id:**
+   - Si hay **exactamente 2 copias idénticas** → probable duplicado de reimportación; marcar para revisión.
+   - Si hay **3-10 copias** → **ADVERTENCIA** (posibles operaciones legítimas en el mismo segundo); reportar pero **no recomendar eliminar**.
+   - Si hay **más de 10 copias idénticas** → **muy probablemente legítimas** (batching de Binance, transacciones FIAT repetidas, recompensas recurrentes); reportar como "INFORMACIÓN" e **indicar que requiere confirmación manual en Binance API** antes de eliminar.
+
+3. **Implementar consentimiento informado (refuerza ADR-009):**
+   - Antes de eliminar duplicados, el agente **lista exactamente cuáles se eliminarán** con ejemplos concretos (monto, tipo, fecha, cantidad de copias).
+   - **Advierte:** "Si estas operaciones son legítimas (según Binance API), eliminarlas causará saldo negativo del activo."
+   - **Pide confirmación explícita** del usuario antes de proceder.
+
+4. **Usar el MCP como árbitro (cuando esté disponible):**
+   - Si el MCP de CoinTracking está conectado, consulta el número de operaciones de ese tipo con trade_ids distintos.
+   - Si son más de 1, son legítimas; no eliminar.
+   - Si es solo 1, es un duplicado real; OK eliminar.
+
+**Cambios en ct_audit.py:**
+
+- Parsear trade_id cuando esté disponible; usarlo en la clave de duplicados.
+- Reportar duplicados con **gravedad escalada** según la cantidad de copias.
+- Devolver resultado con campo `confidence` ("DEFINITE_DUPLICATE", "PROBABLE", "LIKELY_LEGITIMATE").
+
+**Cambios en el agente (skill audit-cointracking):**
+
+- Mostrar al usuario una **tabla de duplicados detectados** con cantidad, confianza y ejemplo.
+- Si confianza < ALTA, preguntar: "¿Confirmas que quieres eliminarlos? (verificar primero en Binance API con `Tx ID`)"
+- No proceder sin confirmación explícita si hay dudas.
+
+**Cambios en CLAUDE.md:**
+
+- Agregar sección ⚠️ sobre falsos positivos en duplicados.
+- Instruir: "Antes de eliminar duplicados, verifica en Binance que tengan el MISMO `Tx ID`. Si tienen IDs distintos, son legítimas."
+
+**Consecuencias:**
+
+- ✅ Evita falsos positivos como el del 2026-07-03
+- ✅ Refuerza ADR-009 (consentimiento informado antes de actuar)
+- ✅ El usuario toma la decisión final, no el agente
+- ⚠️ Requiere que el usuario verifique en Binance API si no confía
+- ⚠️ ct_audit.py debe ser más conservador; menos automatización
+
+---
+
+## ADR-015: Integración de la base de casos ChatGPT como v2 curada (patrones de reconciliación)
+
+**Estado:** Decidido
+
+**Fecha:** 2026-07-03
+
+**Contexto:**
+
+Copilot (explotación) propuso, vía `AGENT_CHANGE_REQUESTS.md` (petición 2026-07-02), integrar `cointracking_casos_extended.yaml` (20 casos generados con un prompt curado a un agente ChatGPT auxiliar, ver handoff `reports/output/2026-07-02_handoff_integracion_casos_chatgpt.md`) como ampliación de `cointracking_casos_base.yaml` (10 casos, esquema mínimo, ya en el repo). El candidato aportaba más cobertura y anti-patrones, pero con heterogeneidad de estilo (listas inline vs bloque), campos vacíos como `""` en vez de `null`, y profundidad desigual en evidencia/diagnóstico.
+
+**Decisión:**
+
+Se ejecuta la migración por fases definida en el handoff:
+
+- **Fase A (esquema):** se fija un esquema canónico de 16 campos (ver `knowledge/patterns/INDEX.md` §Esquema). Todos los `""` pasan a `null`; todas las listas se homogeneizan en formato bloque.
+- **Fase B (curación):** los casos más resumidos del candidato (antiguos CT-004/05/06/09/11-20) se amplían con evidencia mínima accionable y pasos de diagnóstico concretos, y se enlazan con conocimiento ya existente del repo (`COST_BASIS_AND_VALIDATION.md`, `CSV_FORMAT.md`, `WEB_APP_GUIDE.md`) en vez de inventar detalle nuevo sin respaldo. Los casos de duplicados (CT-003, CT-008, CT-016, CT-019) se alinean explícitamente con **ADR-014** (validación por `trade_id` y consentimiento antes de eliminar). El caso de airdrops (antiguo CT-010) mantiene `nivel_confianza: pendiente_verificar` porque el tratamiento fiscal exacto no está cerrado en `knowledge/taxation/spain/PENDIENTES.md`.
+- **Fase C (versionado):** se crea `knowledge/patterns/cointracking_casos_v2.yaml` como base **vigente**. `cointracking_casos_base.yaml` (raíz del repo) pasa a **legacy/deprecado**: no se usa en auditorías nuevas, se conserva como respaldo histórico. `cointracking_casos_extended.yaml` (raíz) queda documentado como material de origen ya superado por v2.
+- **Fase D (validación):** se verifica sintaxis YAML, 100% de campos del esquema presentes en los 20 casos, y cobertura de las 5 categorías críticas de regresión (transferencias huérfanas, ventas sin base de coste, duplicados, saldos negativos, rendimientos mal clasificados) — todas presentes.
+
+**Baja definitiva (2026-07-03):** confirmado por el usuario que `cointracking_casos_base.yaml` y `cointracking_casos_extended.yaml` ya no aportan nada sobre v2; se eliminan del repositorio (quedan recuperables en el historial de git).
+
+**Materiales auxiliares:** `LEEME.md` y `PROMPT_CHATGPT_AGENTE.md` (raíz del repo) eran documentación de apoyo para preparar el candidato con ChatGPT; su contenido queda absorbido por este ADR y por `knowledge/patterns/INDEX.md`, por lo que se eliminan tras la integración.
+
+**Consecuencias:**
+
+- ✅ El agente dispone de 20 casos con esquema homogéneo, evidencia mínima explícita y trazabilidad de fuente (`fuente_recomendada_para_revalidar`)
+- ✅ Los casos de duplicados quedan coherentes con el incidente y la corrección de ADR-014
+- ✅ El estado legacy/deprecado de la base anterior queda documentado (cierra la petición de `AGENT_CHANGE_REQUESTS.md` 2026-07-02)
+- ⚠️ El contenido sigue siendo conocimiento de patrón (cualitativo); ningún caso constituye una cifra fiscal vinculante (ADR-006/009)
+- ⚠️ Los casos `pendiente_verificar`/`hipotesis` requieren reverificación antes de usarse en un informe
+
+---
+
+## ADR-016: Cambio de proyecto activo en caliente en el MCP (`cointracking_switch_project`)
+
+**Estado:** Decidido
+
+**Fecha:** 2026-07-03
+
+**Contexto:**
+
+ADR-013 dejó abierta la cuestión de que el MCP (`cointracking-mcp/`) solo admite el proyecto como flag de arranque del proceso (`--project` en `.mcp.json`) y ninguna tool aceptaba `project_name` en tiempo de ejecución — cambiar de proyecto exigía reiniciar el servidor. El usuario propuso primero escribir un `.env` que el agente reescribiera al cambiar de proyecto; al evaluarlo, se identificaron dos problemas: (1) el binario Go no lee ningún fichero hoy, habría que implementar parseo de `.env`, y (2) el servidor MCP se arranca una vez por sesión, así que reescribir un fichero de config no evita el reinicio — solo lo hace más seguro de tocar que `.mcp.json`. Se optó por una alternativa que resuelve el problema de raíz: un tool MCP nuevo.
+
+**Decisión:**
+
+Añadir el tool `cointracking_switch_project(project_name)` a `cointracking-mcp/internal/tools/switch_project.go`, hermano de `cointracking_close_project` ya existente:
+
+1. Valida `project_name` con la misma regla que `--project` al arrancar (`config.ValidateProjectName`, alfanumérico + `_` + `-`).
+2. Si coincide con el proyecto ya activo, es un no-op (`already_active: true`) que no toca la caché.
+3. Si no, hace flush + close de la caché del proyecto saliente (igual que `close_project`) y abre/crea la caché SQLite del proyecto entrante bajo `{cache-dir}/{project}` (misma lógica que `NewApp` al arrancar, extraída a `openProjectCache` para no duplicarla).
+4. Credenciales, `--tier` y el limitador de tasa son del proceso (una cuenta de CoinTracking), no del proyecto: no cambian.
+
+`App` (en `app.go`) pasa a guardar `cfg`/`cache`/`store` bajo un `sync.RWMutex`, con accesores (`Project()`, `CacheManager()`, `Store()`, `CacheDir()`) que los demás tools usan en vez de leer los campos directamente — así una llamada a `switch_project` no puede dejar a otra tool leyendo un puntero a medio reemplazar.
+
+**Consecuencias:**
+
+- ✅ Resuelve la cuestión abierta de ADR-013: el proyecto de datos activo en la conversación y el proyecto del MCP pueden mantenerse enlazados sin reiniciar Claude Code ni editar `.mcp.json`.
+- ✅ Más simple que la alternativa del `.env`: no requiere que el binario Go parsee ficheros de config ni que el agente escriba en disco antes de cada cambio de proyecto — un tool call basta.
+- ✅ Verificado con test de integración (`TestSwitchProject`): nombre inválido rechazado sin tocar estado, no-op al re-seleccionar el mismo proyecto, aislamiento entre proyectos, y recarga desde disco (sin llamadas nuevas a la API) al volver a un proyecto ya visitado en el proceso.
+- ✅ Ambas skills (`audit-cointracking`, `spanish-tax-return`) y `CLAUDE.md` §"Proyecto activo obligatorio" actualizados para llamar a `cointracking_switch_project` en la puerta de entrada (Paso -1) en cuanto se fija el proyecto activo.
+
+---
+
 ## Índice de ADRs
 
 - ADR-001: Idioma del repositorio (contenido en español, identificadores en inglés) ✅ Decidido
@@ -533,7 +656,10 @@ Hoy el repo mezcla **el agente** (conocimiento, tool, skills, reglas, ADRs — c
 - ADR-010: Eficiencia de tokens y caché de datos de CoinTracking ✅ Decidido
 - ADR-011: Persistencia y trazabilidad del flujo (nada sin dejar rastro) ✅ Decidido
 - ADR-012: División de responsabilidades (Claude Code gestiona, Copilot explota) ✅ Decidido
-- ADR-013: Estructura multi-proyecto (framework + instancias) 🟡 Propuesto
+- ADR-013: Estructura multi-proyecto obligatoria (datos de usuario y estado; MCP pospuesto) ✅ Decidido (fase 1)
+- ADR-014: Validación de duplicados con trade_id y consentimiento explícito ✅ Decidido
+- ADR-015: Integración de la base de casos ChatGPT como v2 curada (patrones de reconciliación) ✅ Decidido
+- ADR-016: Cambio de proyecto activo en caliente en el MCP (`cointracking_switch_project`) ✅ Decidido
 
 ---
 

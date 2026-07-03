@@ -9,7 +9,7 @@
 >
 > **Destilado hasta la fecha:** ver `../COST_BASIS_AND_VALIDATION.md` (base de coste, purchase pool y validación). El resto queda pendiente de destilar bajo demanda desde las URLs de este catálogo.
 
-La columna **Relevancia** indica la prioridad de destilado para nuestros motores de auditoría/reconciliación/fiscal.
+La columna **Relevancia** indica la prioridad de destilado para el agente auditor (reconciliación y fiscalidad española).
 
 ## Resumen por categoría
 

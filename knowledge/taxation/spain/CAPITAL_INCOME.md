@@ -80,7 +80,7 @@ Los rendimientos por **prestar** criptomonedas o por productos tipo "earn"/inter
 
 El valor de mercado en EUR por el que tributa una renta al **recibirla** (staking, airdrop, recompensa, minería) se convierte en el **valor de adquisición (base de coste)** de esas monedas para cuando **luego se transmitan** (venta o permuta), a efectos del FIFO y de la ganancia/pérdida patrimonial.
 
-> 🔑 Esto **evita la doble imposición**: primero tributas por la renta al recibir; después, al vender, solo tributa la **variación** desde ese valor. El motor/agente debe usar ese valor como coste en `CAPITAL_GAINS.md` §2–4. Si no se registra, aparecerá el problema de "venta sin base de coste" (ver `../../cointracking/COST_BASIS_AND_VALIDATION.md` §3).
+> 🔑 Esto **evita la doble imposición**: primero tributas por la renta al recibir; después, al vender, solo tributa la **variación** desde ese valor. El agente debe usar ese valor como coste en `CAPITAL_GAINS.md` §2–4. Si no se registra, aparecerá el problema de "venta sin base de coste" (ver `../../cointracking/COST_BASIS_AND_VALIDATION.md` §3).
 
 ---
 

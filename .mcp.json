@@ -1,10 +1,10 @@
 {
   "mcpServers": {
     "cointracking": {
-      "command": "node",
+      "command": "cointracking-mcp/dist/cointracking-mcp.exe",
       "args": [
-        "--env-file=.env_cointracking",
-        "cointracking-mcp-main/dist/index.js"
+        "--project", "agp",
+        "--cache-dir", ".cache/cointracking"
       ]
     }
   }
