@@ -18,6 +18,13 @@ Formato de entrada:
 
 <!-- Añade nuevas peticiones debajo de esta línea -->
 
+## [✅ HECHO] 2026-07-03 — Precondición explícita de artefacto para cerrar la cifra anual exacta en `spanish-tax-return`
+- **Qué:** el playbook permite avanzar con clasificación fiscal aunque no exista en el workspace el artefacto mínimo para cerrar la cifra anual exacta de base del ahorro (Tax Report oficial del ejercicio, hoja `Resumen`), dejando el cierre bloqueado al final.
+- **Dónde:** `.claude/skills/spanish-tax-return/SKILL.md` (Paso 3 y Paso 6) y checklist operativo de salida del informe.
+- **Evidencia:** caso real `agp2025` (03.07.2026): se pudieron cerrar eventos, recompensas y derivados, pero no la cifra total exacta anual porque no estaba adjunto el Tax Report 2025 completo; solo había cierre parcial BTC/USDC/OM en `REGISTRO-CAMBIOS.md`.
+- **Propuesta:** añadir gate explícito: para marcar el informe como "listo para presentar", exigir presencia del Tax Report oficial del año (o su cifra `Resumen` documentada con evidencia) antes de cerrar la sección de base del ahorro.
+- **Resuelto (2026-07-03):** añadido el gate explícito en el Paso 3 (no cerrar la cifra de base del ahorro sin el artefacto, aunque sí se puede avanzar con el resto del informe) y recordatorio en el Paso 6 (no marcar "listo para presentar" sin ese gate satisfecho). En este mismo caso, el usuario aportó el Tax Report 2025 en la misma sesión y el informe quedó cerrado (`2026-07-03_declaracion_2025.md` §7). Decisión registrada en **DECISIONS.md#ADR-021**.
+
 ## [✅ HECHO] 2026-07-03 — Verificar/normalizar el comportamiento de `cointracking_get_historical_summary` con `start/end`
 - **Qué:** en preparación de renta 2025 (`agp2025`), la llamada `cointracking_get_historical_summary(start=1735686000, end=1767221999)` devolvió serie histórica diaria de 2025, pero también un punto final en fecha actual (2026-07-03), lo que sugiere que el parámetro `end` podría no aplicarse de forma estricta o que la semántica temporal no está documentada.
 - **Dónde:** conocimiento `knowledge/cointracking/MCP_API.md` (documentar semántica real) y/o servidor `cointracking-mcp` (si es bug real de filtrado).

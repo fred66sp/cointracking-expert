@@ -64,6 +64,7 @@ Con `cointracking_get_trades` acotado a `start`/`end` del año (UNIX **segundos*
 - **Limitación clave (decláralo):** `get_gains` devuelve ganancias **de toda la vida**, no del ejercicio, y **no** genera el informe español. Por tanto:
   - El agente **verifica coherencia** y explica los eventos del año, pero **la cifra exacta del ejercicio** debe salir del **Informe de Impuestos de CoinTracking** (ajustes: método FIFO, jurisdicción España, año 2025) o de un asesor. Guía al usuario para generarlo con `knowledge/cointracking/WEB_APP_GUIDE.md` §7.
   - Toda cantidad que ofrezca el agente es **«estimación no vinculante»**.
+  - ⛔ **Precondición de artefacto (no un bloqueo total, un gate de honestidad):** si al preparar la declaración **no tienes en el workspace** el Tax Report oficial del ejercicio (o su cifra `Resumen` ya documentada con evidencia en `REGISTRO-CAMBIOS.md`/memoria del proyecto), **no marques la cifra de base del ahorro como cerrada ni el informe como "listo para presentar"** — dilo explícitamente como `[VERIFICAR]` y pide al usuario ese artefacto (mismo procedimiento que ya usamos para BTC/USDC/OM, `DECISIONS.md#ADR-019`). Puedes seguir avanzando con el resto de secciones (eventos, rendimientos, Modelo 721) sin ese artefacto; solo el cierre de la cifra anual exacta depende de él.
 - Tramos de la base del ahorro por ejercicio: `CAPITAL_GAINS.md` §6 (versionar por año; 2025 llega al 30 %).
 - Compensación de pérdidas: `CAPITAL_GAINS.md` §7 (parcialmente `[PENDIENTE DE FUNDAMENTAR]`; no afirmar porcentajes/plazos sin fuente).
 
@@ -88,6 +89,8 @@ Comprueba si a **31/12 del ejercicio** el valor conjunto de criptos en **custodi
 ## Paso 6 — Informe
 
 Usa `templates/TAX_SUMMARY_ES.md`. Incluye: ejercicio y perfil; estado de reconciliación (bloqueantes); eventos imponibles del año; ganancia/pérdida **estimada** de base del ahorro (no vinculante, y de dónde sale la cifra exacta); rendimientos cuantificados pero **sin calificar** donde proceda; Modelo 721; y disclaimer + recomendación de validación profesional.
+
+⛔ **Gate de cierre (Paso 3):** solo marca el informe como "listo para presentar" si la cifra anual exacta de base del ahorro está respaldada por el Tax Report oficial del ejercicio (o su cifra `Resumen` ya documentada). Si falta ese artefacto, dilo explícitamente en el informe (`[VERIFICAR]`) — no lo des por cerrado igualmente.
 
 **Guárdalo** en `reports/output/<proyecto>/AAAA-MM-DD_declaracion_<ejercicio>.md` (ADR-011); no lo dejes solo en el chat. Registra en `reports/output/<proyecto>/REGISTRO-CAMBIOS.md` cualquier cambio aplicado y actualiza la memoria (`audit_state`).
 
