@@ -83,7 +83,7 @@ Reglas de oro:
 
 ## Paso 5 — Obligación informativa: Modelo 721
 
-Comprueba si a **31/12 del ejercicio** el valor conjunto de criptos en **custodios NO residentes en España** supera **50.000 €** (`INFORMATIVE_OBLIGATIONS.md` §1). Usa `get_grouped_balance(exchange)` + valoración e `get_historical_*`. Marca `[VERIFICAR]` el tratamiento de la autocustodia (Ledger/MetaMask). Recuerda plazo (1 ene–31 mar del año siguiente) y regla de repetición (+20.000 €).
+Comprueba si a **31/12 del ejercicio** el valor conjunto de criptos en **custodios NO residentes en España** supera **50.000 €** (`INFORMATIVE_OBLIGATIONS.md` §1) — es decir, comprueba el umbral, no asumas que aplica. Usa `get_grouped_balance(exchange)` + valoración e `get_historical_*`. ⚠️ **`get_historical_summary` puede devolver un punto fuera del rango pedido** (`MCP_API.md` — hallazgo empírico, ADR-020): filtra tú mismo por fecha el punto más cercano a 31/12, no confíes en que `end` corte exacto. Marca `[VERIFICAR]` el tratamiento de la autocustodia (Ledger/MetaMask). Recuerda plazo (1 ene–31 mar del año siguiente) y regla de repetición (+20.000 €).
 
 ## Paso 6 — Informe
 

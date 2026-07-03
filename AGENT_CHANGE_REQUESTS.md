@@ -18,6 +18,13 @@ Formato de entrada:
 
 <!-- Añade nuevas peticiones debajo de esta línea -->
 
+## [✅ HECHO] 2026-07-03 — Verificar/normalizar el comportamiento de `cointracking_get_historical_summary` con `start/end`
+- **Qué:** en preparación de renta 2025 (`agp2025`), la llamada `cointracking_get_historical_summary(start=1735686000, end=1767221999)` devolvió serie histórica diaria de 2025, pero también un punto final en fecha actual (2026-07-03), lo que sugiere que el parámetro `end` podría no aplicarse de forma estricta o que la semántica temporal no está documentada.
+- **Dónde:** conocimiento `knowledge/cointracking/MCP_API.md` (documentar semántica real) y/o servidor `cointracking-mcp` (si es bug real de filtrado).
+- **Evidencia:** respuesta MCP del 03.07.2026 en proyecto `agp2025`: últimos puntos incluyen `2025-12-30T23:00:00Z` y además `2026-07-03T15:31:59Z` pese a `end=1767221999`.
+- **Propuesta:** añadir test de integración y especificar contrato exacto de fechas (`inclusive/exclusive`, timezone y granularidad diaria) para evitar interpretaciones erróneas en chequeos de Modelo 721.
+- **Resuelto (2026-07-03):** revisado `cointracking-mcp/internal/tools/historical_summary.go` y `cached.go` — el servidor reenvía `start`/`end` sin modificar y la clave de caché los incluye, así que **no es un bug de nuestro código**; lo más probable es que la propia API de CoinTracking añada un punto "actual" adicional (no confirmado contra documentación oficial, no hay artículo público). Documentado como advertencia empírica en `MCP_API.md` con mitigación práctica: filtrar la serie por fecha en el consumidor para cualquier corte exacto (Modelo 721). Añadida la misma advertencia al Paso 5 de `spanish-tax-return/SKILL.md`. No se tocó el servidor Go (causa no confirmada). Decisión registrada en **DECISIONS.md#ADR-020**.
+
 ## [✅ HECHO] 2026-07-03 — Chequeo automático de discrepancia FIFO por asimetría de valoración (`trade_prices`)
 - **Qué:** falta un control específico que detecte cuando la ganancia de `get_gains(price:"oldest")` diverge fuertemente de una reconstrucción FIFO desde `get_trades(trade_prices=1)` por usar lados de valoración distintos (`buy_value_in_cur` vs `sell_value_in_cur`) en permutas cripto-cripto.
 - **Dónde:** `tools/ct_audit.py` (nuevo chequeo opcional de coherencia de ganancias) y playbook `.claude/skills/audit-cointracking/SKILL.md` (paso explícito de diagnóstico cuando hay brecha material).

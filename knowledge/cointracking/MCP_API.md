@@ -43,6 +43,12 @@ En `cointracking_get_gains`, el parámetro `price` mapea así:
 
 > Para cualquier estimación fiscal española, el agente debe pedir `price: "oldest"`. Aun así, conforme a ADR-006, el resultado es **estimación no vinculante** (lo calcula CoinTracking, no un cálculo determinista propio: `tools/ct_audit.py` solo cubre chequeos mecánicos, no FIFO).
 
+### ⚠️ `end` en `get_historical_summary` puede no ser un corte estricto (hallazgo empírico, ADR-020)
+
+**Caso real (`agp2025`, 2026-07-03):** una llamada `cointracking_get_historical_summary(start=1735686000, end=1767221999)` (rango = año natural 2025) devolvió la serie diaria esperada de 2025, **pero además un punto final fechado el día de la consulta** (2026-07-03), fuera del rango pedido. El servidor MCP propio (`cointracking-mcp/internal/tools/historical_summary.go`) **reenvía `start`/`end` tal cual a la API de CoinTracking sin filtrar la respuesta**, y la clave de caché sí incluye ambos parámetros (`cached.go`) — no es un bug de caché ni de nuestro servidor. Todo apunta a que es **la propia API de CoinTracking** la que añade un punto "actual" adicional al final de la serie histórica, al margen del `end` solicitado (comportamiento no documentado que no se ha podido confirmar contra un artículo oficial).
+
+> 🔧 **Cómo protegerse:** para cualquier uso que dependa de un corte exacto de fecha (p. ej. valor a **31/12** para el Modelo 721, `INFORMATIVE_OBLIGATIONS.md` §1), **no te fíes de que `end` filtre estrictamente** — filtra tú mismo la serie devuelta por fecha antes de usarla (descarta cualquier punto posterior al `end` pedido). No se ha fijado un contrato inclusive/exclusive porque no está confirmado; trátalo como heurística hasta verificarlo con un caso donde el resultado sea ambiguo.
+
 ---
 
 ## Mapeo herramienta → chequeo de auditoría
