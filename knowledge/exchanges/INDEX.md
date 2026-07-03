@@ -26,3 +26,7 @@ Para cada exchange, la documentación cubre:
 - Problemas de datos conocidos
 - Patrones de reconciliación
 - Errores comunes de importación
+
+## Contexto regulatorio relevante
+
+- [`BINANCE_EU_MICA_EXIT.md`](BINANCE_EU_MICA_EXIT.md) — salida de Binance de la UE por MiCA (2026-07): qué buscar en la reconciliación cuando el usuario migra de exchange por este motivo (transferencias vs. posibles conversiones forzosas imponibles).
