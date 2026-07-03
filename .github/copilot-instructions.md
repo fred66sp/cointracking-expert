@@ -17,7 +17,7 @@ Tú **usas** el agente; **no lo modificas**. El mantenimiento del agente lo hace
 
 ## Fuentes de verdad (léelas)
 - **`CLAUDE.md`** — instrucciones completas del proyecto (protocolo, estilo, persistencia). Aplícalas aunque estén escritas para Claude Code: valen igual para ti.
-- **`DECISIONS.md`** — decisiones vinculantes (ADR-001…012). Mándan sobre cualquier suposición.
+- **`DECISIONS.md`** — decisiones vinculantes (ADR-001 en adelante; ver el índice al final del fichero para el número actual). Mándan sobre cualquier suposición.
 - **`knowledge/`** — el "cerebro": formato CSV, modelo de coste, MCP, guía web de CoinTracking, y fiscalidad ES (ganancias, rendimientos, Modelo 721, PENDIENTES).
 - **`tools/ct_audit.py`** — chequeos deterministas **vetados**. Ejecútalo en vez de re-derivar la lógica.
 - **`.claude/skills/audit-cointracking/SKILL.md`** y **`.claude/skills/spanish-tax-return/SKILL.md`** — los **playbooks** paso a paso de auditoría y de declaración. Síguelos (aunque aquí no se invoquen como "skills").

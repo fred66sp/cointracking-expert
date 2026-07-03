@@ -2,6 +2,8 @@
 
 **Documentación técnica de referencia para blockchains soportadas**
 
+**Estado:** pendiente de poblar. Esta carpeta solo contiene este índice (plantilla de la visión original del proyecto); no hay documentos reales todavía. Se rellenará bajo demanda cuando un caso real (auditoría o declaración) lo requiera, siguiendo el mismo proceso que `knowledge/exchanges/BINANCE_EU_MICA_EXIT.md` (fundamentado, con fuentes, vía `AGENT_CHANGE_REQUESTS.md`/ADR si aplica).
+
 Esta sección contiene documentación técnica para redes blockchain, cubriendo formatos de dirección, estructuras de transacciones, interacciones comunes de contratos inteligentes y enfoques de reconciliación específicos de cada blockchain.
 
 ## Blockchains soportadas
