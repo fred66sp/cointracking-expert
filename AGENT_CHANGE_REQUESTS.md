@@ -18,6 +18,13 @@ Formato de entrada:
 
 <!-- Añade nuevas peticiones debajo de esta línea -->
 
+## [✅ HECHO] 2026-07-03 — Chequeo automático de discrepancia FIFO por asimetría de valoración (`trade_prices`)
+- **Qué:** falta un control específico que detecte cuando la ganancia de `get_gains(price:"oldest")` diverge fuertemente de una reconstrucción FIFO desde `get_trades(trade_prices=1)` por usar lados de valoración distintos (`buy_value_in_cur` vs `sell_value_in_cur`) en permutas cripto-cripto.
+- **Dónde:** `tools/ct_audit.py` (nuevo chequeo opcional de coherencia de ganancias) y playbook `.claude/skills/audit-cointracking/SKILL.md` (paso explícito de diagnóstico cuando hay brecha material).
+- **Evidencia:** caso real `agp2025` (2026-07-03): BTC `get_gains` = `+492,87 EUR` vs reconstrucción FIFO manual ~`+94,71 EUR`; diferencia ~`398 EUR`. En los 37 trades BTC, la suma de `buy_value_in_cur - sell_value_in_cur` = `+397,72 EUR` (mismo orden de magnitud). Comisiones, duplicados y tipado quedaron descartados como causa principal.
+- **Propuesta:** añadir al auditor un "delta bridge" reproducible por activo que descomponga la diferencia en: (a) efecto de comisiones, (b) efecto de transferencias, (c) efecto de elegir buy/sell value por operación; y que marque automáticamente `[VERIFICAR]` si la brecha supera umbral configurable.
+- **Resuelto (2026-07-03) — alcance reducido conscientemente:** documentado el hallazgo como hipótesis empírica (no confirmada por CoinTracking) en `COST_BASIS_AND_VALIDATION.md` §4.4, con el recipe manual de diagnóstico, y añadido un sub-paso explícito en la fase 6 del Paso 1 de `audit-cointracking/SKILL.md` para aplicarlo ante brechas materiales. **No se automatizó en `tools/ct_audit.py`**: ese tool es determinista sobre el CSV (esquema verificado), y este chequeo depende de campos de la respuesta JSON de `get_trades(trade_prices=1)` cuyo esquema exacto no está verificado en `MCP_API.md` — automatizarlo ahora habría fijado nombres de campo sin confirmar (ADR-009). Queda como pendiente real verificar ese esquema antes de automatizar. Decisión registrada en **DECISIONS.md#ADR-018**.
+
 ## [✅ HECHO] 2026-07-03 — Endurecer auditoría con enfoque conservador (sin tocar cálculo)
 - **Qué:** Falta una guía operativa estricta y uniforme para conciliación que minimice falsos positivos y recomendaciones arriesgadas (especialmente en duplicados, transferencias huérfanas y warning de purchase pool).
 - **Dónde:** playbooks y documentación operativa del agente (`.claude/skills/audit-cointracking/SKILL.md`, `.claude/skills/spanish-tax-return/SKILL.md`, y/o checklists en `knowledge/cointracking/` según criterio de mantenimiento).

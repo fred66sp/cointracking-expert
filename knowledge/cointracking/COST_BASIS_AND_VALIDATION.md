@@ -91,6 +91,25 @@ El procedimiento oficial de saneamiento sigue este orden, que es una buena guía
 
 ---
 
+## 4.4 Discrepancia `get_gains` vs. reconstrucción FIFO manual — asimetría de valoración en permutas (hallazgo empírico, no confirmado por CoinTracking)
+
+**Estado: hipótesis con evidencia fuerte de un caso real, `[VERIFICAR]` — no es un comportamiento documentado por CoinTracking, es un patrón observado por el agente.**
+
+**Caso real (`agp2025`, 2026-07-03):** en el activo BTC, `cointracking_get_gains(price:"oldest")` (que debería ser FIFO) devolvió una ganancia realizada de **+492,87 €**, mientras que una reconstrucción FIFO manual sobre `cointracking_get_trades(trade_prices=1)` (misma cuenta, mismas operaciones, sin transferencias sin emparejar ni duplicados) dio **+94,71 €** — una diferencia de **~398 €**. Se descartaron como causa: comisiones (impacto medido de solo ~1-11 €), duplicados/mal tipado (0 encontrados en las 39 filas de BTC), y FIFO vs. pool promediado (casi idénticos bajo la misma valoración). La única variable que explicó una magnitud del mismo orden (~397,72 €) fue **qué lado de la permuta se usa para valorar en EUR cada operación** (`buy_value_in_cur` vs. `sell_value_in_cur` del lado cripto-cripto) — sumando esa diferencia en los 37 trades de BTC del periodo, el resultado coincide en orden de magnitud con la brecha observada. USDC y OM mostraron el mismo patrón a menor escala.
+
+> ⚠️ **Por qué es solo `[VERIFICAR]` y no una regla cerrada:** no se ha confirmado contra documentación oficial de CoinTracking *por qué* `get_gains` elegiría un lado de valoración distinto al que usa una reconstrucción FIFO ingenua desde `trade_prices=1`, ni se ha verificado el nombre exacto de los campos de la respuesta JSON real de `get_trades` en la sesión donde se use este diagnóstico (pueden diferir de los usados en el caso de referencia). No declares esta causa como cierta sin repetir el contraste en el caso concreto que estés auditando.
+
+**Cómo reproducir el diagnóstico (recipe, no automatizado en `tools/ct_audit.py` — ver más abajo por qué):**
+1. Pide `cointracking_get_trades(trade_prices=1, start=..., end=..., order=ASC)` para el rango del ejercicio y filtra al activo con la brecha.
+2. Reconstruye FIFO manualmente con los importes/monedas de cada lado (no con el valor EUR que trae la fila, solo para armar las colas de coste).
+3. Compara esa ganancia contra `get_gains(price:"oldest")` para el mismo activo y periodo.
+4. Si diverge de forma material (más de una pequeña fracción del importe en juego — no hay un umbral cerrado, usa criterio y decláralo), suma por operación la diferencia entre el valor EUR del lado de compra y el del lado de venta que trae la respuesta (verifica primero los nombres reales de esos campos en la sesión: pueden no llamarse igual que en el caso de referencia). Si esa suma es del mismo orden que la brecha total, la causa más probable es la asimetría de valoración descrita arriba.
+5. Documenta qué se probó y descartó (comisiones, duplicados, FIFO vs. pool) antes de llegar a esta conclusión — no la asumas por defecto.
+
+> 🔧 **Por qué no se automatizó como chequeo en `tools/ct_audit.py`:** ese tool opera de forma determinista sobre el CSV export (columnas fijas, `CSV_FORMAT.md`), no sobre la respuesta JSON de `get_trades(trade_prices=1)` del MCP, cuyo esquema exacto de campos de valoración por lado no está verificado y documentado todavía en `MCP_API.md`. Automatizarlo ahora habría significado fijar nombres de campo sin confirmar (contra ADR-009, cero invención). Queda como recipe manual hasta verificar el esquema; ver `AGENT_CHANGE_REQUESTS.md`/`DECISIONS.md#ADR-018`.
+
+---
+
 ## 5. Implicaciones consolidadas para la auditoría y la preparación fiscal
 
 | Chequeo (skill/tool) | Qué extraemos de aquí |
@@ -101,6 +120,7 @@ El procedimiento oficial de saneamiento sigue este orden, que es una buena guía
 | Balances (`ct_audit.py`) | FIAT negativo puede ser artefacto de no importar depósitos FIAT, no siempre imposibilidad |
 | Duplicados (`ct_audit.py`, ADR-014) | Duplicado por reimportación ≠ repetición legítima |
 | Reconciliación (`audit-cointracking`) | Seguir el orden de validación: importación completa → comparar saldos → duplicados → faltantes |
+| Brecha `get_gains` vs FIFO manual (`audit-cointracking`, `spanish-tax-return`) | Si diverge de forma material, aplica el recipe de §4.4 antes de concluir; nunca lo declares "correcto" sin descartar comisiones/duplicados/FIFO-vs-pool primero |
 
 ---
 
