@@ -9,7 +9,7 @@ Ejecuta una auditoría de reconciliación sobre los datos de CoinTracking del us
 
 ## Paso -1 — Proyecto activo obligatorio (ADR-013)
 
-**Antes de cualquier otra cosa**, si esta conversación todavía no tiene un proyecto activo fijado: lista las subcarpetas de `USER_INPUT/` (los proyectos existentes) y pregunta al usuario con cuál quiere trabajar, o si quiere crear uno nuevo (pide un nombre). Ver `CLAUDE.md` §"Proyecto activo obligatorio". Una vez fijado, reutilízalo el resto de la conversación.
+**Antes de cualquier otra cosa**, si esta conversación todavía no tiene un proyecto activo fijado: lista las subcarpetas de `USER_INPUT/` (los proyectos existentes) y **pregunta siempre con cuál quiere trabajar, incluso si solo hay uno** — nunca lo asumas ni lo anuncies como hecho ("trabajo sobre X salvo que digas lo contrario" no vale). Si no hay ninguno, ofrece crear el primero (pide un nombre). Ver `CLAUDE.md` §"Proyecto activo obligatorio". Una vez fijado (con confirmación explícita del usuario), reutilízalo el resto de la conversación.
 
 En cuanto quede fijado (o si ya lo estaba de una skill anterior en la misma conversación pero el MCP no se ha sincronizado aún), y si hay herramientas `cointracking_*` disponibles: llama a `cointracking_switch_project(project_name=<proyecto activo>)` antes de cualquier otra tool `cointracking_*`. Alinea en caliente el proyecto del MCP con el proyecto de datos activo, sin reiniciar el servidor (ADR-016). Si la respuesta trae `already_active: true`, no hace falta avisar de nada; si cambia de proyecto, ya no hace falta la advertencia de aislamiento que existía antes de ADR-016.
 

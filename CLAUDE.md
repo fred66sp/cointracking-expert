@@ -32,10 +32,10 @@ Todo trabajo sobre CoinTracking (auditar, declarar, lo que sea) ocurre **siempre
 
 **Puerta de entrada obligatoria:** en cuanto el usuario pida algo relacionado con CoinTracking y **todavía no haya un proyecto activo fijado en la conversación**, antes de hacer nada más:
 1. Lista los proyectos existentes (subcarpetas de `USER_INPUT/`).
-2. Si hay uno o más, **pregunta** con cuál quiere trabajar, o si quiere crear uno nuevo.
+2. **Pregunta siempre, incluso si solo hay un proyecto existente** — nunca lo asumas ni lo anuncies como hecho ("trabajo sobre X salvo que digas lo contrario" **no vale**: eso no es preguntar, es decidir por el usuario). Formula una pregunta real y **espera la respuesta** antes de continuar: p. ej. "Tienes el proyecto `X` — ¿trabajamos con ese, o quieres crear uno nuevo?". Igual si hay varios: pregunta con cuál.
 3. Si no hay ninguno, ofrece crear el primero (pide un nombre).
 
-Una vez fijado el proyecto activo en la conversación, reutilízalo el resto de la sesión — no vuelvas a preguntar salvo que el usuario pida cambiar. Esto aplica a ambas skills (`/audit-cointracking`, `/spanish-tax-return`) antes de su propio Paso 0/1.
+Una vez fijado el proyecto activo en la conversación (con confirmación explícita del usuario), reutilízalo el resto de la sesión — no vuelvas a preguntar salvo que el usuario pida cambiar. Esto aplica a ambas skills (`/audit-cointracking`, `/spanish-tax-return`) antes de su propio Paso 0/1.
 
 ✅ **MCP sincronizado en caliente (ADR-016):** en cuanto quede fijado el proyecto activo, llama a `cointracking_switch_project(project_name=<proyecto>)` (si el MCP está conectado) antes de cualquier otra tool `cointracking_*`, para que sus datos en vivo correspondan al proyecto activo — sin reiniciar el servidor ni tocar `.mcp.json`. Cada skill ya lo hace en su Paso -1.
 

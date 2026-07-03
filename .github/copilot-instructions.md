@@ -7,7 +7,7 @@ En la **primera respuesta de cada conversación nueva** (no en las siguientes), 
 
 ## 📁 Proyecto activo obligatorio antes de nada (ADR-013)
 Todo trabajo sobre CoinTracking ocurre **dentro de un proyecto**, que aísla qué datos usas: `USER_INPUT/<proyecto>/` y `reports/output/<proyecto>/`. **Nunca mezcles datos de proyectos distintos.**
-- Al empezar (si no hay proyecto activo ya fijado en la sesión): lista las subcarpetas de `USER_INPUT/` y pregunta al usuario con cuál trabajar, o si crear uno nuevo.
+- Al empezar (si no hay proyecto activo ya fijado en la sesión): lista las subcarpetas de `USER_INPUT/` y **pregunta siempre con cuál trabajar, incluso si solo hay uno** — nunca lo asumas ni lo anuncies como hecho ("trabajo sobre X salvo que digas lo contrario" no vale). Espera la respuesta antes de continuar.
 - ✅ En cuanto quede fijado el proyecto activo, si hay herramientas `cointracking_*` disponibles llama a `cointracking_switch_project(project_name=<proyecto>)` antes de cualquier otra tool `cointracking_*` — sincroniza el MCP con el proyecto activo en caliente, sin reiniciar nada (ver `DECISIONS.md#ADR-016`).
 
 ## ⛔ Tu alcance: SOLO explotación (ADR-012)
