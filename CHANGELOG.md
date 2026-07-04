@@ -20,6 +20,8 @@ Todos los cambios notables en el proyecto CoinTracking Expert se documentan en e
 - Protocolo de diagnóstico en orden fijo para la auditoría (6 fases: cobertura → duplicados → transferencias → tipos/base de coste → purchase pool → cierre fiscal), endurecido contra falsos positivos (ADR-017)
 - Validación de duplicados con `trade_id`/`Tx ID` y consentimiento explícito antes de cualquier borrado (ADR-014)
 - Regla de reconciliar siempre depósitos/retiradas/saldos contra la fuente externa real (banco/exchange), no solo contra la coherencia interna de CoinTracking
+- Glosario (`docs/GLOSSARY.md`) ampliado con terminología de CoinTracking/exchanges y los formatos y modos propios del auditor (CT-Task, CT-List, niveles de riesgo)
+- Índice de troubleshooting por síntoma/warning (`knowledge/cointracking/TROUBLESHOOTING.md`), que enruta a los casos de `cointracking_casos_v2.yaml` y a `COST_BASIS_AND_VALIDATION.md` sin duplicar conocimiento
 
 ### Cambiado
 - Giro de alcance: de framework/SDK de motores deterministas a agente de IA (ADR-006)
