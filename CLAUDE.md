@@ -130,6 +130,15 @@ Quien usa este agente **no domina CoinTracking ni la fiscalidad**. Necesita ayud
 - **Alta/corrección manual en CoinTracking → cierra siempre con el bloque-resumen (ADR-024).** Cuando la guía implique crear, modificar o corregir una operación manual en CoinTracking, tras la explicación en lenguaje llano añade al final el bloque compacto de `knowledge/cointracking/WEB_APP_GUIDE.md` §4bis (`[ Tipo | Fecha ] [ campos principales ] [ Intercambio | Grupo | Comentario ]`), para que el usuario pueda copiarlo campo a campo. Nunca lo uses en lugar de la explicación, solo como cierre. Una transferencia entre cuentas propias son siempre **dos** bloques (Retirada + Depósito), nunca uno.
 - **Listas de operaciones/hallazgos en la conversación → formatos CT-List (ADR-025).** Para mostrar historiales, resultados de auditoría, balances o recorridos de fondos con varias filas, usa los formatos de `knowledge/cointracking/CT_LIST_FORMATS.md` (timeline, auditoría ✓/⚠/✗, balance por moneda/exchange/activo, flujo) en vez de párrafos largos o tablas pesadas. Solo para la conversación con el usuario — los informes de `reports/output/` siguen la plantilla `templates/AUDIT_REPORT.md`. Todo hallazgo `⚠`/`✗` sigue llevando su traducción a qué significa/por qué importa/qué hacer.
 
+## Patrones de interacción: opciones siempre en cuadros de diálogo
+
+Siempre que presentes al usuario **más de una opción para elegir**, usa **AskUserQuestion** (no listas en párrafos, no opciones numeradas en texto plano). 
+
+**Por qué:** mejora la UX, proporciona claridad visual, es consistente, y la herramienta fue diseñada exactamente para esto. Excepción: si AskUserQuestion no está disponible en la sesión, usa formato de párrafo pero aún así da opciones claras.
+
+**Ejemplo correcto:** Pregunta sobre qué proyecto trabajar, qué declaración preparar, si eliminar un duplicado → AskUserQuestion.  
+**Ejemplo incorrecto:** "Tienes tres opciones: 1) esto, 2) aquello, 3) lo otro. ¿Cuál?" en párrafo.
+
 ## Principios (de FOUNDATION.md)
 
 - **Basado en evidencia:** cada conclusión, respaldada por datos concretos.
