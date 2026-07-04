@@ -4,21 +4,22 @@ Backlog único de cuestiones abiertas que afectan a la fiabilidad fiscal (ADR-00
 
 ## 🔴 Alto impacto (afectan a las cifras que van a Hacienda)
 
-1. **Ámbito del FIFO: ¿global o por cuenta?** — ¿Se aplica el FIFO al conjunto del mismo activo del contribuyente (todas las cuentas) o por exchange? Cambia el resultado. Fuente: criterio AEAT/DGT. *(CAPITAL_GAINS.md §4)*
-2. **Fuente de precios históricos en EUR** — Necesaria para valorar permutas cripto-cripto y tenencias a 31/12 (Modelo 721). Sin ella no hay cálculo. Decidir origen (CoinTracking vs externa) y método. *(CAPITAL_GAINS.md §5)*
-3. **Compensación de pérdidas** — Porcentajes y plazos exactos de compensación en la base del ahorro y arrastre a ejercicios siguientes (Art. 49 LIRPF, evolución por año). *(CAPITAL_GAINS.md §7)*
-4. **Regla de recompra (Art. 33.5 LIRPF)** — Aplicabilidad a criptomonedas de la no-cómputo de pérdidas por recompra de activos homogéneos (2 meses / 1 año). *(CAPITAL_GAINS.md §7)*
+0. **🆕 (2026-07-04) El propio FIFO está judicialmente cuestionado — sigue abierto.** El TSJPV (STSJPV 37/2025 y 41/2025, mismo litigio, recurso 75/2024; régimen foral de Bizkaia, análogo a la LIRPF estatal) ha declarado que las criptomonedas NO son "valores homogéneos" y que el FIFO "no es aplicable", proponiendo el coste real de las unidades vendidas. La DGT no ha rectificado (V0525-25, posterior, mantiene FIFO). Sin unificación por el Tribunal Supremo; no consta si hay recurso de casación. No vincula a la AEAT en territorio común, pero es la primera línea jurisprudencial real en sentido contrario a la doctrina DGT. **Antes de cualquier declaración con cifras significativas, advertir de esta incertidumbre y recomendar validación con un profesional.** *(CAPITAL_GAINS.md §4)*
+1. ~~**Ámbito del FIFO: ¿global o por cuenta?**~~ — **Resuelto 2026-07-04** (asumiendo que el FIFO se aplique pese al punto 0): V0525-25 confirma expresamente el ámbito **global**, "con independencia del lugar de custodia" (verificado por triangulación de fuentes secundarias; pendiente confirmar contra texto literal si se logra acceder al buscador oficial de la DGT, que dio error de certificado). Coherente con la opción "Depot/Lot separation" de CoinTracking (desactivada = global). *(CAPITAL_GAINS.md §4)*
+2. ~~**Fuente de precios históricos en EUR**~~ — **Resuelto 2026-07-04:** CoinTracking usa promedio ponderado (CMC/Coingecko/WorldCoinIndex), no configurable para cripto; sí hay opción limitada para EUR/USD. Sin fuente oficial homologada por la AEAT — criterio: razonable, consistente y documentable; conservar evidencia extra en importes elevados. *(cointracking/COST_BASIS_AND_VALIDATION.md §4.5)*
+3. ~~**Compensación de pérdidas**~~ — **Resuelto 2026-07-04:** orden de compensación, límite del 25 % (vigente sin cambios desde 2018) y arrastre a 4 ejercicios, verificado contra el manual práctico de la AEAT. *(CAPITAL_GAINS.md §7)*
+4. **Regla de recompra (Art. 33.5 LIRPF)** — Sin consulta DGT que confirme su aplicación a cripto; la propia V0525-25 (28/03/2025) niega que sean "valores homogéneos" a efectos reglamentarios, pero Renta Web aplicaría en la práctica un plazo de 12 meses igualmente. Contradicción sin zanjar. *(CAPITAL_GAINS.md §7)*
 
 ## 🟠 Medio impacto (calificación de rentas)
 
 5. **Staking delegado** (pools/proveedores) — V1766-22 cubre el staking activo; no se pronuncia sobre el delegado. *(CAPITAL_INCOME.md §2)*
 6. **Lending / intereses** — Falta consulta DGT específica; encaje por analogía con V1766-22. *(CAPITAL_INCOME.md §3)*
-7. **Recompensa / Bonificación** — Clasificación caso a caso (RCM base ahorro vs ganancia patrimonial base general). *(CAPITAL_INCOME.md §5)*
+7. **Recompensa / Bonificación** — Clasificación caso a caso (RCM base ahorro vs ganancia patrimonial base general). Airdrop simple ya confirmado (V1948-21/V0648-24); pendiente sin doctrina DGT: bonus de bienvenida, cashback, referidos (ocasional vs profesional/actividad económica), Learn & Earn. *(CAPITAL_INCOME.md §5.1)*
 
 ## 🟡 Obligaciones informativas
 
-8. **Modelo 721 y autocustodia** — Alcance exacto respecto a wallets autocustodiadas (Ledger/MetaMask). *(INFORMATIVE_OBLIGATIONS.md §1)*
-9. **Norma sancionadora exacta** de los Modelos 172/173/721. *(INFORMATIVE_OBLIGATIONS.md §2)*
+8. ~~**Modelo 721 y autocustodia**~~ — **Resuelto 2026-07-04:** la autocustodia (Ledger/MetaMask, control propio de claves) queda excluida del 721, confirmado contra FAQ oficial de la AEAT. *(INFORMATIVE_OBLIGATIONS.md §1)*
+9. ~~**Norma sancionadora exacta**~~ — **Resuelto 2026-07-04:** régimen general arts. 198/199 LGT (20 €/dato, mín. 300 €, máx. 20.000 €; mitad si es voluntario fuera de plazo). *(INFORMATIVE_OBLIGATIONS.md §2)*
 
 ## 📊 Datos del usuario a resolver (no normativa)
 

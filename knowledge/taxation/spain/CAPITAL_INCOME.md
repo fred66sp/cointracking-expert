@@ -64,6 +64,21 @@ Los rendimientos por **prestar** criptomonedas o por productos tipo "earn"/inter
 
 > ⚠️ `[VERIFICAR caso a caso]` El tipo `Recompensa / Bonificación` de CoinTracking es ambiguo: si son recompensas de staking/earn → ver §2/§3 (base ahorro); si son promociones/referidos → base general. Hay que inspeccionar el origen de cada una.
 
+### 5.1 Desglose por origen concreto (criterio profesional, sin consulta DGT específica salvo lo indicado)
+
+Verificado 2026-07-04 (búsqueda cruzada de doctrina secundaria; ninguna consulta DGT localizada para estos sub-casos salvo donde se indica):
+
+| Origen concreto | Calificación habitual | ¿Consulta DGT específica? |
+|---|---|---|
+| Airdrop simple (token gratis por poseer wallet/protocolo) | Ganancia patrimonial, art. 33.1/37.1.l | **Sí** — V1948-21, V0648-24 (ver §4) |
+| Bonus de bienvenida (registro en exchange) | Ganancia patrimonial, art. 33.1 | No — analogía con airdrop |
+| Cashback promocional (no descuento de comisión) | Ganancia patrimonial, art. 33.1 | No — analogía |
+| Referido ocasional (usuario particular) | Ganancia patrimonial, art. 33.1 | No — analogía |
+| Referido recurrente/organizado ("afiliado profesional") | Podría calificar como **actividad económica** (art. 27) en vez de ganancia patrimonial, si hay habitualidad y ordenación de medios | No — sin doctrina DGT |
+| Learn & Earn (contraprestación: ver curso/responder test) | Sin criterio asentado — al existir una actuación del usuario, se discute entre ganancia patrimonial o prestación retribuida | No — sin doctrina DGT |
+
+> `[VERIFICAR]` Esta tabla es **criterio profesional por analogía**, no doctrina DGT confirmada (salvo el airdrop simple). No afirmar al usuario una calificación cerrada para estos sub-casos sin advertir la falta de consulta específica.
+
 ---
 
 ## 6. Minería — actividad económica (base general)

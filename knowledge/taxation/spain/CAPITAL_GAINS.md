@@ -58,11 +58,21 @@ El intercambio de una cripto por otra es una **permuta**. La ganancia/pérdida e
 
 ## 4. Identificación de unidades: método FIFO
 
-En transmisiones parciales de monedas virtuales **homogéneas** adquiridas en distintos momentos y precios, la AEAT establece el criterio **FIFO** (*First In, First Out*): se considera que **las transmitidas son las adquiridas en primer lugar**.
+En transmisiones parciales de monedas virtuales **homogéneas** adquiridas en distintos momentos y precios, la **doctrina administrativa de la DGT** establece el criterio **FIFO** (*First In, First Out*): se considera que **las transmitidas son las adquiridas en primer lugar**. Fundamento citado: consultas vinculantes **V1604-18, V0975-22, V2520-22, V0648-24 y V0525-25** (28/03/2025 — esta última clasifica las criptomonedas como "bienes inmateriales de naturaleza fungible" y aplica el FIFO por la vía del art. 37.2 LIRPF, no por el concepto de "valores homogéneos") (verificado 2026-07-04; reverificar vigencia según ADR-008 antes de aplicar a un ejercicio distinto).
+
+> ⚠️ **Cita frecuente pero incorrecta:** la consulta **V0999-18** (2018), citada a veces como origen del criterio FIFO, en realidad solo **clasifica las monedas virtuales como activos intangibles** — no se pronuncia sobre FIFO. No usarla como fundamento de este criterio.
+
+> 🔴 **CRÍTICO — el propio FIFO está judicialmente cuestionado (hallazgo 2026-07-04, actualizado 2026-07-04):** el **Tribunal Superior de Justicia del País Vasco** (STSJPV n.º 37/2025 y n.º 41/2025, ambas de 9/01/2025, recurso 75/2024 — es un único litigio, no tres sentencias distintas pese a que algunas fuentes secundarias las citan por separado; aplican la Norma Foral 13/2013 de Bizkaia, de contenido análogo a la LIRPF estatal) ha **rechazado expresamente** que las criptomonedas sean "valores homogéneos" (por reserva de ley: no cumplen los requisitos del art. 47.1 del reglamento foral — emisor único, misma operación financiera, derechos frente a un emisor) y ha declarado que el método FIFO propio de esos valores **"no es aplicable"**, debiendo determinarse la ganancia por el **régimen general** (art. 44.1 del reglamento foral) — en la práctica, el coste real de las unidades efectivamente vendidas.
+>
+> **Estado procesal (verificado 2026-07-04):** no consta ninguna sentencia del Tribunal Supremo que unifique esta cuestión, ni en territorio foral ni en territorio común, y no se ha podido confirmar públicamente si estas sentencias han sido recurridas en casación. **La DGT no ha cambiado su doctrina**: la consulta V0525-25 (28/03/2025), posterior a las sentencias, mantiene el criterio FIFO sin alteración. Hoy conviven dos planos: la **doctrina administrativa** (DGT, vinculante para la Administración, previsiblemente la que seguirá aplicando la AEAT en territorio común) y una **línea judicial foral** en sentido contrario, sin unificación. Aplicabilidad directa de las sentencias limitada a Bizkaia; **no vincula a la AEAT en territorio común**, pero introduce **incertidumbre genuina**. Como reacción, Bizkaia ha propuesto una norma foral expresa que impone el FIFO desde el 1/1/2025 — señal de que el criterio no estaba tan asentado como parecía. **No presentar el FIFO como criterio jurídicamente cerrado e indiscutido**; advertir de esta línea jurisprudencial al usuario/asesor antes de aplicarlo sin más.
+>
+> **Precisión importante:** el litigio consistió en que la Inspección regularizó aplicando **FIFO global** (todas las unidades del contribuyente, en cualquier wallet/exchange) mientras los contribuyentes habían aplicado **FIFO por exchange**. El TSJPV **no valida el FIFO por exchange como criterio correcto** — simplemente anula la regularización de la Inspección por falta de cobertura legal para tratar las criptomonedas como "valores homogéneos" en absoluto (con cualquier ámbito). No establece una doctrina alternativa sobre el ámbito del cálculo.
 
 > 🔑 **Homogéneas = mismo activo.** Recuérdese (ver `knowledge/cointracking/CSV_FORMAT.md` §8) que CoinTracking desambigua símbolos repetidos con sufijo (`SOL` vs `SOL2`): son activos **distintos**, cada uno con su propia cola FIFO.
 
-> ❓ **Cuestión abierta:** ¿el FIFO se aplica por **cartera global** del contribuyente (todas las cuentas juntas) o **por exchange/cuenta**? El criterio general de la AEAT apunta al conjunto del mismo activo del contribuyente, con independencia de dónde se custodie. **[PENDIENTE DE FUNDAMENTAR con consulta DGT específica]** antes de afirmarlo al usuario.
+> ✅ **Ámbito del FIFO (asumiendo que se aplique): GLOBAL, no por exchange — resuelto 2026-07-04.** La consulta **V0525-25** (28/03/2025) confirma expresamente que la identificación FIFO se hace considerando **todas las unidades del mismo tipo que posee el contribuyente, con independencia del lugar de custodia** (verificado por triangulación de varias fuentes secundarias independientes citando ese pasaje; no se pudo acceder al texto en el buscador oficial de la DGT por un error de certificado al intentar la conexión directa — **[VERIFICAR]** contra el texto literal cuando sea posible acceder). Es la posición administrativa que la AEAT aplicará en territorio común; coherente con que la Inspección, en el litigio vasco, también partiera de un FIFO global (ver recuadro anterior). Esto **no es lo mismo** que decir que el FIFO en sí esté fuera de duda (ver el recuadro crítico de arriba) — son dos preguntas distintas: *si* se aplica FIFO, y *sobre qué ámbito*.
+>
+> **Relevancia práctica en CoinTracking (si finalmente se aplica FIFO):** la herramienta tiene una opción llamada **"Depot/Lot separation"** (ver `knowledge/cointracking/COST_BASIS_AND_VALIDATION.md` §3.1). **Desactivada (valor por defecto)**, CoinTracking calcula FIFO/LIFO/HIFO de forma **global**, combinando todos los exchanges/wallets — coherente con la doctrina de V0525-25. **Activada**, cada exchange/wallet pasa a ser un "depot" independiente (pensado para otras jurisdicciones, p. ej. EE. UU.), lo que **ya no coincidiría** con el criterio de la DGT. Antes de preparar una declaración, **comprobar en la cuenta del usuario que esta opción está desactivada**.
 
 ### Ejemplo (ilustrativo)
 
@@ -112,9 +122,20 @@ Escala **estatal en su totalidad** (no cedida a CCAA): aplica igual en toda Espa
 
 ## 7. Compensación de pérdidas
 
-Las pérdidas patrimoniales de la base del ahorro se compensan con ganancias de la misma base, y existen reglas de compensación con rendimientos del capital mobiliario y de arrastre a ejercicios siguientes.
+Las pérdidas patrimoniales de la base del ahorro se compensan, por este orden (**Art. 49 LIRPF**; verificado 2026-07-04 contra el manual práctico de Renta de la AEAT):
 
-> **[PENDIENTE DE FUNDAMENTAR]** los porcentajes y plazos exactos de compensación (Art. 49 LIRPF y su evolución por ejercicio) antes de implementarlos. Existe además una posible **regla anti-aplicación de pérdidas por recompra** de activos homogéneos (Art. 33.5 LIRPF); su aplicabilidad a criptomonedas debe verificarse con doctrina específica. No implementar sin fuente.
+1. **Primero**, con ganancias patrimoniales de la misma base del ahorro (sin límite).
+2. Si queda saldo negativo, con el saldo positivo de **rendimientos del capital mobiliario** de la base del ahorro (intereses, staking…), con el límite del **25 %** de ese saldo positivo.
+3. Si aún queda saldo negativo, se **arrastra a los 4 ejercicios siguientes**, en el mismo orden; pasado ese plazo sin utilizar, se pierde.
+
+> El 25 % lleva vigente desde el ejercicio **2018** (fue subiendo progresivamente desde el 10 % en 2015 tras la reforma de la Ley 26/2014: 2015 10 %, 2016 15 %, 2017 20 %, 2018 en adelante 25 %). **No ha cambiado para 2025.** Reverificar igualmente contra la fuente (`sede.agenciatributaria.gob.es`, manual práctico de Renta del ejercicio correspondiente) antes de aplicarlo a otro año, por la política de vigencia de ADR-008.
+
+### Regla anti-aplicación de pérdidas por recompra (Art. 33.5.e/f LIRPF)
+
+- **Lo que dice la ley:** no computan las pérdidas si se recompran valores/participaciones homogéneos dentro de **2 meses** (mercados regulados) o **1 año** (no cotizados). Redactada pensando en acciones/fondos, no en criptoactivos.
+- **¿Se aplica a criptomonedas?** **No hay consulta DGT vinculante que lo confirme expresamente.** Además, la propia DGT (consulta **V0525-25**, 28/03/2025) niega que las criptomonedas sean "valores homogéneos" en el sentido del reglamento del IRPF — la misma calificación que la regla de recompra exige — lo que debilita (no descarta) su aplicabilidad literal.
+- **Práctica operativa de la AEAT:** según fuentes secundarias (no la propia consulta), Renta Web incluye igualmente una casilla específica que aplica esta regla a criptomonedas con el plazo de **12 meses**, pese al vacío doctrinal — es decir, la Administración la aplica en la práctica aunque no esté confirmada por escrito para cripto.
+- **[PENDIENTE DE FUNDAMENTAR]** con el texto literal de una consulta DGT o norma que zanje esta contradicción entre lo que dice la ley/V0525-25 y lo que hace Renta Web. No presentar como "regla de 2 meses/1 año confirmada para cripto" sin ese matiz.
 
 ---
 
@@ -127,4 +148,4 @@ Las pérdidas patrimoniales de la base del ahorro se compensan con ganancias de 
 5. Sumar ganancias/pérdidas del ejercicio e integrarlas en la **base del ahorro** con los **tramos del año correspondiente**.
 6. Producir detalle trazable por operación (evidencia) en el informe de la skill, no la declaración.
 
-**Cuestiones abiertas:** ámbito del FIFO (global vs por cuenta) §4; fuente de precios históricos EUR §5; reglas exactas de compensación de pérdidas §7. El tratamiento de staking/lending/airdrops/minería ya está fundamentado en **[CAPITAL_INCOME.md](CAPITAL_INCOME.md)** (con sus propios `[VERIFICAR]`).
+**Cuestiones abiertas:** ámbito del FIFO (global vs por cuenta) §4 — comprobar entretanto la opción "Depot/Lot separation" de CoinTracking; fuente de precios históricos EUR §5; reglas exactas de compensación de pérdidas §7. El tratamiento de staking/lending/airdrops/minería ya está fundamentado en **[CAPITAL_INCOME.md](CAPITAL_INCOME.md)** (con sus propios `[VERIFICAR]`).

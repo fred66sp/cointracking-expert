@@ -51,6 +51,12 @@ Significa que se vende un activo del que **no consta compra con base de coste**.
 - Por el método fiscal (p. ej. FIFO), se consumió una fuente sin base de coste.
 - Con **separación de lotes (Depot Separation)**, el depósito es anterior a la retirada, rompiendo la transferencia de base.
 
+> 🔧 **Qué es "Depot/Lot separation"** (verificado 2026-07-04 contra el [centro de ayuda oficial](https://cointracking.freshdesk.com/en/support/solutions/articles/29000038566-depot-lot-separation)): opción global de la cuenta que decide si el cálculo de coste (FIFO/LIFO/HIFO) trata cada exchange/wallet como un "depot" fiscal independiente.
+> - **Desactivada (valor por defecto):** CoinTracking calcula de forma **global**, combinando todos los exchanges/wallets en una sola cola FIFO por activo.
+> - **Activada:** cada exchange/wallet se convierte en su propio depot, con cálculo independiente — pensado para jurisdicciones que lo exigen (p. ej. determinados casos en EE. UU.), **no la práctica habitual asumida para España** (ver `knowledge/taxation/spain/CAPITAL_GAINS.md` §4).
+> - Si está activada, **requiere que toda transferencia entre cuentas del usuario esté completa** (retirada + depósito correspondiente emparejados); si falta una pata, genera exactamente el aviso "no hay una compra adecuada para esta venta" de este apartado.
+> - **Acción para el auditor:** antes de fiar un cálculo de ganancias del informe de CoinTracking, comprobar en Configuración de la cuenta si esta opción está activada o desactivada, y hacerlo explícito en el informe.
+
 ### 3.2 Base de coste = 0 (o coste por unidad irreal)
 Si falta la compra, CoinTracking asigna una **base de coste de 0** → **ganancia inflada** e impuestos mayores. Causas: compras registradas como *depósitos* (sin base), importaciones parciales, historiales incompletos, seguimiento de un solo lado.
 
@@ -110,6 +116,19 @@ En un caso real se detectó una brecha grande entre `cointracking_get_gains(pric
 > **Por tanto:** ante una discrepancia entre `get_gains(price:"oldest")` y un cálculo FIFO propio, **el valor por defecto a confiar es `get_gains`/el Tax Report oficial**, no la reconstrucción manual — a menos que se repita este mismo contraste contra el Tax Report oficial y dé un resultado distinto en ese caso concreto. La hipótesis de "asimetría de valoración por lado de permuta" (documentada antes en esta sección y en `DECISIONS.md#ADR-018`) queda **descartada como causa raíz**: coincidía en magnitud por casualidad, no explicaba el fenómeno real.
 
 **Si vuelve a aparecer una brecha así:** antes de sospechar de `get_gains`, sospecha primero de la reconstrucción manual (sobre todo si hay cadenas de permutas cripto-cripto en el activo). Contrastar contra el Tax Report oficial (país España, método FIFO) del ejercicio correspondiente sigue siendo la forma correcta de resolver la duda — ver `WEB_APP_GUIDE.md` §7.
+
+---
+
+## 4.5 Fuentes de precios históricos y su fiabilidad para Hacienda
+
+Verificado 2026-07-04 contra el [centro de ayuda oficial de CoinTracking](https://cointracking.freshdesk.com/en/support/solutions/articles/29000007214-price-sources-and-currency-settings) y cruzado con criterio profesional.
+
+- **Precio de las criptomonedas:** CoinTracking usa un **promedio ponderado por volumen** entre varias fuentes (CoinMarketCap, Coingecko, WorldCoinIndex). **No es configurable** — no existe una opción para decir "usar solo CoinGecko" o "usar solo Binance" como fuente global.
+- **Conversión de divisa (EUR/USD):** aquí **sí hay una opción configurable**, en *Account Settings*: para EUR se puede elegir entre el promedio ponderado o Bitstamp/Kraken; para USD entre el promedio ponderado o Bitstamp/Kraken/Coinbase Pro. Para el resto de divisas no hay selección.
+- **Materias primas** (oro/plata, si aplica): de xe.com.
+- **Fiabilidad jurídica:** la AEAT no ha homologado ninguna fuente de precios concreta (ni CoinTracking ni otra); la normativa exige un **valor de mercado razonable, consistente entre ejercicios y documentable**, no una fuente específica. Aplica tanto a ventas/permutas (`CAPITAL_GAINS.md` §5) como a la valoración a 31/12 del Modelo 721 (`INFORMATIVE_OBLIGATIONS.md` §1) — la Orden HFP/886/2023 tampoco impone una fuente de cotización.
+
+> 🔑 **Recomendación práctica para el agente:** usar los precios de CoinTracking como base por defecto (técnicamente sólidos y ampliamente usados). Para operaciones de **importe elevado** o activos **muy ilíquidos** (memecoins, tokens recién lanzados, DeFi de bajo volumen), recomendar al usuario conservar evidencia adicional (captura del precio en el exchange donde ejecutó la operación, CSV del exchange) — no porque el precio de CoinTracking sea incorrecto, sino para reforzar la trazabilidad ante una comprobación. Mantener siempre el **mismo criterio** de un ejercicio a otro.
 
 ---
 

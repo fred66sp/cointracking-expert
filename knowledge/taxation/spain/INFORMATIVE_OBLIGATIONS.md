@@ -24,7 +24,9 @@ Deben concurrir **dos requisitos**:
 1. Las monedas virtuales están custodiadas por **personas o entidades que prestan servicios de salvaguarda de claves criptográficas privadas** en nombre de terceros (es decir, custodios/exchanges), y
 2. dichas personas/entidades **no son residentes en España**.
 
-> 🔑 **Implicación para el agente:** el Modelo 721 aplica a saldos en **exchanges/custodios no residentes**. Los activos en **autocustodia** (wallets propias tipo Ledger/MetaMask, donde el usuario tiene sus claves) quedan fuera del 721 según el requisito (1) — punto a matizar y **verificar** por su relevancia (parte de los datos de la cuenta de referencia están en Ledger Live/MetaMask). **[VERIFICAR alcance exacto de autocustodia]**
+> ✅ **Confirmado 2026-07-04** contra las [preguntas frecuentes oficiales de la AEAT sobre el Modelo 721](https://sede.agenciatributaria.gob.es/Sede/todas-gestiones/impuestos-tasas/declaraciones-informativas/modelo-721-decla-sobre-monedas-extranjero/preguntas-frecuentes-sobre-modelo-721.html): las criptomonedas en **autocustodia** (el propio contribuyente controla las claves privadas — Ledger, Trezor, MetaMask, u otra wallet software/hardware) **NO se declaran en el Modelo 721**, con independencia de su valor y de si es *hot* o *cold wallet*. Lo determinante es **quién controla las claves privadas**, no el dispositivo ni el protocolo. Base normativa: Disposición adicional 18.ª de la Ley 58/2003 (LGT) + art. 42 quater del Reglamento (RD 1065/2007, RGAT) + Orden HFP/886/2023 (aprueba el modelo). El requisito (1) de arriba (custodia por un tercero) es exactamente lo que excluye la autocustodia.
+>
+> **Implicación para el agente:** los saldos de la cuenta de referencia en Ledger Live/MetaMask (autocustodia) **quedan fuera del ámbito del 721**, aunque superen el umbral de 50.000 €; solo cuentan los saldos en exchanges/custodios no residentes.
 
 ### Umbral
 
@@ -51,7 +53,10 @@ Tras la primera presentación, solo hay que volver a presentar si el **saldo con
 
 Se citan aquí porque explican de dónde obtiene la AEAT información cruzada sobre las operaciones del contribuyente (relevante para la coherencia de datos y trazabilidad), pero **el agente, orientado al inversor persona física, no los genera**.
 
-> ⚠️ Sanciones mencionadas en fuentes secundarias (p. ej. 200 € por no presentar, 150 € por presentación incorrecta): **[PENDIENTE DE FUNDAMENTAR con la norma sancionadora exacta]** antes de afirmarlas como definitivas.
+> ✅ **Confirmado 2026-07-04** — los Modelos 172, 173 y 721 son declaraciones informativas y, desde la reforma de la Ley 5/2022 (que sustituyó el régimen sancionador especial y "confiscatorio" del antiguo Modelo 720, cuestionado por el TJUE), **no tienen sanción específica propia**: se aplica el régimen general de infracciones de la **Ley 58/2003, General Tributaria (LGT)**.
+> - **No presentar / fuera de plazo con requerimiento previo (art. 198 LGT):** multa fija de **20 € por cada dato o conjunto de datos** referido a la misma persona/entidad que debiera haberse incluido, con **mínimo 300 € y máximo 20.000 €**.
+> - **Presentación voluntaria fuera de plazo, sin requerimiento previo:** la sanción se **reduce a la mitad** → 10 €/dato, mínimo 150 €, máximo 10.000 €.
+> - **Datos incorrectos o incompletos:** puede entrar en juego el **art. 199 LGT**, con cuantía según el tipo de incumplimiento; no hay un importe único cerrado — no fijar una cifra concreta sin revisar el caso.
 
 ---
 
@@ -63,6 +68,6 @@ Se citan aquí porque explican de dónde obtiene la AEAT información cruzada so
 
 ## 4. Cuestiones abiertas
 
-1. Alcance exacto del 721 respecto a **autocustodia** (§1) — relevante para Ledger/MetaMask de la cuenta de referencia.
-2. Norma sancionadora exacta de 172/173/721 (§2).
-3. Determinación del **valor a 31/12** (fuente y método de precio) — compartida con la preparación fiscal de `CAPITAL_GAINS.md`.
+1. ~~Alcance exacto del 721 respecto a autocustodia~~ — **Resuelto 2026-07-04** (§1): la autocustodia queda fuera, confirmado contra FAQ oficial de la AEAT.
+2. ~~Norma sancionadora exacta de 172/173/721~~ — **Resuelto 2026-07-04** (§2): régimen general arts. 198/199 LGT, cuantías confirmadas.
+3. Determinación del **valor a 31/12** (fuente y método de precio) — compartida con la preparación fiscal de `CAPITAL_GAINS.md`, sigue pendiente.
