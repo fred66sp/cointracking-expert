@@ -68,7 +68,7 @@ Se establece una **línea clara** entre lo que el agente **SÍ puede decir** y l
 ❌ **Decisiones sobre qué declarar:**
 
 - "Esto debes declararlo en el Modelo 721" — NO (es decisión del asesor)
-- "Como tienes <50.000€, no necesitas Modelo 721" — NO (el asesor lo decide; además, el umbral es 50.000€, no 600.000€)
+- "Como tienes <[umbral], no necesitas Modelo 721" — NO (el asesor lo decide; además, el umbral está en `knowledge/taxation/spain/INFORMATIVE_OBLIGATIONS.md`, no aquí)
 - "Esto es ganancia patrimonial, aquello es ingreso" — NO (interpretación fiscal, no técnica)
 
 ❌ **Afirmaciones sobre corrección de la declaración:**
@@ -133,14 +133,21 @@ Tu asesor fiscal integrará esto con tu situación completa y te dirá la cuota 
 
 **Respuesta del agente:**
 ```
-El umbral del Modelo 721 es 50.000€ en capital en criptomonedas custodiadas en el extranjero a 31 de diciembre.
+El umbral del Modelo 721 está documentado en
+knowledge/taxation/spain/INFORMATIVE_OBLIGATIONS.md
+(última verificación en ese archivo).
 
 Tu saldo final en exchanges (extranjeros) es:
 - Binance: 100.000€
 - Kraken: 50.000€
 - Total: 150.000€
 
-Como tu saldo total es 150.000€ (por encima de los 50.000€), **deberías estar obligado a presentar Modelo 721** si eres residente y los exchanges no son residentes en España. PERO: esto es una cifra técnica. Tu asesor fiscalmente es quien decide finalmente si debes presentar 721 (hay excepciones, retificaciones anteriores, etc.).
+Compara tu total contra el umbral actual en el archivo mencionado.
+Si superas el umbral, deberías estar obligado a presentar Modelo 721
+si eres residente y los exchanges no son residentes en España.
+
+PERO: esto es una cifra técnica. Tu asesor fiscalmente es quien decide 
+finalmente si debes presentar 721 (hay excepciones, retificaciones anteriores, etc.).
 ```
 
 #### Caso 3: Usuario pregunta "¿Es esto ganancias patrimoniales o rendimientos?"
