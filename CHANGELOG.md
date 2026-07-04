@@ -16,7 +16,9 @@ Todos los cambios notables en el proyecto CoinTracking Expert se documentan en e
 - División de responsabilidades: Claude Code gestiona el agente, GitHub Copilot lo explota vía `.github/copilot-instructions.md`, con `AGENT_CHANGE_REQUESTS.md` como bandeja de peticiones de mejora desde el uso real (ADR-012)
 - Base de casos/patrones de reconciliación curada (`knowledge/patterns/cointracking_casos_v2.yaml`, 20 casos, esquema canónico) reemplazando el YAML legacy (ADR-015)
 - Conocimiento sobre contexto regulatorio/operativo de exchanges (`knowledge/exchanges/`), p. ej. la salida de Binance de la UE por MiCA (2026-07) y su impacto en reconciliación
-- Registro de decisiones ampliado a ADR-022 (ver `DECISIONS.md` para el índice completo)
+- Registro de decisiones arquitectónicas (ADRs 001-027) migrado a formato MADR individual en `adr/` (una decisión por archivo), reemplazando el monolítico `DECISIONS.md` (ADR-025)
+- ADR-026: Matriz de decisiones explícita — qué decide el agente solo (Categoría A), qué requiere confirmación del usuario (Categoría B), qué delega a humanos (Categoría C), operacionalizando el límite de determinismo de ADR-006
+- ADR-027: Protocolo de integración de nuevos exchanges en multi-proyecto, 4 fases obligatorias (preintegración con consentimiento, importación controlada, validación exhaustiva con 9 chequeos, documentación total), con 3 ejemplos prácticos y 7 pendientes de automatización
 - Protocolo de diagnóstico en orden fijo para la auditoría (6 fases: cobertura → duplicados → transferencias → tipos/base de coste → purchase pool → cierre fiscal), endurecido contra falsos positivos (ADR-017)
 - Validación de duplicados con `trade_id`/`Tx ID` y consentimiento explícito antes de cualquier borrado (ADR-014)
 - Regla de reconciliar siempre depósitos/retiradas/saldos contra la fuente externa real (banco/exchange), no solo contra la coherencia interna de CoinTracking
