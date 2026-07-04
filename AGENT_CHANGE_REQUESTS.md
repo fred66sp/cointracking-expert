@@ -31,8 +31,13 @@ Formato de entrada:
   - Crear `knowledge/.metadata/MIGRATION_PLAN.md`: plan detallado de Fase 2-3 (no bloqueante, iterativo)
   - Crear estructura vacía de directorios: `authorities/`, `official/`, `behavioral/`, `cases/`, `procedures/`, `checklists/`, `decision-trees/`, `reference/` (sin mover archivos aún)
   - Commit: 491b93f
+- **Resuelto (2026-07-05, Fase 2):**
+  - Reorganizar directorios: 6 archivos movidos con git mv (historial preservado)
+  - Crear índices cruzados: 10 índices nuevos + AUTHORITY_MATRIX.md
+  - Actualizar referencias: skills, documentos, enlaces cruzados
+  - Commit: 27330a0
+  - Estructura ahora alineada con ADR-033 (6 niveles A-F) + INDEX_MASTER.md
 - **Próximos pasos:**
-  - Fase 2 (próxima sesión): Reorganizar directorios, crear índices cruzados, actualizar referencias
   - Fase 3 (iterativo): Agregar metadatos YAML, convertir YAML a `.md`, crear procedimientos/patrones/checklists
 
 ## [✅ HECHO] 2026-07-03 — Precondición explícita de artefacto para cerrar la cifra anual exacta en `spanish-tax-return`
