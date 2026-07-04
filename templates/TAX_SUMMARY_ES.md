@@ -21,11 +21,11 @@
 
 ## 2. Eventos imponibles del ejercicio {AÑO}
 
-| Tipo | Nº ops | Observaciones |
-|------|-------:|---------------|
-| Ventas a fiat (EUR) | | |
-| Permutas cripto-cripto (Art. 37.1.h) | | tributan aunque no pasen por euros |
-| Pagos con cripto | | |
+| Tipo                                 | Nº ops | Observaciones                      |
+|--------------------------------------|-------:|------------------------------------|
+| Ventas a fiat (EUR)                  |        |                                    |
+| Permutas cripto-cripto (Art. 37.1.h) |        | tributan aunque no pasen por euros |
+| Pagos con cripto                     |        |                                    |
 
 - Excluidos (no imponibles): compras con fiat, holding, transferencias entre cuentas propias.
 
@@ -40,11 +40,11 @@
 
 > 🔴 Calificación fiscal **pendiente de fundamentar** — no calculada.
 
-| Tipo | Nº ops | Importe (cuantificado) |
-|------|-------:|------------------------|
-| Staking | | |
-| Recompensa / Bonificación | | |
-| Ingresos por intereses | | |
+| Tipo                      | Nº ops | Importe (cuantificado) |
+|---------------------------|-------:|------------------------|
+| Staking                   |        |                        |
+| Recompensa / Bonificación |        |                        |
+| Ingresos por intereses    |        |                        |
 
 - **Acción:** fundamentar su tributación (consulta DGT) o validar con profesional antes de declarar.
 
