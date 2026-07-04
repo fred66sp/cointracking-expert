@@ -8,26 +8,40 @@
 
 ---
 
-## Estado Actual (Fase 2)
+## Estado Actual (Fase 3)
 
-Los 20 casos se encontraban en `knowledge/patterns/cointracking_casos_v2.yaml` (esquema YAML canónico).
+Los 20 casos han sido **convertidos a archivos `.md` individuales** con metadatos YAML.
 
-**En esta sesión:** Se han migrado a esta carpeta. En Fase 3 se convertirán a archivos `.md` individuales con metadatos YAML.
-
-**Archivo:** [`cointracking_casos_v2.yaml`](cointracking_casos_v2.yaml)
+**Archivo original (legacy):** [`cointracking_casos_v2.yaml`](cointracking_casos_v2.yaml) — mantenido como backup
 
 ---
 
-## Casos Documentados (v2)
+## Casos Documentados (20 archivos .md)
 
-| ID | Título | Categoría | Gravedad |
-|----|--------|-----------|----------|
-| CT-001 | Duplicados (mismo timestamp) | duplicados | medio |
-| CT-002 | FLOKI: 29 transacciones idénticas NO son duplicadas | duplicados | alto |
-| CT-003 | Missing Purchase History: compras sin origen | missing_ph | crítico |
-| ... | (17 casos más) | ... | ... |
+**Cada caso tiene su propio archivo:**
 
-**Resumen:** 20 casos, esquema canónico, 16 campos obligatorios por caso.
+1. [CT-001-transferencia-entre-exchanges-importada-solo-en-origen.md](CT-001-transferencia-entre-exchanges-importada-solo-en-origen.md) — Transferencias huérfanas
+2. [CT-002-venta-sin-historial-de-compra-previo-missing-purchase-history.md](CT-002-venta-sin-historial-de-compra-previo-missing-purchase-history.md) — Missing Purchase History
+3. [CT-003-api-y-csv-importados-simultaneamente-duplicado-por-doble-fuente.md](CT-003-api-y-csv-importados-simultaneamente-duplicado-por-doble-fuente.md) — API + CSV solapados
+4. [CT-004-balance-negativo-por-orden-cronologico-incorrecto-zona-horaria.md](CT-004-balance-negativo-por-orden-cronologico-incorrecto-zona-horaria.md) — Zona horaria
+5. [CT-005-recompensas-de-staking-clasificadas-como-deposito-generico.md](CT-005-recompensas-de-staking-clasificadas-como-deposito-generico.md) — Staking
+6. [CT-006-binance-convert-importado-como-venta-y-compra-independientes.md](CT-006-binance-convert-importado-como-venta-y-compra-independientes.md) — Binance Convert
+7. [CT-007-transferencia-interna-confundida-con-venta.md](CT-007-transferencia-interna-confundida-con-venta.md) — Transferencias internas
+8. [CT-008-duplicados-aparentes-por-ejecucion-parcial-de-una-orden.md](CT-008-duplicados-aparentes-por-ejecucion-parcial-de-una-orden.md) — Órdenes parciales
+9. [CT-009-comision-fee-omitida-en-la-importacion.md](CT-009-comision-fee-omitida-en-la-importacion.md) — Comisiones
+10. [CT-010-airdrop-registrado-como-compra-con-coste-artificial.md](CT-010-airdrop-registrado-como-compra-con-coste-artificial.md) — Airdrops
+11. [CT-011-lending-tratado-como-transferencia-generica.md](CT-011-lending-tratado-como-transferencia-generica.md) — Lending
+12. [CT-012-balance-negativo-por-importacion-parcial-via-api.md](CT-012-balance-negativo-por-importacion-parcial-via-api.md) — Importación parcial
+13. [CT-013-wallet-externa-no-importada-fondos-desaparecidos.md](CT-013-wallet-externa-no-importada-fondos-desaparecidos.md) — Wallets externas
+14. [CT-014-recompensas-de-mineria-mining-registradas-como-deposito.md](CT-014-recompensas-de-mineria-mining-registradas-como-deposito.md) — Mining
+15. [CT-015-swap-defi-fragmentado-en-varias-operaciones-on-chain.md](CT-015-swap-defi-fragmentado-en-varias-operaciones-on-chain.md) — Swaps DeFi
+16. [CT-016-duplicados-por-reimportacion-completa-del-mismo-periodo.md](CT-016-duplicados-por-reimportacion-completa-del-mismo-periodo.md) — Reimportación
+17. [CT-017-coste-cero-por-compra-omitida-de-ejercicios-anteriores.md](CT-017-coste-cero-por-compra-omitida-de-ejercicios-anteriores.md) — Años anteriores
+18. [CT-018-token-renombrado-interpretado-como-un-activo-distinto.md](CT-018-token-renombrado-interpretado-como-un-activo-distinto.md) — Tokens renombrados
+19. [CT-019-balance-negativo-tras-eliminar-una-compra-confundida-con-duplicado.md](CT-019-balance-negativo-tras-eliminar-una-compra-confundida-con-duplicado.md) — Falso positivo
+20. [CT-020-advertencia-tecnica-interpretada-como-error-fiscal-definitivo.md](CT-020-advertencia-tecnica-interpretada-como-error-fiscal-definitivo.md) — Advertencias
+
+**Resumen:** 20 casos, cada uno con metadatos YAML (KB-C1-001 a KB-C1-020)
 
 ---
 
