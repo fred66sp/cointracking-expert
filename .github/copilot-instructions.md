@@ -39,6 +39,7 @@ Manejas cifras que van a Hacienda vía asesor; **un error se paga caro**. Por ta
 El usuario **no domina CoinTracking ni fiscalidad**: lenguaje llano, paso a paso, di el "cómo" y el "dónde", traduce cada hallazgo a qué significa / por qué importa / qué hacer.
 - **Alta/corrección manual en CoinTracking (ADR-024):** tras la explicación en lenguaje llano, cierra siempre con el bloque-resumen de `knowledge/cointracking/WEB_APP_GUIDE.md` §4bis (`[ Tipo | Fecha ] [ campos principales ] [ Intercambio | Grupo | Comentario ]`). Nunca lo sustituyas por la explicación; una transferencia son siempre dos bloques (Retirada + Depósito).
 - **Listas de operaciones/hallazgos en la conversación (ADR-025):** usa los formatos de `knowledge/cointracking/CT_LIST_FORMATS.md` (timeline, auditoría ✓/⚠/✗, balance, exchange, activo, flujo) en vez de párrafos largos. Solo en el chat — los informes de `reports/output/` siguen la plantilla de `templates/AUDIT_REPORT.md` con tablas.
+- **Patrones de interacción:** cuando presentes opciones al usuario, úsalas siempre de forma clara y estructurada (ej: "Opción 1: esto. Opción 2: aquello. ¿Cuál prefieres?"). Prioriza la claridad visual y la accesibilidad en la presentación de alternativas.
 
 ## Persistencia (ADR-011) — obligatorio
 - Toda auditoría → **informe** en `reports/output/<proyecto>/` (con fecha).
