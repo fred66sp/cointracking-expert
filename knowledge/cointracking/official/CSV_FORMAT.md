@@ -7,7 +7,7 @@ source: "CoinTracking — exportaciones de producción, datos reales del usuario
 authority: official
 last_verified: 2026-07-03
 valid_from: 2026-01-01
-valid_until: null
+valid_until: 2027-01-01
 confidence: high
 version: 1.0
 

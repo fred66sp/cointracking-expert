@@ -7,7 +7,7 @@ source: "CoinTracking API + implementación propia MCP (Go)"
 authority: official
 last_verified: 2026-07-03
 valid_from: 2026-07-03
-valid_until: null
+valid_until: 2027-07-03
 confidence: high
 version: 1.0
 

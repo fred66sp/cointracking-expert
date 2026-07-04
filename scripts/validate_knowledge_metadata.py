@@ -99,10 +99,15 @@ def validate_file(filepath):
     last_verified = frontmatter.get("last_verified")
     if last_verified:
         try:
-            verified_date = datetime.strptime(last_verified, "%Y-%m-%d")
+            # Handle both string and datetime.date objects
+            if isinstance(last_verified, str):
+                verified_date = datetime.strptime(last_verified, "%Y-%m-%d")
+            else:
+                verified_date = datetime.combine(last_verified, datetime.min.time())
+
             if verified_date > datetime.now():
                 errors.append(f"{filepath}: last_verified es futuro: {last_verified}")
-        except ValueError:
+        except (ValueError, TypeError):
             errors.append(f"{filepath}: last_verified formato inválido: {last_verified}")
 
     # Warn if confidence is low
@@ -134,24 +139,24 @@ def main():
     print(f"{'='*60}\n")
 
     if errors:
-        print(f"❌ ERRORES ({len(errors)}):\n")
+        print(f"[ERROR] ERRORES ({len(errors)}):\n")
         for error in errors:
             print(f"  • {error}")
         print()
 
     if warnings:
-        print(f"⚠️ ADVERTENCIAS ({len(warnings)}):\n")
+        print(f"[WARN] ADVERTENCIAS ({len(warnings)}):\n")
         for warning in warnings:
             print(f"  • {warning}")
         print()
 
-    print(f"✅ {len(md_files) - len(errors)} archivos válidos")
-    print(f"🔑 {len(ids_seen)} IDs únicos")
+    print(f"[OK] {len(md_files) - len(errors)} archivos válidos")
+    print(f"[OK] {len(ids_seen)} IDs únicos")
 
     if errors:
         sys.exit(1)
     else:
-        print("\n✅ Validación exitosa")
+        print("\n[OK] Validación exitosa")
         sys.exit(0)
 
 if __name__ == "__main__":

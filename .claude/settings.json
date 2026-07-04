@@ -7,7 +7,19 @@
       "Edit(/.claude/skills/**)",
       "mcp__cointracking__cointracking_get_grouped_balance",
       "mcp__cointracking__cointracking_get_balance",
-      "Bash(python tools/ct_audit.py *)"
+      "Bash(python tools/ct_audit.py *)",
+      "PowerShell(Get-ChildItem -Path \"h:\\\\cointracking-expert\\\\knowledge\\\\\" -Recurse -Directory | ForEach-Object { $_.FullName } | head -50)",
+      "PowerShell(Get-ChildItem -Path \"h:\\\\cointracking-expert\\\\knowledge\\\\\" -Recurse -Directory | ForEach-Object { $_.FullName } | Select-Object -First 50)",
+      "Edit(/.claude/skills/audit-cointracking/**)",
+      "Bash(git commit -m 'refactor\\(knowledge\\): Fase 3.1 — Agregar metadatos YAML a documentos críticos \\(A1/A2\\) *)",
+      "Bash(python C:\\\\Users\\\\alfredo\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\h--cointracking-expert\\\\fdde10b9-f3a3-4231-b115-85342e7d97e9\\\\scratchpad\\\\yaml_to_md_cases.py knowledge/cases/cointracking_casos_v2.yaml knowledge/cases)",
+      "Read(//h/cointracking-expert/knowledge/cases/**)",
+      "Bash(git commit -m 'feat\\(knowledge\\): Fase 3.3 — Crear 4 patrones de reconciliación \\(Nivel C2\\) *)",
+      "Bash(git commit -m 'feat\\(knowledge\\): Fase 3.4 — Crear 3 procedimientos operativos \\(Nivel C3\\) *)",
+      "Bash(git commit -m 'feat\\(knowledge\\): Fase 3.5-3.6 — Crear checklists \\(D1\\) y árboles de decisión \\(D2\\) *)",
+      "Bash(git commit -m 'feat\\(scripts\\): Fase 3.7-3.8 — Scripts de validación y alertas de vigencia *)",
+      "Bash(python h:\\\\cointracking-expert\\\\scripts\\\\validate_knowledge_metadata.py)",
+      "PowerShell(cd h:\\\\cointracking-expert; python scripts\\\\validate_knowledge_metadata.py > \"$env:TEMP\\\\validation_output.txt\" 2>&1; Get-Content \"$env:TEMP\\\\validation_output.txt\")"
     ],
     "additionalDirectories": [
       "H:\\cointracking-expert\\cointracking-mcp\\cmd"

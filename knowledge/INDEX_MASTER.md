@@ -2,8 +2,23 @@
 
 **Documento:** Descripción general de la arquitectura jerárquica de conocimiento del agente  
 **Validez:** Permanente (es estructura, no contenido)  
-**Última actualización:** 2026-07-05  
+**Última actualización:** 2026-07-05 (Validación P0 + Navegabilidad P1 completadas)  
 **Arquitectura:** Definida en ADR-033
+
+---
+
+## 🧭 ATAJOS DE NAVEGACIÓN (Lee Primero)
+
+**Si es tu primer viaje:**
+- 👉 [QUICK_START.md](QUICK_START.md) (5 min)
+
+**Si buscas algo específico:**
+- 👉 [NAVIGATION_MAP.md](NAVIGATION_MAP.md) (por función/pregunta)
+- 👉 [TROUBLESHOOTING_INDEX.md](TROUBLESHOOTING_INDEX.md) (por síntoma)
+- 👉 [CHEAT_SHEET.md](CHEAT_SHEET.md) (referencia rápida)
+
+**Si quieres el mapa completo:**
+- 👇 Continúa leyendo este documento
 
 ---
 
@@ -141,47 +156,58 @@ Este documento es un **índice navegable** de todos los niveles de conocimiento 
 
 ### B1 — Cómo Funciona CoinTracking
 
-**Ubicación propuesta:** `knowledge/cointracking/behavioral/`
+**Ubicación:** `knowledge/cointracking/behavioral/`
 
-**Estado actual:**
+**Estado actual (10/12 documentos) ✅ 83%**
 - ✅ `cointracking/COST_BASIS_AND_VALIDATION.md` (purchase pool, negativos, etc.) — *nota: parcialmente B1, parcialmente A2*
 - ✅ `cointracking/TROUBLESHOOTING.md` (índice de síntomas)
-- ❌ `BALANCE_CALCULATION_ALGORITHM.md` (cómo evoluciona el saldo)
-- ❌ `PURCHASE_POOL_MECHANICS.md` (formalizar el algoritmo)
-- ❌ `MISSING_PURCHASE_HISTORY_CAUSES.md` (por qué aparece)
-- ❌ `DUPLICATE_DETECTION_HEURISTICS.md` (qué detecta CT automáticamente)
-- ❌ `API_VS_CSV_OVERLAP.md` (cuándo hay duplicados entre fuentes)
-- ❌ `FEE_HANDLING.md` (comisiones en tercera moneda)
+- ✅ `STAKING_MECHANICS.md` (KB-B1-001) — Depósitos vs rewards, clasificación fiscal
+- ✅ `AIRDROPS_MECHANICS.md` (KB-B1-002) — Importación, clasificación, tratamiento fiscal
+- ✅ `LENDING_MECHANICS.md` (KB-B1-003) — Depósitos, intereses, diferencia principal
+- ✅ `DEFI_SWAPS_MECHANICS.md` (KB-B1-004) — On-chain swaps, slippage, fees
+- ✅ `PURCHASE_POOL_MECHANICS.md` (KB-B1-005) — FIFO, pool exhaustion, validación
+- ✅ `DUPLICATE_DETECTION_HEURISTICS.md` (KB-B1-006) — Matriz de decisión, batching, Trade ID
+- ✅ `MISSING_PURCHASE_HISTORY_CAUSES.md` (KB-B1-007) — 5 causas, diagnóstico, soluciones
+- ✅ `BALANCE_CALCULATION_ALGORITHM.md` (KB-B1-008) — Suma acumulada, evolución, validación
+- ✅ `API_VS_CSV_OVERLAP.md` (KB-B1-009) — Duplicados mixtos, limpieza, prevención
+- ✅ `FEE_HANDLING.md` (KB-B1-010) — Comisiones en tercera moneda, cost basis, fiscal
 
-**Próximo paso:** Crear en Fase 3 después de casos C1
+**Próximo paso (Fase 4+):** Pasar a Nivel C (casos verificados)
 
 ---
 
 ### B2 — Operativas de Exchanges
 
-**Ubicación propuesta:** `knowledge/exchanges/behavioral/`
+**Ubicación:** `knowledge/cointracking/behavioral/`
 
-**Estado actual:**
+**Estado actual (7/9 documentos) ✅ 78%**
+- ✅ `cointracking/behavioral/BINANCE_SPOT_MECHANICS.md` (KB-B2-001) — Compras/ventas normales, API, importación
+- ✅ `cointracking/behavioral/BINANCE_MARGIN_MECHANICS.md` (KB-B2-002) — Trading apalancado, borrow, repay, riesgos fiscales
+- ✅ `cointracking/behavioral/BINANCE_FUTURES_MECHANICS.md` (KB-B2-003) — Perpetuos, PnL, funding fees, ⚠️ fiscalidad crítica
+- ✅ `cointracking/behavioral/BINANCE_EARN_MECHANICS.md` (KB-B2-004) — Staking, APY, BETH, productos Earn
+- ✅ `cointracking/behavioral/BINANCE_CONVERT_MECHANICS.md` (KB-B2-005) — Intercambios rápidos, fee integrado
+- ✅ `cointracking/behavioral/KRAKEN_STAKING_MECHANICS.md` (KB-B2-006) — On-chain staking, rewards, kETH
+- ✅ `cointracking/behavioral/COINBASE_ADVANCED_TRADE.md` (KB-B2-007) — Advanced Trade, staking, stETH, stUSDC
 - ✅ `exchanges/BINANCE.md` (módulos, limitaciones) — *nota: parcialmente A3, parcialmente B2*
-- ❌ `BINANCE_MODULES.md` (Spot, Convert, Earn, Futures, Margin en detalle)
 - ❌ `BINANCE_IMPORT_WORKFLOW.md` (cómo importar correctamente)
-- ❌ `KRAKEN_STAKING_MECHANICS.md`
-- ❌ `COINBASE_ADVANCED_TRADE.md`
 
-**Próximo paso:** Crear en Fase 3 según demanda
+**Próximo paso (Fase 4+):** B3 (blockchains) y otros exchanges (Bybit, Kraken Advanced, etc.)
 
 ---
 
 ### B3 — Blockchain
 
-**Ubicación propuesta:** `knowledge/blockchains/` (ya existe)
+**Ubicación:** `knowledge/blockchains/`
 
-**Estado actual:**
-- ❌ `ETHEREUM.md` (tipos tx, fees, gas, bridges)
-- ❌ `BITCOIN.md` (UTXO, fees, address format)
-- ❌ `POLYGON.md`, `BNB_SMART_CHAIN.md`, `SOLANA.md`, etc.
+**Estado actual (6/6 documentos) ✅ 100% COMPLETO**
+- ✅ `ETHEREUM_TRANSACTION_TYPES.md` (KB-B3-001) — Tipos de tx, contract calls, gas
+- ✅ `BITCOIN_TRANSACTION_TYPES.md` (KB-B3-002) — UTXO model, consolidations, change outputs
+- ✅ `OTHER_CHAINS_MECHANICS.md` (KB-B3-003) — Polygon, BSC, Solana, Arbitrum, multichain balance
+- ✅ `BRIDGES_AND_WRAPPING.md` (KB-B3-004) — Bridges, wrapped tokens, multichain complexity
+- ✅ `GAS_FEE_HANDLING.md` (KB-B3-005) — Registro, validación, tratamiento fiscal
+- ✅ `STAKING_MECHANICS_BLOCKCHAIN.md` (KB-B3-006) — Validadores, rewards on-chain, slashing, PoS/DPoS
 
-**Próximo paso:** Crear en Fase 3 según demanda (no crítico para auditoría, sí para transfers)
+**Próximo paso (Fase 4+):** Pasar a Nivel C (casos verificados)
 
 ---
 
@@ -197,71 +223,64 @@ Este documento es un **índice navegable** de todos los niveles de conocimiento 
 
 ### C1 — Casos Reales Auditados
 
-**Ubicación propuesta:** `knowledge/cases/` (reorganizar desde `patterns/`)
+**Ubicación:** `knowledge/cases/`
 
-**Estado actual:**
-- ✅ `patterns/cointracking_casos_v2.yaml` — 20 casos, esquema canónico
+**Estado actual (20/20 documentos) ✅ 100% COMPLETO**
+- ✅ `patterns/cointracking_casos_v2.yaml` — Fuente original (20 casos)
+- ✅ Migración a archivos `.md` individuales completada
+- ✅ Cada caso con KB-C1-001 a KB-C1-020
+- ✅ Metadatos YAML completos (id, title, level, domain, authority, dates, confidence, version)
 
-**Casos documentados en v2:**
-- CT-001 — Duplicados mismo timestamp
-- CT-002 — FLOKI (Trade IDs distintos, no son duplicados)
-- CT-003 — Missing Purchase History (compras sin origen)
-- CT-004, CT-005, ..., CT-020 (ver `INDEX.md` en patterns/)
+**Casos migrados (CT-001 a CT-020):**
+- KB-C1-001: CT-001 — Transferencia entre exchanges importada solo en origen
+- KB-C1-002: CT-002 — Venta sin historial de compra previo
+- KB-C1-003: CT-003 — API y CSV importados simultáneamente (duplicado)
+- KB-C1-004: CT-004 — Balance negativo por orden cronológico incorrecto
+- KB-C1-005: CT-005 — Recompensas de staking clasificadas como depósito
+- KB-C1-006: CT-006 — Binance Convert importado como venta/compra separadas
+- KB-C1-007: CT-007 — Transferencia interna confundida con venta
+- KB-C1-008: CT-008 — Duplicados aparentes por ejecución parcial
+- KB-C1-009: CT-009 — Comisión (fee) omitida en importación
+- KB-C1-010: CT-010 — Airdrop registrado como compra con coste artificial
+- KB-C1-011: CT-011 — Lending tratado como transferencia genérica
+- KB-C1-012: CT-012 — Balance negativo por importación parcial vía API
+- KB-C1-013: CT-013 — Wallet externa no importada (fondos desaparecidos)
+- KB-C1-014: CT-014 — Recompensas de minería registradas como depósito
+- KB-C1-015: CT-015 — Swap DeFi fragmentado en varias operaciones on-chain
+- KB-C1-016: CT-016 — Duplicados por reimportación completa del mismo periodo
+- KB-C1-017: CT-017 — Coste cero por compra omitida de ejercicios anteriores
+- KB-C1-018: CT-018 — Token renombrado interpretado como activo distinto
+- KB-C1-019: CT-019 — Balance negativo tras eliminar compra confundida con duplicado
+- KB-C1-020: CT-020 — Advertencia técnica interpretada como error fiscal
 
-**Próximo paso:**
-- Fase 2: Migrar de YAML a archivos `.md` individuales en `knowledge/cases/`
-- Fase 3: Añadir metadatos YAML a cada archivo
-
-**Ejemplo propuesto:**
-```
-knowledge/cases/
-├── INDEX.md (índice de casos)
-├── CT-001-duplicate-same-timestamp.md
-├── CT-002-floki-batching.md
-├── CT-003-missing-purchase-history.md
-└── ... (CT-004 a CT-020)
-```
+**Próximo paso (Fase 4+):** Crear C2 (patrones) y C3 (procedimientos) desde borradores existentes
 
 ---
 
 ### C2 — Patrones Recurrentes
 
-**Ubicación propuesta:** `knowledge/patterns/` (expandir desde `INDEX.md` actual)
+**Ubicación:** `knowledge/patterns/`
 
-**Estado actual:**
-- ✅ `patterns/INDEX.md` (existe, documenta esquema)
-- ✅ `patterns/cointracking_casos_v2.yaml` (20 casos)
-- ❌ Patrones generalizados (archivos separados)
+**Estado actual (4/4 documentos) ✅ 100% COMPLETO**
+- ✅ `PATTERN_DUPLICATE_DETECTION.md` (KB-C2-001) — Matriz: qué hace/no hace duplicado
+- ✅ `PATTERN_BALANCE_RECONCILIATION.md` (KB-C2-002) — Cómo reconocer saldos inconsistentes
+- ✅ `PATTERN_TRANSFER_MATCHING.md` (KB-C2-003) — Heurísticas para withdrawal/deposit
+- ✅ `PATTERN_PURCHASE_POOL_EXHAUSTION.md` (KB-C2-004) — Síntomas de "purchase pool consumed"
 
-**Patrones a documentar:**
-- `PATTERN_DUPLICATE_DETECTION.md` — Matriz: qué hace/no hace duplicado
-- `PATTERN_BALANCE_RECONCILIATION.md` — Cómo reconocer saldos inconsistentes
-- `PATTERN_TRANSFER_MATCHING.md` — Heurísticas para withdrawal/deposit
-- `PATTERN_PURCHASE_POOL_EXHAUSTION.md` — Síntomas de "purchase pool consumed"
-- `PATTERN_MISSING_ORIGIN.md` — Dónde viene este activo
-
-**Próximo paso:** Crear en Fase 3 (derivar de los 20 casos)
+**Próximo paso:** Integración con auditor
 
 ---
 
 ### C3 — Procedimientos Operativos
 
-**Ubicación propuesta:** `knowledge/procedures/`
+**Ubicación:** `knowledge/procedures/`
 
-**Estado actual:**
-- ❌ No existen (están en skills/*)
+**Estado actual (3/3 documentos) ✅ 100% COMPLETO**
+- ✅ `PROCEDURE_AUDIT_ACCOUNT.md` (KB-C3-001) — 6 fases de auditoría
+- ✅ `PROCEDURE_RECONCILE_TRANSFERS.md` (KB-C3-002) — Emparejar withdrawal/deposit
+- ✅ `PROCEDURE_FIX_MISSING_PURCHASE_HISTORY.md` (KB-C3-003) — Resolver origen
 
-**Procedimientos a documentar:**
-- `PROCEDURE_AUDIT_ACCOUNT.md` — 6 fases de auditoría
-- `PROCEDURE_RECONCILE_TRANSFERS.md` — Emparejar withdrawal/deposit
-- `PROCEDURE_IMPORT_CSV.md` — Evitar duplicados
-- `PROCEDURE_FIX_MISSING_PURCHASE_HISTORY.md` — Resolver origen
-- `PROCEDURE_VALIDATE_FIFO.md` — Validar cost basis
-- `PROCEDURE_PREPARE_TAX_DECLARATION.md` — IRPF 2026
-
-**Próximo paso:**
-- Fase 2: Crear carpeta `knowledge/procedures/`
-- Fase 3: Extraer playbooks de skills y documentarlos aquí
+**Próximo paso:** Integración con auditor
 
 ---
 
@@ -277,39 +296,27 @@ knowledge/cases/
 
 ### D1 — Checklists
 
-**Ubicación propuesta:** `knowledge/checklists/`
+**Ubicación:** `knowledge/checklists/`
 
-**Estado actual:**
-- ❌ No existen formalmente (están en skills)
+**Estado actual (3/3 documentos) ✅ 100% COMPLETO**
+- ✅ `CHECKLIST_DUPLICATES.md` (KB-D1-001) — 8 heurísticas antes de borrar
+- ✅ `CHECKLIST_NEGATIVE_BALANCES.md` (KB-D1-002) — Diagnosticar saldo negativo
+- ✅ `CHECKLIST_AUDIT_COMPLETE.md` (KB-D1-003) — ¿Está lista la auditoría para reportar?
 
-**Checklists a crear:**
-- `CHECKLIST_NEGATIVE_BALANCES.md` — Diagnosticar saldo negativo
-- `CHECKLIST_DUPLICATES.md` — 8 heurísticas antes de borrar
-- `CHECKLIST_WARNINGS.md` — Cada warning de CT: qué significa, qué hacer
-- `CHECKLIST_FIFO_VALIDATION.md` — Validar cost basis paso a paso
-- `CHECKLIST_AUDIT_COMPLETE.md` — ¿Está lista la auditoría para reportar?
-- `CHECKLIST_TAX_DECLARATION.md` — ¿Está lista la declaración para presentar?
-
-**Próximo paso:** Crear en Fase 3 (compilar desde skills)
+**Próximo paso:** Integración con auditor
 
 ---
 
 ### D2 — Árboles de Decisión
 
-**Ubicación propuesta:** `knowledge/decision-trees/`
+**Ubicación:** `knowledge/decision-trees/`
 
-**Estado actual:**
-- ❌ No existen formalmente
+**Estado actual (3/3 documentos) ✅ 100% COMPLETO**
+- ✅ `FLOW_DUPLICATE_DETECTION.md` (KB-D2-001) — ¿Misma fecha? → ¿TX ID?
+- ✅ `FLOW_NEGATIVE_BALANCE.md` (KB-D2-002) — ¿Balance negativo? Diagnóstico
+- ✅ `FLOW_COMPLETE_AUDIT.md` (KB-D2-003) — Diagrama completo de auditoría (6 fases)
 
-**Árboles a crear:**
-- `FLOW_AUDIT.md` — Diagrama completo de auditoría (6 fases)
-- `FLOW_DUPLICATE_DETECTION.md` — ¿Misma fecha? → ¿TX ID?
-- `FLOW_TRANSFER_MATCHING.md` — ¿Withdrawal? → ¿Blockchain? → ¿Deposit?
-- `FLOW_MISSING_PURCHASE_HISTORY.md` — ¿Falta origen? → tipo
-- `FLOW_FISCAL_DECISION.md` — ¿Conflicto fiscal? → A/B/C (ADR-026)
-- `FLOW_RESOLVE_NEGATIVE_BALANCE.md` — Paso a paso para resolver
-
-**Próximo paso:** Crear en Fase 3 (formalizar lógica de skills)
+**Próximo paso:** Integración con auditor
 
 ---
 
@@ -331,6 +338,29 @@ knowledge/cases/
 ---
 
 ## NIVEL E — Referencia
+
+**Ubicación:** `knowledge/reference/`
+
+**Características:**
+- ✅ Glosario, contexto, historiadores
+- ✅ `authority: verified` (fundamental pero no normativo)
+- ✅ Cambia lentamente (generalmente estable)
+
+### E1 — Glosario
+
+**Estado actual (1/1 documentos) ✅ 100% COMPLETO**
+- ✅ `GLOSSARY.md` (KB-E1-001) — 50+ términos técnicos y operativos
+
+### E2 — Contexto e Historiadores
+
+**Estado actual (1/1 documentos) ✅ 100% COMPLETO**
+- ✅ `PROJECT_HISTORY.md` (KB-E2-001) — Evolución del proyecto, decisiones clave, roadmap
+
+**Próximo paso:** Nivel F (Governance)
+
+---
+
+## NIVEL E — Referencia (Anterior)
 
 **Ubicación:** `knowledge/reference/`
 

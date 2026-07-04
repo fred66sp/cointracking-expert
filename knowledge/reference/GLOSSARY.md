@@ -1,3 +1,34 @@
+---
+id: KB-E1-001
+title: "Glosario: Terminología y Definiciones de CoinTracking Expert"
+level: E
+domain: cointracking
+source: "Corpus documental + ADR-001 (convenciones)"
+authority: verified
+last_verified: 2026-07-05
+valid_from: 2024-01-01
+valid_until: null
+confidence: high
+version: 1.0
+
+related_adr:
+  - ADR-001
+  - ADR-003
+  - ADR-025
+
+related_docs:
+  - knowledge/INDEX_MASTER.md
+  - knowledge/cointracking/CT_LIST_FORMATS.md
+
+tags:
+  - glossary
+  - reference
+  - terminology
+  - español
+
+notes: "Glosario completo de términos técnicos y operativos del proyecto. Referencia viva, actualizar con nuevos términos."
+---
+
 # Glosario
 
 **Terminología y definiciones para CoinTracking Expert**
