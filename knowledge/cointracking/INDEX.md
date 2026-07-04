@@ -11,6 +11,7 @@ Esta sección contiene documentación exhaustiva sobre la plataforma CoinTrackin
 - **[WEB_APP_GUIDE.md](WEB_APP_GUIDE.md)** — Guía operativa de la web de CoinTracking: cómo **corregir** los problemas que detecta la auditoría (cambiar tipos, editar valores, transferencias, duplicados, edición masiva) y cómo **generar el informe fiscal de España (FIFO)**. Orientada a guiar al usuario paso a paso, citando el artículo oficial de cada acción.
 - **[reference/CATALOG.md](reference/CATALOG.md)** — Índice de los 205 artículos oficiales del centro de ayuda de CoinTracking (título, URL pública, categoría, relevancia). Fuente para destilar más conocimiento propio.
 - **[DOCUMENT_CHECKLIST.md](DOCUMENT_CHECKLIST.md)** — qué pedir al usuario más allá del MCP y el CSV Trade Table: informes propios de CoinTracking (Missing Transactions, Double-Entry List, Realized/Unrealized Gains, Balance by Exchange…) para validación cruzada, e información del exchange original (trade_id, extractos, hash on-chain) para los casos que ni CoinTracking sabe certificar.
+- **[TROUBLESHOOTING.md](TROUBLESHOOTING.md)** — índice de enrutamiento por síntoma/warning (no añade conocimiento nuevo): ante un warning literal de CoinTracking o un síntoma descrito por el usuario, remite directamente al documento o caso (`knowledge/patterns/cointracking_casos_v2.yaml`) con la causa, evidencia y solución.
 
 ## Mantenimiento y vigencia (ADR-008)
 
