@@ -88,7 +88,7 @@ No es un SDK ni una librería de motores deterministas: eso se descartó (ver AD
 - `knowledge/` — el **cerebro** del agente (fuente de verdad):
   - `cointracking/` — formato CSV, modelo de coste, integración MCP, guía de uso de la web (remediación), catálogo de referencia.
   - `taxation/spain/` — fiscalidad IRPF (ganancias patrimoniales, FIFO, Modelo 721).
-- `DECISIONS.md` — registro de decisiones (ADR-001…015 y siguientes). Gobernanza vinculante.
+- `adr/` — registro de decisiones en formato MADR (ADR-001…025 y siguientes). Gobernanza vinculante. Ver `adr/README.md` para índice.
 - `templates/AUDIT_REPORT.md` — plantilla de informe.
 - `tools/ct_audit.py` — chequeos deterministas vetados sobre el CSV (saldos, negativos, transferencias huérfanas, duplicados, colisiones). El agente lo **ejecuta** en vez de re-derivar la lógica (ADR-006/009/010).
 - `tests/fixtures/` — caso de prueba de oro (`sample_trades.csv` sintético + `EXPECTED.md`) para regresión del tool.
