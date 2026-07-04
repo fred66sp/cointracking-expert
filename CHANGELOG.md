@@ -7,6 +7,7 @@ Todos los cambios notables en el proyecto CoinTracking Expert se documentan en e
 ## [No lanzado]
 
 ### Agregado
+- **ADR-033: Sistema de Conocimiento Jerárquico** — arquitectura de 6 niveles (A-F) con metadatos YAML obligatorios, operacionaliza ADR-032 (Knowledge with Temporal Validity); incluye INDEX_MASTER.md (mapa navegable) y MIGRATION_PLAN.md (Fase 2-3)
 - Agente auditor de CoinTracking en Claude Code (subagente + skill `/audit-cointracking`)
 - Skill `/spanish-tax-return` para preparar la declaración de IRPF de un ejercicio, reconciliando primero (ADR-006)
 - Base de conocimiento: formato CSV, modelo de coste, integración MCP y fiscalidad española (IRPF)

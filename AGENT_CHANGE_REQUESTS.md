@@ -18,6 +18,23 @@ Formato de entrada:
 
 <!-- Añade nuevas peticiones debajo de esta línea -->
 
+## [✅ HECHO] 2026-07-05 — Arquitectura jerárquica del conocimiento (ADR-033 + metadatos YAML)
+
+- **Qué:** Formalizar el sistema de conocimiento con arquitectura jerárquica (6 niveles A-F) y metadatos YAML obligatorios, permitiendo que ADR-032 (Knowledge with Temporal Validity) sea operacional.
+- **Dónde:** `adr/0033-*.md`, `knowledge/.metadata/METADATA_TEMPLATE.md`, `knowledge/INDEX_MASTER.md`, `knowledge/.metadata/MIGRATION_PLAN.md`, estructura de directorios.
+- **Evidencia:** Propuesta de usuario (2026-07-05) solicitando "Sistema de Conocimiento Jerárquico" con niveles de autoridad (A=oficial, B=operativo, C=casos, D=auxiliar, E=referencia, F=governance).
+- **Propuesta:** Implementar en 3 fases: Fase 1 (estructura + formalización), Fase 2 (reorganizar directorios), Fase 3 (metadatos + documentos nuevos).
+- **Resuelto (2026-07-05, Fase 1):** 
+  - Crear ADR-033: operacionaliza arquitectura de 6 niveles + metadatos YAML (validado contra ADR-032, ADR-031, CLAUDE.md)
+  - Crear `knowledge/.metadata/METADATA_TEMPLATE.md`: esquema YAML estándar con 11 campos obligatorios
+  - Crear `knowledge/INDEX_MASTER.md`: mapa navegable de todos los niveles (estado actual + brechas)
+  - Crear `knowledge/.metadata/MIGRATION_PLAN.md`: plan detallado de Fase 2-3 (no bloqueante, iterativo)
+  - Crear estructura vacía de directorios: `authorities/`, `official/`, `behavioral/`, `cases/`, `procedures/`, `checklists/`, `decision-trees/`, `reference/` (sin mover archivos aún)
+  - Commit: 491b93f
+- **Próximos pasos:**
+  - Fase 2 (próxima sesión): Reorganizar directorios, crear índices cruzados, actualizar referencias
+  - Fase 3 (iterativo): Agregar metadatos YAML, convertir YAML a `.md`, crear procedimientos/patrones/checklists
+
 ## [✅ HECHO] 2026-07-03 — Precondición explícita de artefacto para cerrar la cifra anual exacta en `spanish-tax-return`
 - **Qué:** el playbook permite avanzar con clasificación fiscal aunque no exista en el workspace el artefacto mínimo para cerrar la cifra anual exacta de base del ahorro (Tax Report oficial del ejercicio, hoja `Resumen`), dejando el cierre bloqueado al final.
 - **Dónde:** `.claude/skills/spanish-tax-return/SKILL.md` (Paso 3 y Paso 6) y checklist operativo de salida del informe.
