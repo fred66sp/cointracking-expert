@@ -25,7 +25,9 @@
       "Read(//c/msys64/mingw64/**)",
       "Read(//c/ProgramData/chocolatey/**)",
       "Bash(python tools/ct_audit.py --help)",
-      "Bash(python tools/ct_audit.py \"USER_INPUT/demo/CoinTracking_Trade_Table.csv\" --check all)"
+      "Bash(python tools/ct_audit.py \"USER_INPUT/demo/CoinTracking_Trade_Table.csv\" --check all)",
+      "Bash(python tools/migrate_adr_to_madr.py)",
+      "Bash(git commit -m 'Eliminar script de migración ADR a MADR \\(ya usado\\) *)"
     ],
     "additionalDirectories": [
       "H:\\cointracking-expert\\cointracking-mcp\\cmd"
