@@ -127,6 +127,7 @@ Quien usa este agente **no domina CoinTracking ni la fiscalidad**. Necesita ayud
 - **Explica el porqué** de cada paso, brevemente.
 - **Traduce cada hallazgo técnico** a tres cosas: qué significa, por qué le importa (¿le cuesta dinero/impuestos?), y qué hacer ahora.
 - **Nunca des por hecho conocimiento previo.** Ante la duda, ofrece explicar más.
+- **Alta/corrección manual en CoinTracking → cierra siempre con el bloque-resumen (ADR-024).** Cuando la guía implique crear, modificar o corregir una operación manual en CoinTracking, tras la explicación en lenguaje llano añade al final el bloque compacto de `knowledge/cointracking/WEB_APP_GUIDE.md` §4bis (`[ Tipo | Fecha ] [ campos principales ] [ Intercambio | Grupo | Comentario ]`), para que el usuario pueda copiarlo campo a campo. Nunca lo uses en lugar de la explicación, solo como cierre. Una transferencia entre cuentas propias son siempre **dos** bloques (Retirada + Depósito), nunca uno.
 
 ## Principios (de FOUNDATION.md)
 

@@ -74,6 +74,57 @@ Usar el informe de **duplicados** para localizarlos y borrarlos; si son muchos, 
 Se pueden añadir operaciones a mano en la página de introducción de operaciones; hay campos obligatorios según el tipo.
 - Fuentes: [Cómo introducir operaciones](https://cointracking.freshdesk.com/en/support/solutions/articles/29000018166-how-to-enter-transactions-into-cointracking) · [Datos obligatorios (custom importer)](https://cointracking.freshdesk.com/en/support/solutions/articles/29000032507-custom-importer-and-mandatory-data-to-add-transactions)
 
+### 4bis. Bloque-resumen para introducir una operación manual ("resumen para copiar")
+
+Cuando la tarea implique **crear, modificar o corregir una operación manual** en CoinTracking, tras explicar en lenguaje llano qué hay que hacer y por qué (regla general de este documento y de `CLAUDE.md`), cierra con un **bloque compacto** que el usuario pueda copiar campo a campo sobre el formulario, en el mismo orden que aparece en la tabla/formulario (`Tipo, Compra, Cur., Venta, Cur., Comisión, Cur., Intercambio, Grupo, Comentario, Fecha` — verificado, ver arriba §"Columnas").
+
+> 🔑 **Regla de uso (importante):** este bloque **nunca sustituye** la explicación en lenguaje llano ni el paso a paso — es un añadido al final, para que quien ya entendió qué va a hacer pueda copiarlo rápido sin releer párrafos. Adáptalo siempre a la tarea concreta que se está pidiendo; no lo fuerces si no aporta claridad (p. ej. en una pregunta puramente conceptual no hace falta).
+
+**Estructura:**
+
+```
+[ <Tipo> | <Fecha DD.MM.AAAA HH:MM:SS> ] [ <campos principales según el tipo> ] [ Intercambio: … | Grupo: … | Comentario: … ]
+```
+
+- El tercer bloque (Intercambio/Grupo/Comentario) es opcional campo a campo: omite lo que no aplique.
+- No inventes valores que el usuario no haya dado.
+- Si la operación puede generar un aviso de CoinTracking (balance negativo, "no hay compra adecuada para esta venta", etc.), dilo **después** del bloque, nunca dentro.
+
+**Campos principales por tipo — confirmados contra tus datos reales (`CSV_FORMAT.md` §3/§12):**
+
+| Tipo | Campos principales |
+|---|---|
+| `Operación` (Trade) | `Compra: X CUR \| Venta: X CUR \| Comisión: X CUR` (comisión opcional) |
+| `Depósito` | `Cantidad: X CUR` (entra por `Compra`) |
+| `Retirada` | `Cantidad: X CUR` (sale por `Venta`, + comisión si aplica) |
+| `Ingresos` (no "Ingreso") | `Cantidad: X CUR` |
+| `Ingresos por intereses` | `Cantidad: X CUR` |
+| `Gasto` | `Cantidad: X CUR` |
+| `Staking` | `Cantidad: X CUR` |
+| `Recompensa / Bonificación` | `Cantidad: X CUR` |
+| `Otras comisiones` | `Cantidad: X CUR` |
+
+> ⚠️ **`[VERIFICAR]` — no confirmados contra el desplegable real del formulario ni contra tus datos:** `Donación`, `Minería`, `Airdrop`, `Regalo`. Es plausible que existan con esos nombres u otros parecidos, pero antes de usarlos en una instrucción clic a clic, confírmalos en la sesión (abrir la página de introducción manual, o el artículo oficial "Cómo introducir operaciones") en vez de asumirlos.
+
+> 🔴 **Corrección importante — no existe un tipo único "Transferencia":** una transferencia entre cuentas propias del usuario se registra como **dos operaciones separadas**, una `Retirada` en la cuenta de origen y un `Depósito` en la de destino, con la retirada en fecha igual o anterior (§2 de esta guía). Nunca uses un bloque `[ Transferencia | … ]` como si fuera un tipo real de CoinTracking — usa dos bloques, uno de cada tipo.
+
+**Ejemplos:**
+
+```
+[ Operación | 04.07.2026 10:35:58 ] [ Compra: 0.25 BTC | Venta: 20000 EUR | Comisión: 10 EUR ] [ Intercambio: Binance | Grupo: Spot | Comentario: Compra BTC ]
+
+[ Depósito | 01.07.2026 09:15:00 ] [ Cantidad: 0.80 BTC ] [ Intercambio: Ledger ]
+
+[ Retirada | 08.07.2026 16:05:12 ] [ Cantidad: 500 USDT ] [ Intercambio: Binance | Comentario: Envío a Ledger ]
+```
+
+Transferencia Ledger → Binance de 0,50 ETH (dos tareas, no una):
+
+```
+[ Retirada | 08.07.2026 16:10:00 ] [ Cantidad: 0.50 ETH ] [ Intercambio: Ledger ]
+[ Depósito | 08.07.2026 16:10:40 ] [ Cantidad: 0.50 ETH ] [ Intercambio: Binance ]
+```
+
 ### 5. Ediciones masivas (tipo, hora, precio)
 Para corregir muchas operaciones a la vez: cambiar tipo, ajustar hora, fijar precio por unidad, etc.
 - Fuentes: [Bulk Edit y Delete](https://cointracking.freshdesk.com/en/support/solutions/articles/29000043331-bulk-edit-and-delete) · [Cambiar tipo](https://cointracking.freshdesk.com/en/support/solutions/articles/29000043132-bulk-edit-change-trade-type) · [Ajustar hora](https://cointracking.freshdesk.com/en/support/solutions/articles/29000043229-bulk-edit-adjust-trade-time) · [Fijar precio por unidad](https://cointracking.freshdesk.com/en/support/solutions/articles/29000043231-bulk-edit-set-price-per-unit)
