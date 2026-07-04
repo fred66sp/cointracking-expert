@@ -53,3 +53,25 @@ Formato de entrada:
 - **Evidencia:** el fichero extendido aporta cobertura y estructura útiles, pero presenta heterogeneidad de formato (listas inline vs bloque), campos vacíos con string vacío, y variabilidad de detalle en evidencia/diagnóstico. Handoff preparado en `reports/output/2026-07-02_handoff_integracion_casos_chatgpt.md` con proceso cerrado y DoD.
 - **Propuesta:** ejecutar migración por fases: (A) normalizar esquema y tipos, (B) curar contenido y confianza, (C) versionar en v2 con convivencia controlada de legacy, (D) validar con criterios de aceptación explícitos. Al cerrar, dejar trazabilidad documental de estado legacy/deprecación.
 - **Resuelto (2026-07-03):** ejecutadas las fases A-D. Resultado en `knowledge/patterns/cointracking_casos_v2.yaml` (20 casos, esquema canónico, sin campos vacíos inconsistentes, 5 categorías críticas de regresión cubiertas). Estado legacy/deprecado de `cointracking_casos_base.yaml` documentado en `knowledge/patterns/INDEX.md` y en **DECISIONS.md#ADR-015**. Ficheros auxiliares `LEEME.md` y `PROMPT_CHATGPT_AGENTE.md` eliminados (contenido absorbido por ADR-015 e INDEX.md).
+
+## [PENDIENTE] 2026-07-05 — Crear ADRs de Capa 2 (Conciliación) — Motor operativo del agente
+
+- **Qué:** El proyecto tiene 32 ADRs bien estructurados en gobernanza, arquitectura y principios (Capas 1, 5, 6), pero **falta la Capa 2 (Conciliación)** — el motor operativo que define qué es una auditoría correcta en CoinTracking. Sin estos ADRs, el agente tiene gobernanza excelente pero carece de especificidad operativa en el dominio crítico.
+- **Dónde:** `adr/` — crear nuevos ADRs 033-040 aproximadamente para cubrir:
+  1. Flujo de conciliación (pipeline invariante: importación → normalización → balances → transfers → duplicados → warnings → missing PH → holdings → FIFO)
+  2. Modelo de balances (qué es un balance "correcto", cuándo es negativo, cuándo parar auditoría)
+  3. Missing Purchase History (causa + detección + falsas alarmas + impacto fiscal)
+  4. Transfers (cómo emparejar withdrawal/deposit/blockchain, tolerancias)
+  5. Duplicados (matriz de clasificación: Trade ID, Order ID, Hash, Cantidad, Precio — más allá de "misma fecha")
+  6. Holdings (validación CT vs Exchange vs Wallet vs Blockchain)
+  7. Cost Basis / FIFO (operativo: cuándo confiar en CT, cuándo recalcular, discrepancias aceptables)
+  8. Warnings (catálogo: gravedad, impacto, acción recomendada)
+- **Evidencia:** análisis de Copilot (2026-07-05) identificó que de los 15 ADRs imprescindibles propuestos para un agente de auditoría, 8 existen (Capa 1 + principios) pero **7 faltan** (Capa 2 completa). Documentado en `docs/ADR_GAP_ANALYSIS_2026-07-05.md` con matriz de cobertura por capa.
+- **Impacto:** CRÍTICO. Sin Capa 2, el agente es "robusto en gobernanza" pero no es "específico a CoinTracking". Es como tener un protocolo de calidad sin definir qué es calidad en el dominio.
+- **Propuesta:** Sesión futura dedicada a diseñar e implementar los 8 ADRs de Capa 2, validados contra:
+  - Documentación oficial de CoinTracking (centro de ayuda)
+  - Comportamiento real de exchanges (Binance, Kraken, etc.)
+  - Casos de auditoría reales del proyecto
+  - Feedback de Copilot (usuario final del agente)
+- **Prioridad:** ⭐⭐⭐⭐⭐ (BLOQUEANTE para que el agente sea productivo)
+- **Siguiente paso:** Leer `docs/ADR_GAP_ANALYSIS_2026-07-05.md` y ejecutar en sesión futura (2026-07-06 o después).
