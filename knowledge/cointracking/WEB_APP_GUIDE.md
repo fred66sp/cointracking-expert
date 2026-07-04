@@ -74,6 +74,8 @@ Usar el informe de **duplicados** para localizarlos y borrarlos; si son muchos, 
 Se pueden añadir operaciones a mano en la página de introducción de operaciones; hay campos obligatorios según el tipo.
 - Fuentes: [Cómo introducir operaciones](https://cointracking.freshdesk.com/en/support/solutions/articles/29000018166-how-to-enter-transactions-into-cointracking) · [Datos obligatorios (custom importer)](https://cointracking.freshdesk.com/en/support/solutions/articles/29000032507-custom-importer-and-mandatory-data-to-add-transactions)
 
+> 🔗 Para mostrar **listas** de operaciones/hallazgos/balances en la conversación (no en informes formales), ver la familia de formatos **CT-List** en `CT_LIST_FORMATS.md` (ADR-025) — timeline, auditoría con ✓/⚠/✗, balance por moneda, por exchange, por activo, y recorrido de fondos.
+
 ### 4bis. Bloque-resumen para introducir una operación manual ("resumen para copiar")
 
 Cuando la tarea implique **crear, modificar o corregir una operación manual** en CoinTracking, tras explicar en lenguaje llano qué hay que hacer y por qué (regla general de este documento y de `CLAUDE.md`), cierra con un **bloque compacto** que el usuario pueda copiar campo a campo sobre el formulario, en el mismo orden que aparece en la tabla/formulario (`Tipo, Compra, Cur., Venta, Cur., Comisión, Cur., Intercambio, Grupo, Comentario, Fecha` — verificado, ver arriba §"Columnas").
