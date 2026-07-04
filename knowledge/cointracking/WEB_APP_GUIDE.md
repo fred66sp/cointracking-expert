@@ -1,10 +1,36 @@
-# Guía de uso de la web de CoinTracking (remediación y operación)
+---
+id: KB-A2-004
+title: "Guía de uso de la web de CoinTracking (remediación y operación)"
+level: A
+domain: cointracking
+source: "CoinTracking — Centro de ayuda oficial"
+authority: official
+last_verified: 2026-07-03
+valid_from: 2026-01-01
+valid_until: null
+confidence: medium
+version: 1.0
 
-**Tipo:** Conocimiento operativo destilado de fuentes oficiales de CoinTracking
-**Fuentes:** Centro de ayuda oficial (URLs al pie y en `reference/CATALOG.md`)
-**Última verificación:** 2026-07-03
-**Vigencia:** la **interfaz de CoinTracking cambia**. Los pasos concretos (nombres de menús/botones) pueden variar — **antes de dar instrucciones clic a clic, verifica los pasos vigentes** en el artículo oficial citado (ADR-008). No inventes rutas de menú (ADR-009).
-**Estado:** Destilado y reelaborado (no copia verbatim)
+related_adr:
+  - ADR-032
+  - ADR-024
+  - ADR-009
+
+related_docs:
+  - CSV_FORMAT.md
+  - reference/CATALOG.md
+
+tags:
+  - cointracking
+  - web-app
+  - ui
+  - guide
+  - remediation
+
+notes: "Interfaz de CT cambia regularmente. CRÍTICO: antes de dar pasos clic a clic, reverificar en artículo oficial citado."
+---
+
+# Guía de uso de la web de CoinTracking (remediación y operación)
 
 Esta guía permite al agente **acompañar a un usuario novato** a operar la web de CoinTracking, sobre todo para **corregir** los problemas que detecta la auditoría y para **generar los informes**. Explica en pasos sencillos, uno a uno, y en lenguaje llano (ver estilo de guía en `CLAUDE.md`).
 

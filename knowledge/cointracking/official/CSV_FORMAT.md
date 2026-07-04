@@ -1,9 +1,37 @@
-# Formato CSV de CoinTracking (Trade Table)
+---
+id: KB-A2-001
+title: "Formato CSV de CoinTracking (Trade Table)"
+level: A
+domain: cointracking
+source: "CoinTracking — exportaciones de producción, datos reales del usuario"
+authority: official
+last_verified: 2026-07-03
+valid_from: 2026-01-01
+valid_until: null
+confidence: high
+version: 1.0
 
-**Estado:** Validado contra datos reales — **dos variantes** documentadas (§1-10 y §12)
-**Fuentes:** (a) Exportación "Trade Table"/CSV simple, locale ES (1.828 operaciones, rango 2024-03-01 → 2026-07-01, 6 cuentas); (b) Exportación "CSV (Exportación Completa)", locale inglés (proyecto `binance-2025`, 1.821 operaciones, 2024-04 → 2025)
-**Fecha de validación:** 2026-07-02 (variante ES) · 2026-07-03 (variante EN, §12)
-**Vigencia:** formatos observados en 2026-07. CoinTracking puede cambiar columnas, tipos o tickers — ante la duda, **los datos reales del usuario mandan**; reverificar contra el CSV/MCP actual y el centro de ayuda (ADR-008).
+related_adr:
+  - ADR-032
+  - ADR-004
+  - ADR-003
+
+related_docs:
+  - COST_BASIS_AND_VALIDATION.md
+  - MCP_API.md
+  - tools/ct_audit.py
+
+tags:
+  - cointracking
+  - csv
+  - format
+  - import
+  - trade-table
+
+notes: "Validado contra datos reales (3.649 operaciones, 2 variantes). CoinTracking puede cambiar formato — reversificar si hay cambios de columnas/tipos/tickers."
+---
+
+# Formato CSV de CoinTracking (Trade Table)
 
 Este documento describe el formato **real** de las exportaciones de operaciones de CoinTracking, verificado contra exportaciones de producción. Conforme a ADR-004, es la referencia autoritativa para la capa de importación: ninguna suposición sobre el formato debe cerrarse sin contrastarla aquí. `tools/ct_audit.py` detecta automáticamente cuál de las dos variantes recibe (§12 "Detección automática").
 

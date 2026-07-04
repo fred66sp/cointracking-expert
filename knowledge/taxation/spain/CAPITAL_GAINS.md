@@ -1,10 +1,36 @@
-# Ganancias y pérdidas patrimoniales por criptomonedas (IRPF España)
+---
+id: KB-A1-002
+title: "Ganancias y pérdidas patrimoniales por criptomonedas (IRPF España 2025)"
+level: A
+domain: taxation
+source: "AEAT — Manual práctico IRPF 2025, LIRPF arts. 14, 33, 35, 37.1.h, 46.b, 49"
+authority: official
+last_verified: 2026-07-02
+valid_from: 2025-01-01
+valid_until: 2025-12-31
+confidence: high
+version: 1.0
 
-**Jurisdicción:** España — IRPF, personas físicas residentes
-**Fuentes:** Manual práctico IRPF 2025 (AEAT); LIRPF arts. 14, 33, 35, 37.1.h, 46.b, 49
-**Última verificación:** 2026-07-02
-**Vigencia:** cifras y criterios del ejercicio **2025**. La normativa cambia cada año — reverificar (AEAT/BOE/DGT) para otros ejercicios o si esta fecha es antigua (ADR-008).
-**Estado:** Fundamentado en fuente oficial
+related_adr:
+  - ADR-032
+  - ADR-031
+  - ADR-028
+
+related_docs:
+  - INFORMATIVE_OBLIGATIONS.md
+  - CAPITAL_INCOME.md
+
+tags:
+  - taxation
+  - capital-gains
+  - irpf
+  - spain
+  - 2025
+
+notes: "Ejercicio 2025. Normativa cambia cada año. Requiere reverificación enero 2026 para siguiente ejercicio."
+---
+
+# Ganancias y pérdidas patrimoniales por criptomonedas (IRPF España)
 
 > ⚠️ Base técnica para cálculo y reconciliación, **no asesoramiento fiscal**. Ver disclaimer en INDEX.md.
 

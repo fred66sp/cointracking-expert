@@ -1,10 +1,35 @@
-# Obligaciones informativas sobre criptomonedas (España)
+---
+id: KB-A1-001
+title: "Obligaciones informativas sobre criptomonedas (España)"
+level: A
+domain: taxation
+source: "AEAT — Modelo 721 + preguntas frecuentes, Modelos 172/173"
+authority: official
+last_verified: 2026-07-02
+valid_from: 2026-01-01
+valid_until: 2026-12-31
+confidence: high
+version: 1.0
 
-**Jurisdicción:** España
-**Fuentes:** AEAT — Modelo 721 (declaración informativa sobre monedas virtuales situadas en el extranjero) y preguntas frecuentes; Modelos 172 y 173
-**Última verificación:** 2026-07-02
-**Vigencia:** umbrales y plazos vigentes a 2026-07. Pueden cambiar por año — reverificar (AEAT) el umbral (50.000 €), la regla de repetición (+20.000 €) y los plazos si esta fecha es antigua (ADR-008).
-**Estado:** Fundamentado en fuente oficial
+related_adr:
+  - ADR-032
+  - ADR-031
+  - ADR-028
+
+related_docs:
+  - CAPITAL_GAINS.md
+  - CAPITAL_INCOME.md
+
+tags:
+  - taxation
+  - modelo-721
+  - obligaciones-informativas
+  - spain
+
+notes: "Cambio anual. Requiere reverificación cada enero (umbrales, plazos, reglas pueden cambiar)."
+---
+
+# Obligaciones informativas sobre criptomonedas (España)
 
 > ⚠️ Base técnica, **no asesoramiento fiscal**. Ver disclaimer en INDEX.md.
 

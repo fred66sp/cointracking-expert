@@ -1,10 +1,39 @@
-# Base de coste, "purchase pool" y validación en CoinTracking
+---
+id: KB-A2-002
+title: "Base de coste, purchase pool y validación en CoinTracking"
+level: A
+domain: cointracking
+source: "CoinTracking centro de ayuda (destilado), validado contra datos reales"
+authority: official
+last_verified: 2026-07-02
+valid_from: 2026-01-01
+valid_until: null
+confidence: high
+version: 1.0
 
-**Tipo:** Conocimiento propio destilado de fuentes oficiales de CoinTracking
-**Fuentes:** Centro de ayuda de CoinTracking (ver enlaces al pie); catálogo en `reference/CATALOG.md`
-**Última verificación:** 2026-07-02
-**Vigencia:** destilado del centro de ayuda de CoinTracking a 2026-07. El comportamiento de la plataforma (purchase pool, avisos, métodos) puede cambiar — reverificar contra las URLs de `reference/CATALOG.md` si esta fecha es antigua (ADR-008).
-**Estado:** Destilado y reelaborado (no copia verbatim)
+related_adr:
+  - ADR-032
+  - ADR-004
+  - ADR-019
+  - ADR-018
+
+related_docs:
+  - CSV_FORMAT.md
+  - MCP_API.md
+  - knowledge/patterns/cointracking_casos_v2.yaml
+  - tools/ct_audit.py
+
+tags:
+  - cointracking
+  - cost-basis
+  - purchase-pool
+  - fifo
+  - validation
+
+notes: "Destilado de documentación oficial CT. Comportamiento puede cambiar — reverificar contra reference/CATALOG.md si es antiguo."
+---
+
+# Base de coste, "purchase pool" y validación en CoinTracking
 
 Este documento explica, **con nuestras propias palabras**, cómo CoinTracking calcula la base de coste y detecta inconsistencias. Es conocimiento crítico para la auditoría (`tools/ct_audit.py`, skill `audit-cointracking`) y para la preparación fiscal (skill `spanish-tax-return`), porque define cómo se comporta la plataforma cuyos datos auditamos.
 

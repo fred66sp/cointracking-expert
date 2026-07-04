@@ -1,10 +1,35 @@
-# Integración con la API de CoinTracking vía MCP
+---
+id: KB-A2-003
+title: "Integración con la API de CoinTracking vía MCP"
+level: A
+domain: cointracking
+source: "CoinTracking API + implementación propia MCP (Go)"
+authority: official
+last_verified: 2026-07-03
+valid_from: 2026-07-03
+valid_until: null
+confidence: high
+version: 1.0
 
-**Tipo:** Documentación de integración (obra propia)
-**Servidor MCP:** `cointracking-mcp` — implementación propia en Go, en `cointracking-mcp/` (spec en `cointracking-mcp/SPEC/`). Sustituye a partir de 2026-07-03 al servidor JS de terceros usado antes (`cointracking-mcp-main/`, de Alessandro Melazzini, MIT); ese repo sigue en el filesystem como referencia de puerto pero ya no es el que arranca `.mcp.json`.
-**Última verificación:** 2026-07-03
-**Vigencia:** herramientas y parámetros del MCP y límites de la API observados a 2026-07. Pueden cambiar con nuevas versiones del servidor/API — reverificar contra las herramientas `cointracking_*` realmente disponibles en la sesión si esta fecha es antigua (ADR-008).
-**Estado:** Operativo; verificado contra la API real (`getBalance`, `getGroupedBalance`, `getGains`, `getTrades`, `getHistoricalCurrency`)
+related_adr:
+  - ADR-032
+  - ADR-020
+  - ADR-016
+
+related_docs:
+  - CSV_FORMAT.md
+  - COST_BASIS_AND_VALIDATION.md
+
+tags:
+  - cointracking
+  - api
+  - mcp
+  - integration
+
+notes: "Servidor MCP propio en Go (cointracking-mcp/). Sustituye JS legacy desde 2026-07-03. Reverificar si hay nuevas versiones."
+---
+
+# Integración con la API de CoinTracking vía MCP
 
 Esta es la vía de **datos en vivo** del agente auditor (ADR-006), complementaria al CSV export. El servidor MCP es **solo lectura** y expone la API de usuario de CoinTracking como herramientas `cointracking_*`, con caché propia (memoria + disco) por proyecto.
 
