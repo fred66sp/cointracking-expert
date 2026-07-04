@@ -21,7 +21,7 @@ En cuanto quede fijado (o si ya lo estaba de una skill anterior en la misma conv
 
 Después:
 
-1. **Carga el conocimiento**: lee `knowledge/cointracking/CSV_FORMAT.md`, `knowledge/cointracking/COST_BASIS_AND_VALIDATION.md`, `knowledge/taxation/spain/CAPITAL_GAINS.md`. Son las reglas que aplicarás y citarás.
+1. **Carga el conocimiento**: lee `knowledge/cointracking/official/CSV_FORMAT.md`, `knowledge/cointracking/official/COST_BASIS_AND_VALIDATION.md`, `knowledge/taxation/spain/CAPITAL_GAINS.md`. Son las reglas que aplicarás y citarás.
 2. **Localiza los datos** (ADR-006, ambas vías):
    - **MCP de CoinTracking**: si hay herramientas MCP de CoinTracking disponibles en la sesión, úsalas para datos en vivo. Si el usuario menciona un MCP pero no está conectado, pídele que lo conecte (`/mcp`).
    - **CSV export**: búscalo en la carpeta **`USER_INPUT/<proyecto>/`** (ahí deja el usuario los archivos que le pedimos; ver `USER_INPUT/README.md`). Está en `.gitignore` por privacidad.
