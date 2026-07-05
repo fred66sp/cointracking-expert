@@ -36,7 +36,9 @@
       "Bash(grep -r \"^id: KB-B1-002$\" knowledge --include=\"*.md\")",
       "Bash(grep -r \"^id: KB-C1-002$\" knowledge --include=\"*.md\")",
       "Bash(grep -r \"^id: KB-D1-001$\" knowledge --include=\"*.md\")",
-      "Bash(git commit -m 'Implementar ADR-037/38: Pre-commit hooks + CI/CD + Documentación *)"
+      "Bash(git commit -m 'Implementar ADR-037/38: Pre-commit hooks + CI/CD + Documentación *)",
+      "Bash(python tools/test_cache_savings.py)",
+      "Bash(git commit -m 'Fase 3: Validacion de Ahorro de Tokens — ADR-039 ACCEPTED *)"
     ],
     "additionalDirectories": [
       "H:\\cointracking-expert\\cointracking-mcp\\cmd"

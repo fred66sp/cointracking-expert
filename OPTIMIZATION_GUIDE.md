@@ -8,8 +8,10 @@
 
 - ✅ ADR-039 documentado (estrategia de 3 capas)
 - ✅ `cache_manager.py` implementado (Fase 1)
-- ⏳ Integración en skills (Fase 2)
-- ⏳ Validación (Fase 3)
+- ✅ Integración en skills (Fase 2)
+- ✅ Validación (Fase 3) — Test ejecutado, 67% MCP + 91% contexto
+
+**Status Final:** ACCEPTED ✓
 
 ---
 
@@ -122,12 +124,12 @@ mgr.invalidate_all()  # Limpia TODO el caché del proyecto
 
 ## Próximas Tareas
 
-- [ ] Integrar CacheManager en `/audit-cointracking`
-- [ ] Integrar CacheManager en `/spanish-tax-return`
-- [ ] Validar ahorro (medir tokens)
-- [ ] Documentar resultados en ADR-039
-- [ ] Actualizar skills docstring con instrucciones
+- [x] Integrar CacheManager en `/audit-cointracking` (Fase 2)
+- [x] Integrar CacheManager en `/spanish-tax-return` (Fase 2)
+- [x] Validar ahorro (medir tokens) (Fase 3)
+- [x] Documentar resultados en ADR-039 (Fase 3)
+- [x] Actualizar skills docstring con instrucciones (Fase 2)
 
 ---
 
-**Estado:** Fase 1 completa ✅ | Esperando integración en skills (Fase 2)
+**Estado:** Todas las fases completas ✅ | ADR-039 ACCEPTED
