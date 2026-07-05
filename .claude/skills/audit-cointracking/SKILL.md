@@ -29,7 +29,19 @@ Después:
    - Si no hay ninguno, dilo y detente: no inventes datos.
    - **Documentación adicional bajo demanda:** si un hallazgo concreto lo justifica (duplicados dudosos, transferencia huérfana, discrepancia de balance…), consulta `knowledge/cointracking/DOCUMENT_CHECKLIST.md` para saber qué informe extra de CoinTracking pedir (§A) o qué dato del propio exchange solicitar al usuario (§B, p. ej. trade_id para ADR-014). No lo pidas todo de entrada; solo lo que el hallazgo requiera.
 3. **Normaliza mentalmente** según el conocimiento: fechas a UTC desde `Europe/Madrid` con DST (ADR-005), importes con precisión decimal, ticker completo con sufijo (`SOL` ≠ `SOL2`), parsear por posición (3 columnas `Cur.`).
-4. **Sé económico (ADR-010).** Cachea lo obtenido en `.cache/cointracking/` (con marca de tiempo) y reutilízalo; no vuelvas a llamar si ya lo tienes fresco. Consulta lo mínimo (rango, `limit`, agregados). Para volúmenes grandes (historial completo), vuelca a fichero y **procésalo con un script**, subiendo al contexto solo el resultado. No pegues JSON crudo.
+4. **Sé económico (ADR-010/ADR-039).** Usa `CacheManager` para reutilizar datos (ver `tools/cache_manager.py`):
+   ```python
+   from tools.cache_manager import CacheManager
+   mgr = CacheManager(project_name)  # <proyecto activo>
+   # get_or_fetch reutiliza datos < 24h, falso solo si es necesario
+   balance = mgr.get_or_fetch('get_grouped_balance', {...}, mcp_call_fn=..., max_age_hours=24)
+   ```
+   - Caché persiste en `.cache/cointracking/<proyecto>/` (marca de tiempo automática)
+   - Invalida si el usuario hizo cambios: `mgr.invalidate_pattern('get_trades')`
+   - Procesa localmente: usa `tools/ct_audit.py` en lugar de pasar JSON al contexto
+   - Ahorro: 80-90% de tokens (ADR-039) — 5500 → 500 tokens/auditoría
+   
+   Consulta lo mínimo (rango, `limit`, agregados). Para volúmenes grandes (historial completo), vuelca a fichero y **procésalo con un script**, subiendo al contexto solo el resultado. No pegues JSON crudo.
 
 ## Paso 1 — Ejecuta el playbook de chequeos, en orden fijo (ADR-017)
 

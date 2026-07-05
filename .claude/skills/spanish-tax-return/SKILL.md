@@ -43,7 +43,14 @@ Solo tras este diálogo, continúa con el Paso 1.
 
 **No des ninguna cifra fiscal sobre datos sin reconciliar.**
 
-- **Reutiliza si ya está hecho.** Si en **esta misma conversación** ya se ejecutó una auditoría (p. ej. el usuario invocó `/audit-cointracking` antes) sobre **la misma fuente y sin cambios desde entonces**, **reutiliza sus hallazgos**; **no la repitas** (evita gastar llamadas a la API, límite 60/h). Dilo: "reutilizo la auditoría que acabamos de hacer".
+- **Reutiliza si ya está hecho.** Si en **esta misma conversación** ya se ejecutó una auditoría (p. ej. el usuario invocó `/audit-cointracking` antes) sobre **la misma fuente y sin cambios desde entonces**, **reutiliza sus hallazgos**; **no la repitas** (evita gastar llamadas a la API, límite 60/h). Usa `CacheManager` para automatizar esto (ver `tools/cache_manager.py`):
+  ```python
+  from tools.cache_manager import CacheManager
+  mgr = CacheManager(project_name)
+  # Los datos cachetados < 24h se reutilizan automáticamente
+  balance = mgr.get_or_fetch('get_grouped_balance', {...}, mcp_call_fn=..., max_age_hours=24)
+  ```
+  Dilo: "reutilizo la auditoría que acabamos de hacer (datos en caché)".
 - **Re-audita solo si:** no se ha hecho aún, los **datos han cambiado** (el usuario corrigió operaciones), o cambió la fuente.
 - Cuando toque auditar, usa la skill `audit-cointracking` o el subagente `cointracking-auditor`.
 
@@ -51,6 +58,15 @@ Solo tras este diálogo, continúa con el Paso 1.
 - Solo continúa cuando los datos estén razonablemente limpios (o el usuario acepte el riesgo explícitamente).
 
 ## Paso 2 — Eventos imponibles del ejercicio
+
+**Optimización de tokens (ADR-039):** Procesa datos localmente, no en contexto LLM. Usa `tools/ct_audit.py` y `CacheManager` para análisis local antes de pasar resultados compactos al contexto. Ejemplo:
+```python
+mgr = CacheManager(project_name)
+trades = mgr.get_or_fetch('get_trades', {...}, mcp_call_fn=..., max_age_hours=1)
+# Procesar en Python (sin contexto):
+taxable_events = analyze_trades_locally(trades)  # Devuelve resumen, no JSON crudo
+# Pasar solo resumen al contexto (~200 tokens vs ~3000 sin procesar)
+```
 
 Con `cointracking_get_trades` acotado a `start`/`end` del año (UNIX **segundos**; convierte 1 ene 00:00 y 31 dic 23:59:59 de `Europe/Madrid` a UTC, ADR-005), identifica y clasifica:
 
