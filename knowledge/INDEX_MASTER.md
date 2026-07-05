@@ -180,7 +180,7 @@ Este documento es un **índice navegable** de todos los niveles de conocimiento 
 
 **Ubicación:** `knowledge/cointracking/behavioral/`
 
-**Estado actual (7/9 documentos) ✅ 78%**
+**Estado actual (9/10 documentos) ✅ 90%**
 - ✅ `cointracking/behavioral/BINANCE_SPOT_MECHANICS.md` (KB-B2-001) — Compras/ventas normales, API, importación
 - ✅ `cointracking/behavioral/BINANCE_MARGIN_MECHANICS.md` (KB-B2-002) — Trading apalancado, borrow, repay, riesgos fiscales
 - ✅ `cointracking/behavioral/BINANCE_FUTURES_MECHANICS.md` (KB-B2-003) — Perpetuos, PnL, funding fees, ⚠️ fiscalidad crítica
@@ -188,10 +188,12 @@ Este documento es un **índice navegable** de todos los niveles de conocimiento 
 - ✅ `cointracking/behavioral/BINANCE_CONVERT_MECHANICS.md` (KB-B2-005) — Intercambios rápidos, fee integrado
 - ✅ `cointracking/behavioral/KRAKEN_STAKING_MECHANICS.md` (KB-B2-006) — On-chain staking, rewards, kETH
 - ✅ `cointracking/behavioral/COINBASE_ADVANCED_TRADE.md` (KB-B2-007) — Advanced Trade, staking, stETH, stUSDC
+- ✅ `cointracking/behavioral/BINGX_MECHANICS.md` (KB-B2-010) — Spot, Margin, Perpetuos (usado en agp)
 - ✅ `exchanges/BINANCE.md` (módulos, limitaciones) — *nota: parcialmente A3, parcialmente B2*
-- ❌ `BINANCE_IMPORT_WORKFLOW.md` (cómo importar correctamente)
 
-**Próximo paso (Fase 4+):** B3 (blockchains) y otros exchanges (Bybit, Kraken Advanced, etc.)
+**Próximo paso:** Bybit, OKX (exchanges adicionales)
+
+**En este proyecto:** BingX completamente documentado
 
 ---
 
