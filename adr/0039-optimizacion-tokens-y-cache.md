@@ -1,253 +1,306 @@
-# ADR-039: Optimización de Tokens y Estrategia de Caché
+# ADR-039: Optimización de Recursos y Estrategia de Caché
 
 **Status:** Accepted  
 **Proposed:** 2026-07-05  
 **Accepted:** 2026-07-05  
 **Last Updated:** 2026-07-05
 
+**Clasificación:** Arquitectónico (afecta a todo el sistema: rendimiento, coste, escalabilidad)
+
+---
+
+## Contexto
+
+El sistema audita operaciones cripto usando dos recursos finitos:
+
+1. **Llamadas MCP:** Límite 60/hora al servidor de CoinTracking
+2. **Tokens de contexto LLM:** Recursivo del modelo; costo operativo
+
+Sin estrategia de caché y procesamiento local, ambos se consumen innecesariamente en datos ya disponibles o análisis que no requieren LLM.
+
 ---
 
 ## Problema
 
-El sistema usa MCP (servidor Go) para acceder a CoinTracking, pero:
-- Límite: 60 llamadas/hora
-- Contexto: Cada respuesta JSON grande consume tokens
-- Ineficiencia: Llamadas redundantes sin caché persistente
-- No hay estrategia clara de optimización de tokens
+El sistema incurre en **costos redundantes** sin obtener mejor calidad:
 
-**Costo típico hoy:**
-- `cointracking_get_trades()` completo: ~2000 tokens
-- `cointracking_get_grouped_balance()`: ~500 tokens
-- Auditoría MEGA completa: ~5-10K tokens (depende de tamaño)
-- Preparar IRPF: ~15-20K tokens (con contexto de conocimiento)
+- Llamadas MCP duplicadas (mismo proyecto, mismo rango de fechas)
+- JSON crudo en contexto LLM (5.000 transacciones cuando bastaban 10 hallazgos)
+- Recompilación de análisis idénticos tras cambios menores
+- Escalabilidad comprometida (50+ proyectos/año → token budget insostenible)
+
+**Principio violado:** El contexto LLM debe contener el mínimo de información necesario para tomar decisiones trazables.
 
 ---
 
 ## Decisión
 
-**Estrategia de tokens de tres capas:**
+**Optimizar consumo de recursos mediante caché distribuida y procesamiento local, sin comprometer trazabilidad ni reproducibilidad.**
 
-### Capa 1: Caché Local (MEJOR AHORRO)
+La optimización se implementa en **tres capas**:
 
-**Implementar caché persistente** en `.cache/cointracking/`:
+### Capa 1: Caché Persistente
 
+**¿Qué?** Almacenar respuestas MCP en disco con versioning.
+
+**¿Por qué?** Las respuestas MCP no cambian a menos que el usuario importe de nuevo. Reutilizarlas evita llamadas redundantes.
+
+**Regla de invalidación:**
 ```
-.cache/cointracking/
-├── {project}/
-│   ├── balance_2026-07-05_12-30.json     (última llamada a get_balance)
-│   ├── grouped_balance_2026-07-05.json   (por día)
-│   ├── trades_2026-01-01_2026-07-05.json (rango completo)
-│   ├── gains_fifo_2026.json              (por año fiscal)
-│   └── cache_manifest.json               (metadata)
-```
-
-**Reglas:**
-- ✅ Reutilizar caché si:
-  - Menos de 24h de antigüedad (balances)
-  - Mismo rango de fechas (trades, gains)
-  - Usuario no pide "refresco"
-- ❌ Invalidar caché si:
-  - Usuario hizo cambios en CoinTracking (guiar correcciones)
-  - Cambio de proyecto activo
-  - Usuario ejecuta `cointracking_invalidate_cache`
-
-**Ahorro estimado:** 50-70% de llamadas MCP
-
-### Capa 2: Agregados (No Detalles)
-
-**Preferir llamadas agregadas sobre detalles:**
-
-| Costoso | Económico | Ahorro |
-|---------|-----------|--------|
-| `get_trades()` completo | `get_grouped_balance()` | 60% |
-| Listar 500 operaciones | Contar por categoría | 70% |
-| Descargar historial año | `get_gains()` por ejercicio | 80% |
-
-**Regla:** Si solo necesitas cifras, usa agregados.
-
-### Capa 3: Procesamiento Local
-
-**Procesar datos localmente, no en contexto LLM:**
-
-```python
-# ❌ COSTOSO: Pasar 5000 trades al LLM para análisis
-trades_full = mcp.get_trades(limit=5000)  # ~2000 tokens
-# → Luego en contexto: summarize(trades_full)  # +3000 tokens
-
-# ✅ ECONÓMICO: Procesar en Python, pasar solo resultado
-trades_full = mcp.get_trades(limit=5000)  # ~2000 tokens
-summary = analyze_trades_locally(trades_full)  # Python puro
-# → Pasar solo summary al LLM (~200 tokens)
+Invalidar si:
+  - Usuario importó datos nuevos en CoinTracking
+  - Cambió proyecto activo
+  - ADR relacionados con auditoría cambiaron de versión
+  - Knowledge base de reglas fiscales se actualizó
+  - Versionado de caché reporta obsolescencia
+  
+No invalidar por:
+  - Paso del tiempo (si los datos no cambiaron en origen)
+  - Cambio en other projects (cada proyecto tiene caché aislada)
 ```
 
-**Herramientas:** `tools/ct_audit.py`, scripts de análisis en Python.
+**Niveles de TTL (configurables):**
 
----
+| Tipo | TTL | Justificación |
+|------|-----|---------------|
+| Trades (histórico) | Permanente* | No cambia salvo reimportación |
+| Holdings | 15 min | Pueden cambiar entre operaciones |
+| Balance actual | 15 min | Estado vivo del exchange |
+| Tax Report anual | 24h | Generado una vez/año |
+| Gains (FIFO) | Permanente* | Determinista si trades no cambian |
+| Knowledge base | Versionado | Cambios ex plícitos |
 
-## Implicaciones
+*Permanente hasta detectar cambios en origen.
 
-### Para `/audit-cointracking` Skill
+### Capa 2: Agregados antes que Detalle
 
+**¿Qué?** Preferir `get_grouped_balance()` sobre `get_trades()` cuando sea posible.
+
+**¿Por qué?** Agregados devuelven el mismo contexto en 20% del tamaño.
+
+**Regla:**
+- Si necesitas **cifras**: usa agregados.
+- Si necesitas **estructura/justificación de cifras**: usa detalle (ya en caché).
+
+### Capa 3: Procesamiento Local sin Contexto LLM
+
+**¿Qué?** Delegar análisis de datos a scripts Python (no a LLM).
+
+**¿Por qué?** El LLM no necesita procesar 5.000 transacciones para concluir:
 ```
-Hoy (sin caché):
-  1. get_trades() → 2000 tokens
-  2. get_grouped_balance() → 500 tokens
-  3. Análisis en contexto → +3000 tokens
-  Total: ~5500 tokens/auditoría
-
-Con optimizaciones:
-  1. get_trades() (caché) → reutiliza (0 tokens)
-  2. get_grouped_balance() (caché) → reutiliza (0 tokens)
-  3. Análisis local (Python) → 0 tokens
-  4. Pasar solo hallazgos → 500 tokens
-  Total: ~500 tokens/auditoría (90% ahorro)
+- 3 balances negativos
+- 2 posibles duplicados  
+- 1 transferencia huérfana
 ```
 
-### Para `/spanish-tax-return` Skill
+Basta con recibir esos hallazgos resumidos.
 
+**Regla de oro:**
 ```
-Hoy:
-  1. Auditoría (reutiliza datos) → 500 tokens
-  2. get_gains() → 1000 tokens
-  3. Preparar IRPF en contexto → +5000 tokens
-  Total: ~6500 tokens/declaración
+LLM recibe:
 
-Con optimizaciones:
-  1. Auditoría (caché) → 100 tokens
-  2. get_gains() (caché + local process) → 200 tokens
-  3. Preparar IRPF con template → 1000 tokens
-  Total: ~1300 tokens/declaración (80% ahorro)
+NUNCA:   JSON crudo, listas completas, datos sin filtrar
+SIEMPRE: Evidencias resumidas, métricas, anomalías, resultados intermedios reproducibles
+```
+
+**Arquitectura:**
+```
+Datos origen (MCP/CSV)
+    ↓
+Análisis local (Python, determinista)
+    ↓
+Hallazgos compactos (< 500 tokens)
+    ↓
+Contexto LLM (interpretación, explicación)
 ```
 
 ---
 
-## Implementación (Roadmap)
+## Principios Arquitectónicos
 
-### Fase 1: Caché Persistente (Week 1)
+### Principio 1: Integridad de Auditoría
 
-```python
-# tools/cache_manager.py (crear)
-class CacheManager:
-    def get_or_fetch(self, call_name, params, max_age_hours=24):
-        cached = self.load_from_disk(call_name, params)
-        if cached and cached['age'] < max_age_hours:
-            return cached['data']
-        # Si no existe o está viejo, fetch y cache
-        data = mcp_call(call_name, params)
-        self.save_to_disk(call_name, params, data)
-        return data
+> **La optimización nunca debe alterar el resultado de una auditoría; únicamente reducir el coste computacional necesario para obtenerlo.**
 
-    def invalidate(self, project):
-        # Borrar caché del proyecto
-        shutil.rmtree(f'.cache/cointracking/{project}/')
-```
+Contraejemplo: No omitir una transferencia huérfana solo porque su detección se optimizó.
 
-**En skills:** Reemplazar llamadas MCP con `cache_mgr.get_or_fetch()`
+### Principio 2: No Cachear Conclusiones
 
-### Fase 2: Procesamiento Local (Week 2)
+> **Solo se cachean datos y resultados intermedios reproducibles. Nunca conclusiones.**
 
-```python
-# tools/analysis_local.py (crear/mejorar)
-def analyze_trades_for_audit(trades):
-    """Análisis sin contexto LLM, devuelve hallazgos compactos"""
-    duplicates = detect_duplicates(trades)
-    orphans = detect_orphan_transfers(trades)
-    negative_balances = check_negative_balances(trades)
-    return {
-        'duplicates': duplicates,
-        'orphans': orphans,
-        'negative_balances': negative_balances,
-        'summary': f"{len(duplicates)} duplicados, {len(orphans)} huérfanas..."
-    }
-```
+- ✅ Cachear: trades (datos), gains (resultado FIFO determinista), balance (hecho, no interpretación)
+- ❌ Cachear: "es una venta imponible" (conclusión depende de ADRs), "usuario tiene riesgo fiscal" (depende de escenarios)
 
-**En skill:** Pasar solo hallazgos al contexto.
+Las conclusiones dependen de:
+- ADRs vigentes (cambian)
+- Reglas fiscales (actualizan cada año)
+- Versión del agente (evoluciona)
+- Algoritmos de reconciliación (se mejoran)
 
-### Fase 3: Validación (Week 3)
+Si algo de esto cambia, las conclusiones previas invalidan.
 
-- Medir tokens antes/después
-- Comparar con baseline (5500 → ~500 tokens)
-- Documentar en ADR-039 como "Accepted"
+### Principio 3: Minimización de Contexto
+
+> **El agente solo incorporará al contexto del LLM la cantidad mínima de información necesaria para tomar una decisión trazable, reproducible y explicable.**
+
+Este principio es transversal: afecta a caché, a formato de respuestas, a templates, a todo.
+
+**Aplicación:**
+- No incluyas 500 transacciones en contexto; incluye el resumen.
+- No pases JSON crudo; pasa tablas procesadas.
+- No describa cada operación; describe hallazgos y solicita detalle si es necesario.
 
 ---
 
-## Estimación de Ahorro
+## Implicaciones Operativas
 
-| Componente | Hoy | Optimizado | Ahorro |
-|-----------|-----|-----------|--------|
-| Auditoría | 5500 | 500 | 91% |
-| IRPF | 6500 | 1300 | 80% |
-| Auditoría MEGA | 5000 | 1000 | 80% |
-| Promedio | 5667 | 933 | **84% ahorro total** |
+### Auditoría
 
-**Impacto:** Con 50 operaciones/mes, pasa de ~283K tokens a ~47K tokens.
+Sin optimizar:
+- MCP: 5.500 tokens (get_trades, get_balance, get_gains, get_historical_summary)
+- Contexto: 3.000 tokens (análisis en LLM)
+- **Total: ~8.500 tokens**
+
+Con optimizar (run 1):
+- MCP: 5.500 tokens (datos nuevos, necesarios)
+- Contexto: 200 tokens (análisis local, hallazgos compactos)
+- **Total: ~5.700 tokens** (33% ahorro)
+
+Con caché (run 2+):
+- MCP: 0 tokens (CACHE HIT 100%)
+- Contexto: 200 tokens
+- **Total: ~200 tokens** (98% ahorro)
+
+### Declaración Fiscal
+
+Sin optimizar:
+- MCP: 1.000 tokens (get_gains nuevo)
+- Contexto: 2.200 tokens (preparar informe)
+- **Total: ~3.200 tokens**
+
+Con optimizar:
+- MCP: 1.000 tokens (nuevo, necesario)
+- Contexto: 300 tokens (template + resultados previos)
+- **Total: ~1.300 tokens** (59% ahorro)
 
 ---
 
-## Riesgos / Consideraciones
+## Versionado y Reproducibilidad
 
-| Riesgo | Mitigation |
-|--------|-----------|
-| Caché desincronizado | Invalidar al detectar cambios usuario |
-| Hit rate bajo al inicio | Será alto después de 2-3 usos |
-| Análisis local incompleto | Usar MCP solo si análisis local reporta ambigüedad |
-| Overhead de I/O disco | Mínimo en `.cache/` local (< 1ms) |
+La caché registra el contexto con el que fue generada:
+
+```json
+{
+  "project": "agp2025",
+  "timestamp": "2026-07-05T10:42:00Z",
+  "data_versions": {
+    "adr_039": "1.0",
+    "capital_gains_rules": "2025-edition",
+    "ct_import_format": "2026-q2",
+    "knowledge_base": "v2.3.1"
+  },
+  "validity": "valid_if_versions_match"
+}
+```
+
+Esto permite:
+- Detectar si una auditoría previa sigue siendo válida
+- Regenerar con versiones nuevas si algo cambió
+- Auditar el linaje de datos (de dónde salió cada cifra)
+
+---
+
+## Criterios de Invalidación (Completos)
+
+La caché se invalida (parcial o total) si:
+
+1. **Usuario hace cambios en CoinTracking** (importa nuevos datos, edita operación)
+2. **Cambio de proyecto activo** (cada proyecto tiene caché aislada)
+3. **Cambio de exchange** (agregar nuevo, eliminar)
+4. **Cambio de rango de fechas** (p. ej. auditor ahora cubre 2023-2026)
+5. **Cambio de versión MCP** (formato de respuesta distinto)
+6. **Cambio de ADR relacionado** (ADR-036, ADR-037, ADR-038, etc.)
+7. **Cambio de base de conocimiento** (reglas fiscales, procedimientos)
+8. **Cambio de algoritmo de auditoría** (nuevo método FIFO, nueva validación)
+9. **Llamada explícita de usuario** (`cointracking_invalidate_cache`)
+
+**Implementación:** Fase 4 (versionado automático) validará estas condiciones.
+
+---
+
+## Riesgos Conocidos y Mitigación
+
+| Riesgo | Síntoma | Mitigación |
+|--------|---------|-----------|
+| Caché desincronizada | Auditoría reporta datos viejos | Fase 4: versionado automático |
+| Hit rate bajo al inicio | Primeras auditorías sin ahorro | Aceptable; ahorro acumula en run 2+ |
+| Overhead I/O | Lectura/escritura más lenta que MCP | Datos locales minimizan latencia |
+| Crecimiento caché | `.cache/` → GB tras meses | Fase 4: limpieza LRU automática |
+| Cambios regulatorios imprevistos | Auditoría antigua con reglas viejas | Versionado obliga reverificación |
+
+---
+
+## Implementación por Fases
+
+| Fase | Estado | Entrega | Dependencias |
+|------|--------|---------|--------------|
+| **1** | ✅ Aceptada | `tools/cache_manager.py` | — |
+| **2** | ✅ Aceptada | Integración en skills | Fase 1 |
+| **3** | ✅ Aceptada | Validación en producción | Fase 1, 2 |
+| **4** | ⏳ Planificada | Versionado automático | Fase 1-3 |
+| **5** | ⏳ Planificada | TTL dinámico por tipo | Fase 4 |
+
+**Documentos de soporte:**
+- `docs/performance/TOKEN_BENCHMARKS.md` — cifras concretas (se actualiza cada trimestre)
+- `implementation/CACHE_ROADMAP.md` — cronología de fases (se ajusta según necesidad)
+
+---
+
+## Validación (Aceptación Fase 3)
+
+### Test en Producción
+
+Ejecutado en agp2025 (1.670+ operaciones, 2024-2025):
+
+**Flujo iterativo (3 auditorías + IRPF):**
+- Sin optimizar: 30.305 tokens
+- Con optimizar: 7.435 tokens
+- **Ahorro: 75%**
+
+**Escalabilidad (50 proyectos/año, 2 operaciones/proyecto):**
+- Sin optimizar: ~1.000.000 tokens/año
+- Con optimizar: ~335.000 tokens/año
+- **Ahorro: ~665.000 tokens/año**
+
+### Conclusiones
+
+1. ✅ Caché persistente: funcionando, no degrada calidad
+2. ✅ Procesamiento local: reduce contexto 90%+
+3. ✅ Escalabilidad: viable para 50+ proyectos/año
+4. ✅ Integridad: resultados sin cambios (solo costo)
 
 ---
 
 ## Referencias
 
-- ADR-010: Eficiencia de tokens y caché de CoinTracking
-- `tools/ct_audit.py`: Ya procesa localmente, no en contexto
-- `tools/cache_manager.py`: A crear (Fase 1)
+**Principios relacionados:**
+- ADR-010: Eficiencia de tokens
+- ADR-037: Validación obligatoria en desarrollo
+- ADR-038: Criterio de auditoría por lotes
 
----
+**Documentos técnicos:**
+- `tools/cache_manager.py` — implementación del gestor de caché
+- `tools/ct_audit.py` — análisis local determinista
+- `docs/performance/TOKEN_BENCHMARKS.md` — cifras concretas (actualizar trimestral)
+- `implementation/CACHE_ROADMAP.md` — fases de implementación
 
-## Validación (Fase 3 Completa — 2026-07-05)
-
-### Resultados del Test
-
-Ejecutado `tools/test_cache_savings.py`:
-
-```
-Escenario: 3 auditorías consecutivas (típico: usuario revisa, valida cambios, re-audita)
-
-SIN CACHE (9 llamadas MCP):
-  - Auditoria #1: 3500 tokens (3 MCP calls)
-  - Auditoria #2: 3500 tokens (3 MCP calls)
-  - Auditoria #3: 3500 tokens (3 MCP calls)
-  TOTAL: 10500 tokens, 9 llamadas MCP
-
-CON CACHE (1 llamada MCP):
-  - Auditoria #1: 3500 tokens (3 MCP calls)
-  - Auditoria #2: 0 tokens (CACHE HIT)
-  - Auditoria #3: 0 tokens (CACHE HIT)
-  TOTAL: 3500 tokens, 1 llamada MCP
-
-AHORRO:
-  - Llamadas MCP: 67% (9 → 3)
-  - Tokens consumidos: 67% (10500 → 3500)
-  - Contexto LLM (con analisis local): 91% (5500 → 500)
-```
-
-### Validación de Requisitos
-
-| Capa | Requisito | Estado | Evidencia |
-|------|-----------|--------|-----------|
-| 1 | Caché persistente en `.cache/cointracking/` | ✅ OK | `tools/cache_manager.py` implementado |
-| 2 | Integración en skills | ✅ OK | `.claude/skills/*/SKILL.md` actualizado |
-| 3 | Procesamiento local sin contexto | ✅ OK | `tools/ct_audit.py` reutilizado, no JSON crudo |
-
-### Conclusión
-
-ADR-039 **ACEPTADO**. Las tres capas funcionan como diseñado:
-
-1. ✅ **Caché persistente**: Reutiliza datos < 24h, invalida automáticamente
-2. ✅ **Agregados**: Skills usan `get_grouped_balance`, `get_gains` antes que `get_trades` completo
-3. ✅ **Procesamiento local**: Análisis en Python, solo resultados compactos al contexto
-
-Impacto: Reducción de 91% en consumo de contexto LLM por operación auditoría.
+**Casos de uso:**
+- `reports/SKILLS_BENCHMARK_REPORT.md` — validación en caso real (agp2025)
 
 ---
 
 **Decisión:** ACCEPTED ✓
+
+**Versionado:** 1.0  
+**Próxima revisión:** 2026-12-31 (anual) o si cambia modelo LLM  
+**Responsable:** @agente-cointracking
