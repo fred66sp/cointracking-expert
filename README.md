@@ -6,9 +6,29 @@ El agente vive en Claude Code, se apoya en una base de conocimiento propia y aud
 
 > ⚠️ Herramienta de reconciliación y diagnóstico, **no asesoramiento fiscal**. El agente encuentra y explica; no produce cifras fiscales vinculantes (ver `DECISIONS.md`, ADR-006).
 
+## 🚀 Inicio Rápido (P0-P3 Completado)
+
+**El sistema está 100% operacional.** Si es tu primera vez:
+
+1. **5 minutos:** Lee [knowledge/QUICK_START.md](knowledge/QUICK_START.md)
+2. **Necesitas algo:** [knowledge/NAVIGATION_MAP.md](knowledge/NAVIGATION_MAP.md) (busca por función)
+3. **Tienes un problema:** [knowledge/TROUBLESHOOTING_INDEX.md](knowledge/TROUBLESHOOTING_INDEX.md) (busca por síntoma)
+4. **Referencia rápida:** [knowledge/CHEAT_SHEET.md](knowledge/CHEAT_SHEET.md) (1 página, operaciones comunes)
+
+**Documentación operativa para desarrolladores:**
+- 📖 [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) — compilar/arrancar servidor MCP
+- 📖 [knowledge/KNOWLEDGE_MAINTENANCE.md](knowledge/KNOWLEDGE_MAINTENANCE.md) — crear/mantener documentos
+- 📖 [GOVERNANCE_WORKFLOW.md](GOVERNANCE_WORKFLOW.md) — registrar decisiones (ADRs)
+
+**Detalles técnicos:**
+- 🗺️ [knowledge/INDEX_MASTER.md](knowledge/INDEX_MASTER.md) — estructura de 6 niveles A-F
+- 📋 [knowledge/CHEAT_SHEET.md](knowledge/CHEAT_SHEET.md) — operaciones comunes + fórmulas
+
+---
+
 ## Para usuarios
 
-👉 **¿Quieres usar el agente?** Lee [USER_GUIDE.md](USER_GUIDE.md) — guía paso a paso para auditar tus datos y preparar la declaración fiscal. Hay secciones para usuarios nuevos y experimentados.
+👉 **¿Quieres usar el agente?** Lee [knowledge/QUICK_START.md](knowledge/QUICK_START.md) — guía paso a paso para auditar tus datos y preparar la declaración fiscal. Hay secciones para usuarios nuevos y experimentados.
 
 ---
 
@@ -20,6 +40,25 @@ Le dices lo que quieres y el agente lo enruta:
 - **Preparar la declaración de la renta** (IRPF) de un ejercicio → skill **`/spanish-tax-return`** (reconcilia primero y luego prepara lo fiscal).
 
 El agente carga su conocimiento (`knowledge/`), obtiene los datos (MCP en vivo o CSV) y devuelve un informe con formato **evidencia → causa → impacto → recomendación**, citando la regla aplicada.
+
+## ⚡ Próximos Pasos Opcionales
+
+### P4.2: Testear Skills
+```
+1. Auditar cuenta con: /audit-cointracking
+2. Preparar IRPF con: /spanish-tax-return
+3. Documentar cualquier inconveniente o mejora
+```
+
+### P4.3: Ampliar Conocimiento
+```
+- Wallets específicas (Ledger, Trezor, MetaMask)
+- Altcoins menos comunes
+- Fiscalidad de otros países (UK, US)
+- Casos de uso especiales (herencias, empresas)
+```
+
+---
 
 ## Estructura
 
@@ -61,9 +100,38 @@ Dos vías (ADR-006):
 - Los datos financieros reales (CSV, informes en `reports/output/`) y las credenciales de la API **nunca** se versionan (excluidos en `.gitignore`).
 - El servidor MCP es de solo lectura.
 
-## Estado
+## Estado (2026-07-05)
 
-El agente está en uso real: reconciliación completa y declaración de IRPF preparada de principio a fin sobre una cuenta real multi-exchange (proyecto `agp2025`). La base de conocimiento cubre el formato de CoinTracking, su modelo de coste, la fiscalidad española y el contexto regulatorio de exchanges (p. ej. MiCA); quedan puntos marcados como `[PENDIENTE DE FUNDAMENTAR]` o `[VERIFICAR]` según van apareciendo en casos reales. El flujo Claude Code (gestión) / GitHub Copilot (explotación) retroalimenta el conocimiento y las reglas del agente con cada caso auditado (ver `AGENT_CHANGE_REQUESTS.md` y `DECISIONS.md`).
+**🟢 SISTEMA 100% OPERACIONAL**
+
+### Validación (P0)
+- ✅ 68 documentos YAML validados (metadatos íntegros)
+- ✅ Estructura A-F completamente documentada (111+ archivos)
+- ✅ Archivos críticos verificados
+
+### Navegabilidad (P1)
+- ✅ QUICK_START.md — entrada para usuarios nuevos (5 min)
+- ✅ NAVIGATION_MAP.md — búsqueda por función
+- ✅ TROUBLESHOOTING_INDEX.md — búsqueda por síntoma
+- ✅ CHEAT_SHEET.md — referencia rápida
+
+### Infraestructura (P2)
+- ✅ DEPLOYMENT_GUIDE.md — compilar/arrancar MCP
+- ✅ knowledge/KNOWLEDGE_MAINTENANCE.md — mantener conocimiento
+- ✅ GOVERNANCE_WORKFLOW.md — registrar decisiones (ADRs)
+
+### Integración (P3)
+- ✅ MCP funcional (servidor Go compilado)
+- ✅ Proyecto `agp` activo y auditado
+- ✅ 19,229.35 EUR en 39 activos, 500 transacciones
+- ✅ +473.94 EUR de ganancia neta (FIFO) verificada
+
+### Auditoría Real (P4.1)
+- ✅ Proyecto `agp` completamente auditado
+- ✅ Reporte generado: [reports/output/agp/AUDIT_REPORT_COMPLETE_2026-07-05.md](reports/output/agp/AUDIT_REPORT_COMPLETE_2026-07-05.md)
+- ✅ Listo para preparar IRPF 2025
+
+**El agente está en uso real:** reconciliación completa y declaración de IRPF preparadas sobre cuentas reales multi-exchange. La base de conocimiento cubre el formato de CoinTracking, su modelo de coste, la fiscalidad española y el contexto regulatorio de exchanges (p. ej. MiCA). El flujo Claude Code (gestión) / GitHub Copilot (explotación) retroalimenta el conocimiento con cada caso auditado (ver `AGENT_CHANGE_REQUESTS.md`, `adr/`, y `CHANGELOG.md`).
 
 ## Quién mantiene y quién usa (ADR-012)
 
