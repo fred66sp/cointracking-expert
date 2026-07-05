@@ -1,3 +1,10 @@
+---
+# Versionado para invalidación de caché (VersionTracker / ADR-039).
+# Incrementar `version` al cambiar la decisión de forma material;
+# los cachés calculados con la versión anterior se invalidan solos.
+version: 1.0
+---
+
 # ADR-015: Integración de la base de casos ChatGPT como v2 curada (patrones de reconciliación)
 
 **Status:** Accepted

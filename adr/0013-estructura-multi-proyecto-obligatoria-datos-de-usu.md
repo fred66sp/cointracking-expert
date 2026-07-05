@@ -1,3 +1,10 @@
+---
+# Versionado para invalidación de caché (VersionTracker / ADR-039).
+# Incrementar `version` al cambiar la decisión de forma material;
+# los cachés calculados con la versión anterior se invalidan solos.
+version: 1.0
+---
+
 # ADR-013: Estructura multi-proyecto obligatoria (datos de usuario y estado; MCP pospuesto)
 
 **Status:** Accepted

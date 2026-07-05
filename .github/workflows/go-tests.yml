@@ -1,0 +1,68 @@
+name: Tests del servidor MCP (Go, con detector de carreras)
+
+# El detector de carreras (-race) requiere CGO, no disponible en la máquina
+# de desarrollo Windows (sin gcc). Este workflow cubre ese hueco en Linux,
+# donde CGO funciona de serie — limitación documentada en la revisión de
+# robustez de 2026-07-05, cerrada aquí.
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'cointracking-mcp/**'
+      - '.github/workflows/go-tests.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'cointracking-mcp/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: build + vet + test -race
+    defaults:
+      run:
+        working-directory: cointracking-mcp
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: cointracking-mcp/go.mod
+          cache-dependency-path: cointracking-mcp/go.sum
+
+      - name: Build
+        run: go build ./...
+
+      - name: Vet
+        run: go vet ./...
+
+      - name: Tests con detector de carreras
+        run: go test ./... -race -count=1 -v
+
+  golden-fixtures:
+    runs-on: ubuntu-latest
+    name: ct_audit.py contra fixtures de oro
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Fixture 1 — sample_trades.csv (validación completa)
+        run: |
+          python tools/ct_audit.py tests/fixtures/sample_trades.csv --check all \
+            --expect-balances '{"Binance":{"EUR":"0","BTC":"0","DOGE":"-100","USDT":"50"},"Kraken":{"BTC":"0.019","SOL2":"20","ADA":"99.5","XLM":"4"}}' \
+            | python -c "import json,sys; d=json.load(sys.stdin); assert d['validacion']['ok'], 'descuadre: %s' % d['validacion']['descuadres']; assert len(d['transferencias']['depositos_huerfanos'])==4; assert len(d['transferencias']['retiradas_huerfanas'])==0; assert len(d['duplicados_exactos'])==1; assert d['colision_tickers']==['SOL2']; print('Fixture 1 OK')"
+
+      - name: Fixture 2 — double_claim (emparejamiento exclusivo)
+        run: |
+          python tools/ct_audit.py tests/fixtures/sample_trades_double_claim.csv --check transfers \
+            | python -c "import json,sys; d=json.load(sys.stdin); dh=d['transferencias']['depositos_huerfanos']; assert len(dh)==1 and dh[0]['cuenta']=='Coinbase', dh; assert len(d['transferencias']['retiradas_huerfanas'])==0; print('Fixture 2 OK')"

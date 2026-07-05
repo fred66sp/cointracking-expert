@@ -1,3 +1,10 @@
+---
+# Versionado para invalidación de caché (VersionTracker / ADR-039).
+# Incrementar `version` al cambiar la decisión de forma material;
+# los cachés calculados con la versión anterior se invalidan solos.
+version: 1.0
+---
+
 # ADR-020: `get_historical_summary` puede devolver un punto fuera del rango `end` pedido — filtrar por fecha en el consumidor
 
 **Status:** Accepted

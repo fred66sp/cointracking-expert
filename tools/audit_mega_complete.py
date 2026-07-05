@@ -24,6 +24,12 @@ from pathlib import Path
 from collections import defaultdict
 import yaml
 
+# Raíz del repo derivada de la ubicación del script (tools/ -> raíz), no
+# cableada: con la ruta absoluta anterior ('h:/cointracking-expert') el
+# workflow de CI en ubuntu-latest no encontraba ningún documento y "pasaba"
+# en vacío sin validar nada (corregido 2026-07-05).
+REPO_ROOT = Path(__file__).resolve().parent.parent
+
 class MegaAudit:
     def __init__(self):
         self.errors = defaultdict(list)
@@ -54,7 +60,7 @@ class MegaAudit:
 
         yaml_data = self.extract_yaml(content)
         fname = file_path.name
-        frel = str(file_path).replace('h:\\cointracking-expert\\', '')
+        frel = str(file_path.resolve().relative_to(REPO_ROOT))
 
         # 1. YAML válido?
         if not yaml_data:
@@ -134,7 +140,7 @@ class MegaAudit:
                 adr_num_int = int(adr_num)
                 # Verificar que existe algún archivo que matchee
                 found = False
-                for p in Path('h:/cointracking-expert/adr').glob(f'0{adr_num_int:03d}-*'):
+                for p in (REPO_ROOT / 'adr').glob(f'0{adr_num_int:03d}-*'):
                     found = True
                     break
                 if not found:
@@ -152,7 +158,7 @@ class MegaAudit:
                 # directorio del archivo que contiene el link, no contra la
                 # raíz del repo (bug encontrado 2026-07-05: generaba ~100
                 # falsos positivos "BROKEN LINK" en docs de navegación).
-                doc_dir = Path('h:/cointracking-expert') / Path(frel).parent
+                doc_dir = REPO_ROOT / Path(frel).parent
                 full_path = (doc_dir / path_no_anchor).resolve()
                 if not full_path.exists():
                     self.warnings[frel].append(f"BROKEN LINK: {path}")
@@ -183,7 +189,7 @@ class MegaAudit:
 
         # Fase 1: Validar todos los archivos
         print("[1/3] Validando archivos...")
-        knowledge_dir = Path('h:/cointracking-expert/knowledge')
+        knowledge_dir = (REPO_ROOT / 'knowledge')
         md_files = list(knowledge_dir.rglob('*.md'))
 
         for file_path in sorted(md_files):

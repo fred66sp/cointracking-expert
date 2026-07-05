@@ -1,3 +1,10 @@
+---
+# Versionado para invalidación de caché (VersionTracker / ADR-039).
+# Incrementar `version` al cambiar la decisión de forma material;
+# los cachés calculados con la versión anterior se invalidan solos.
+version: 1.0
+---
+
 # ADR-006: El producto es un agente de IA auditor (Claude Code) sobre la base de conocimiento
 
 **Status:** Accepted

@@ -1,3 +1,10 @@
+---
+# Versionado para invalidación de caché (VersionTracker / ADR-039).
+# Incrementar `version` al cambiar la decisión de forma material;
+# los cachés calculados con la versión anterior se invalidan solos.
+version: 1.0
+---
+
 # ADR-021: Gate explícito de artefacto antes de cerrar la cifra anual exacta en `spanish-tax-return`
 
 **Status:** Accepted

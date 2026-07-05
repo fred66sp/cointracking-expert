@@ -45,7 +45,7 @@ Todo trabajo sobre CoinTracking (auditar, declarar, lo que sea) ocurre **siempre
 
 Una vez fijado el proyecto activo en la conversación (con confirmación explícita del usuario), reutilízalo el resto de la sesión — no vuelvas a preguntar salvo que el usuario pida cambiar. Esto aplica a ambas skills (`/audit-cointracking`, `/spanish-tax-return`) antes de su propio Paso 0/1.
 
-✅ **MCP sincronizado en caliente (ADR-016):** en cuanto quede fijado el proyecto activo, llama a `cointracking_switch_project(project_name=<proyecto>)` (si el MCP está conectado) antes de cualquier otra tool `cointracking_*`, para que sus datos en vivo correspondan al proyecto activo — sin reiniciar el servidor ni tocar `.mcp.json`. Cada skill ya lo hace en su Paso -1.
+✅ **MCP sincronizado en caliente (ADR-016):** en cuanto quede fijado el proyecto activo, llama a `cointracking_switch_project(project_name=<proyecto>)` (si el MCP está conectado) antes de cualquier otra tool `cointracking_*`, para que su **caché** corresponda al proyecto activo — sin reiniciar el servidor ni tocar `.mcp.json`. Cada skill ya lo hace en su Paso -1. ⚠️ **Alcance del switch:** las credenciales de la API son del proceso, no del proyecto (ADR-016) — todos los proyectos de una sesión consultan la **misma cuenta** de CoinTracking; el switch aísla carpetas de caché y datos, no cuentas. Para auditar una cuenta distinta hay que arrancar el MCP con otras credenciales; cambiar de proyecto no basta y contaminaría la caché con datos de la cuenta equivocada.
 
 ## ⚠️ Falsos positivos en duplicados: verificar Tx ID antes de eliminar (ADR-014)
 

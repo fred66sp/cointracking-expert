@@ -155,11 +155,17 @@ type SwitchProjectResult struct {
 // SwitchProject moves the server from whatever project is currently active
 // to name, live: flushes and closes the current project's cache, then opens
 // (or creates) name's cache the same way NewApp does at startup. Credentials,
-// tier, and rate limiter are per-process and untouched — only the cache
-// (and therefore which account's data cointracking_get_* tools return)
-// changes. This is what lets the ADR-013 "active project" gate switch
-// projects mid-conversation without restarting the MCP server or touching
-// .mcp.json.
+// tier, and rate limiter are per-process and untouched — ONLY the cache
+// directory changes. This means all projects in one server process talk to
+// the SAME CoinTracking account: fresh API calls after a switch still return
+// that account's data, and only cached data is isolated per project. Do NOT
+// use project switching to audit two different CoinTracking accounts — that
+// would silently fill project B's cache with account A's data (ADR-016:
+// "credenciales... son del proceso, no del proyecto"; wording here fixed
+// 2026-07-05, it previously claimed the switch changed "which account's data"
+// the tools return, which was wrong). This is what lets the ADR-013 "active
+// project" gate switch projects mid-conversation without restarting the MCP
+// server or touching .mcp.json.
 func (a *App) SwitchProject(name string) (*SwitchProjectResult, error) {
 	if err := config.ValidateProjectName(name); err != nil {
 		return nil, err
