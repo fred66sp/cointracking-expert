@@ -1,24 +1,4 @@
 ---
-id: KB-B1-XXX
-title: "Untitled Document"
-level: B
-domain: cointracking
-source: "Internal documentation"
-authority: verified
-last_verified: 2026-07-05
-valid_from: 2024-01-01
-valid_until: 2027-12-31
-confidence: medium
-version: 1.0
-
-tags:
-  - todo
-  - needs-review
-
-notes: "Metadatos agregados automáticamente. Verificar y actualizar conforme ADR-032."
----
-
----
 id: KB-B3-003
 title: "Cómo CoinTracking maneja otras blockchains (Polygon, BSC, Solana, etc.)"
 level: B
@@ -27,7 +7,7 @@ source: "Análisis de casos reales"
 authority: verified
 last_verified: 2026-07-05
 valid_from: 2024-01-01
-valid_until: null
+valid_until: 2027-07-03
 confidence: medium
 version: 1.0
 
@@ -49,6 +29,9 @@ tags:
 
 notes: "Operativo: cómo CoinTracking trata blockchains L2 y alternativas."
 ---
+
+
+
 
 # Cómo CoinTracking Maneja Otras Blockchains
 

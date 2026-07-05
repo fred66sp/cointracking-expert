@@ -1,24 +1,4 @@
 ---
-id: KB-B1-XXX
-title: "Untitled Document"
-level: B
-domain: cointracking
-source: "Internal documentation"
-authority: verified
-last_verified: 2026-07-05
-valid_from: 2024-01-01
-valid_until: 2027-12-31
-confidence: medium
-version: 1.0
-
-tags:
-  - todo
-  - needs-review
-
-notes: "Metadatos agregados automáticamente. Verificar y actualizar conforme ADR-032."
----
-
----
 id: KB-B2-010
 title: "Mecánicas de BingX: Trading Spot y Derivados"
 level: B
@@ -48,6 +28,9 @@ tags:
 
 notes: "BingX es exchange asiático similar a Binance pero con características propias. Soporta Spot, Margin y Derivados. Integración en CoinTracking es API-based."
 ---
+
+
+
 
 # BingX Mechanics
 

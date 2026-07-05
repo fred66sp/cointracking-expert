@@ -1,24 +1,4 @@
 ---
-id: KB-B1-XXX
-title: "Untitled Document"
-level: B
-domain: cointracking
-source: "Internal documentation"
-authority: verified
-last_verified: 2026-07-05
-valid_from: 2024-01-01
-valid_until: 2027-12-31
-confidence: medium
-version: 1.0
-
-tags:
-  - todo
-  - needs-review
-
-notes: "Metadatos agregados automáticamente. Verificar y actualizar conforme ADR-032."
----
-
----
 id: KB-B1-005
 title: "Cómo funciona el Pool de Compras en CoinTracking (FIFO)"
 level: B
@@ -27,7 +7,7 @@ source: "Análisis de CoinTracking + documentación oficial"
 authority: verified
 last_verified: 2026-07-05
 valid_from: 2024-01-01
-valid_until: null
+valid_until: 2027-07-03
 confidence: high
 version: 1.0
 
@@ -48,6 +28,9 @@ tags:
 
 notes: "Crítico: cómo CoinTracking rastrea la base de coste mediante FIFO."
 ---
+
+
+
 
 # Cómo Funciona el Pool de Compras en CoinTracking (FIFO)
 

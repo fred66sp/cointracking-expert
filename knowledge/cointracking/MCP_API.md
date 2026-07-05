@@ -1,24 +1,4 @@
 ---
-id: KB-B1-XXX
-title: "Untitled Document"
-level: B
-domain: cointracking
-source: "Internal documentation"
-authority: verified
-last_verified: 2026-07-05
-valid_from: 2024-01-01
-valid_until: 2027-12-31
-confidence: medium
-version: 1.0
-
-tags:
-  - todo
-  - needs-review
-
-notes: "Metadatos agregados automáticamente. Verificar y actualizar conforme ADR-032."
----
-
----
 id: KB-A2-003
 title: "Integración con la API de CoinTracking vía MCP"
 level: A
@@ -48,6 +28,9 @@ tags:
 
 notes: "Servidor MCP propio en Go (cointracking-mcp/). Sustituye JS legacy desde 2026-07-03. Reverificar si hay nuevas versiones."
 ---
+
+
+
 
 # Integración con la API de CoinTracking vía MCP
 

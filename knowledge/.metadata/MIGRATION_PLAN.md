@@ -1,31 +1,4 @@
 ---
-id: KB-B1-XXX
-title: "Plan de Migración — Sistema de Conocimiento Jerárquico"
-level: B
-domain: cointracking
-source: "Internal documentation"
-authority: verified
-last_verified: 2026-07-05
-valid_from: 2024-01-01
-valid_until: 2027-12-31
-confidence: medium
-version: 1.0
-
-tags:
-  - todo
-  - needs-review
-
-notes: "Metadatos agregados automáticamente. Verificar y actualizar conforme ADR-032."
----
-
-# Plan de Migración — Sistema de Conocimiento Jerárquico
-
-**Documento:** Plan operativo para implementar ADR-033 en 3 fases  
-**Status:** Fase 1 completa, Fase 2-3 pendientes  
-**Última actualización:** 2026-07-05  
-**Dificultad:** Media (reestructuración sin romper nada)
-
----
 
 ## Resumen Ejecutivo
 
@@ -36,6 +9,16 @@ notes: "Metadatos agregados automáticamente. Verificar y actualizar conforme AD
 **Riesgo:** Bajo (la Fase 1 no rompe nada)
 
 ---
+
+
+# Plan de Migración — Sistema de Conocimiento Jerárquico
+
+**Documento:** Plan operativo para implementar ADR-033 en 3 fases  
+**Status:** Fase 1 completa, Fase 2-3 pendientes  
+**Última actualización:** 2026-07-05  
+**Dificultad:** Media (reestructuración sin romper nada)
+
+
 
 ## Fase 1 ✅ COMPLETADA (2026-07-05)
 

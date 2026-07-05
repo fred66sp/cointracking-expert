@@ -1,24 +1,4 @@
 ---
-id: KB-B1-XXX
-title: "Untitled Document"
-level: B
-domain: cointracking
-source: "Internal documentation"
-authority: verified
-last_verified: 2026-07-05
-valid_from: 2024-01-01
-valid_until: 2027-12-31
-confidence: medium
-version: 1.0
-
-tags:
-  - todo
-  - needs-review
-
-notes: "Metadatos agregados automáticamente. Verificar y actualizar conforme ADR-032."
----
-
----
 id: KB-B2-005
 title: "Cómo CoinTracking maneja Binance Convert (intercambios rápidos)"
 level: B
@@ -27,7 +7,7 @@ source: "Casos reales + análisis"
 authority: verified
 last_verified: 2026-07-05
 valid_from: 2024-01-01
-valid_until: null
+valid_until: 2027-07-03
 confidence: high
 version: 1.0
 
@@ -47,6 +27,9 @@ tags:
 
 notes: "Operativo: cómo CoinTracking registra Binance Convert."
 ---
+
+
+
 
 # Cómo CoinTracking Maneja Binance Convert
 

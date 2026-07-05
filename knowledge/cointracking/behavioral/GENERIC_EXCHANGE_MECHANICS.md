@@ -1,24 +1,4 @@
 ---
-id: KB-B1-XXX
-title: "Untitled Document"
-level: B
-domain: cointracking
-source: "Internal documentation"
-authority: verified
-last_verified: 2026-07-05
-valid_from: 2024-01-01
-valid_until: 2027-12-31
-confidence: medium
-version: 1.0
-
-tags:
-  - todo
-  - needs-review
-
-notes: "Metadatos agregados automáticamente. Verificar y actualizar conforme ADR-032."
----
-
----
 id: KB-B2-009
 title: "Mecánicas Genéricas de Exchanges: Cómo Manejar Exchanges No Documentados"
 level: B
@@ -27,7 +7,7 @@ source: "Patrón genérico + análisis"
 authority: verified
 last_verified: 2026-07-05
 valid_from: 2024-01-01
-valid_until: null
+valid_until: 2027-07-03
 confidence: medium
 version: 1.0
 
@@ -48,6 +28,9 @@ tags:
 
 notes: "Cómo auditar exchanges no documentados específicamente (Bybit, OKX, Huobi, etc)."
 ---
+
+
+
 
 # Mecánicas Genéricas de Exchanges: Exchanges No Documentados
 

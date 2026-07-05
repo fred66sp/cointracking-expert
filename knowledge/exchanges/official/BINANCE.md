@@ -1,5 +1,5 @@
 ---
-id: KB-B1-XXX
+id: KB-B1-015
 title: "Binance — particularidades de importación en CoinTracking"
 level: B
 domain: cointracking

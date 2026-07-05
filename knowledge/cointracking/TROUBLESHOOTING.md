@@ -1,22 +1,18 @@
 ---
-id: KB-B1-XXX
-title: "Troubleshooting: de síntoma/warning a causa y solución"
-level: B
-domain: cointracking
-source: "Internal documentation"
-authority: verified
-last_verified: 2026-07-05
-valid_from: 2024-01-01
-valid_until: 2027-12-31
-confidence: medium
-version: 1.0
 
-tags:
-  - todo
-  - needs-review
+## Warnings literales de CoinTracking
 
-notes: "Metadatos agregados automáticamente. Verificar y actualizar conforme ADR-032."
+| Warning / texto en CoinTracking | Significado breve | Gravedad | Ver |
+|---|---|---|---|
+| "There is no suitable purchase to this sale, all purchasing pools consumed" | Se vende un activo sin compra con base de coste registrada | Crítica (infla la ganancia) | `COST_BASIS_AND_VALIDATION.md` §3.1 · casos CT-002, CT-017 |
+| Coste por unidad irreal / base de coste en 0 en el informe de ganancias | Falta la compra; CoinTracking asigna coste 0 | Crítica | `COST_BASIS_AND_VALIDATION.md` §3.2 · casos CT-002, CT-017 |
+| Advertencia sobre FIAT extranjero (divisa distinta a la principal de la cuenta) | Solo la moneda principal de la cuenta tiene soporte completo | Baja-media | `COST_BASIS_AND_VALIDATION.md` §3.3 |
+| Saldo FIAT negativo | Normalmente **no es un error**: es fiat gastado en cripto sin depósito FIAT previo registrado | Informativa (verificar antes de tratarla como error) | `COST_BASIS_AND_VALIDATION.md` §4.1 |
+| "Reoccurring Duplicate Transactions" / operaciones repetidas | Patrón reconocido por CoinTracking; puede ser reimportación real o batching legítimo del exchange | Variable — **nunca eliminar sin verificar** | `COST_BASIS_AND_VALIDATION.md` §4.2 · `DECISIONS.md#ADR-014` · casos CT-003, CT-008, CT-016, CT-019 |
+| Cualquier warning del informe de ganancias, sin más contexto | No todo warning implica declaración incorrecta; muchos son preventivos | Depende del caso concreto | caso CT-020 |
+
 ---
+
 
 # Troubleshooting: de síntoma/warning a causa y solución
 
@@ -32,20 +28,7 @@ Este documento **no repite** el conocimiento ya destilado — lo indexa por sín
 3. Antes de **modificar o eliminar** cualquier dato en CoinTracking, aplica el consentimiento informado (ADR-009 §7) y, si es un posible duplicado, el protocolo de `trade_id` (ADR-014).
 4. Si el síntoma no aparece aquí: no improvises (ADR-009 §2) — busca en el resto de `knowledge/`, y si tampoco está, en la fuente oficial (`reference/CATALOG.md`) o pregunta al usuario.
 
----
 
-## Warnings literales de CoinTracking
-
-| Warning / texto en CoinTracking | Significado breve | Gravedad | Ver |
-|---|---|---|---|
-| "There is no suitable purchase to this sale, all purchasing pools consumed" | Se vende un activo sin compra con base de coste registrada | Crítica (infla la ganancia) | `COST_BASIS_AND_VALIDATION.md` §3.1 · casos CT-002, CT-017 |
-| Coste por unidad irreal / base de coste en 0 en el informe de ganancias | Falta la compra; CoinTracking asigna coste 0 | Crítica | `COST_BASIS_AND_VALIDATION.md` §3.2 · casos CT-002, CT-017 |
-| Advertencia sobre FIAT extranjero (divisa distinta a la principal de la cuenta) | Solo la moneda principal de la cuenta tiene soporte completo | Baja-media | `COST_BASIS_AND_VALIDATION.md` §3.3 |
-| Saldo FIAT negativo | Normalmente **no es un error**: es fiat gastado en cripto sin depósito FIAT previo registrado | Informativa (verificar antes de tratarla como error) | `COST_BASIS_AND_VALIDATION.md` §4.1 |
-| "Reoccurring Duplicate Transactions" / operaciones repetidas | Patrón reconocido por CoinTracking; puede ser reimportación real o batching legítimo del exchange | Variable — **nunca eliminar sin verificar** | `COST_BASIS_AND_VALIDATION.md` §4.2 · `DECISIONS.md#ADR-014` · casos CT-003, CT-008, CT-016, CT-019 |
-| Cualquier warning del informe de ganancias, sin más contexto | No todo warning implica declaración incorrecta; muchos son preventivos | Depende del caso concreto | caso CT-020 |
-
----
 
 ## Síntomas descritos por el usuario (sin warning literal)
 

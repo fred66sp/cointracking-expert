@@ -1,24 +1,4 @@
 ---
-id: KB-B1-XXX
-title: "Untitled Document"
-level: B
-domain: cointracking
-source: "Internal documentation"
-authority: verified
-last_verified: 2026-07-05
-valid_from: 2024-01-01
-valid_until: 2027-12-31
-confidence: medium
-version: 1.0
-
-tags:
-  - todo
-  - needs-review
-
-notes: "Metadatos agregados automáticamente. Verificar y actualizar conforme ADR-032."
----
-
----
 id: KB-C3-001
 title: "Procedimiento: Auditar una Cuenta Completa (6 fases)"
 level: C
@@ -49,6 +29,9 @@ tags:
 
 notes: "Orden fijo de 6 fases. No saltar pasos. Cada paso reduce falsos positivos del siguiente."
 ---
+
+
+
 
 # Procedimiento: Auditar una Cuenta Completa
 

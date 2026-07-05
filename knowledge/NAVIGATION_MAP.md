@@ -1,29 +1,4 @@
 ---
-id: KB-B1-XXX
-title: "Mapa de Navegación — Encuentra lo que Necesitas"
-level: B
-domain: cointracking
-source: "Internal documentation"
-authority: verified
-last_verified: 2026-07-05
-valid_from: 2024-01-01
-valid_until: 2027-12-31
-confidence: medium
-version: 1.0
-
-tags:
-  - todo
-  - needs-review
-
-notes: "Metadatos agregados automáticamente. Verificar y actualizar conforme ADR-032."
----
-
-# Mapa de Navegación — Encuentra lo que Necesitas
-
-**Para:** Cuando sabes qué necesitas pero no dónde buscarlo  
-**Uso:** Ctrl+F y busca tu pregunta
-
----
 
 ## 🔍 Por Tipo de Necesidad
 
@@ -37,6 +12,14 @@ notes: "Metadatos agregados automáticamente. Verificar y actualizar conforme AD
 | Ver un caso real | [CT-001](cases/ct-001-transferencia-entre-exchanges-importada-.md) a [CT-020](cases/ct-020-advertencia-tecnica-no-es-error-fiscal.md) | 30 min |
 
 ---
+
+
+# Mapa de Navegación — Encuentra lo que Necesitas
+
+**Para:** Cuando sabes qué necesitas pero no dónde buscarlo  
+**Uso:** Ctrl+F y busca tu pregunta
+
+
 
 ### 🔴 "Tengo un problema / hallazgo raro"
 

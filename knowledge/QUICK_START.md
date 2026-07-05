@@ -1,30 +1,4 @@
 ---
-id: KB-B1-XXX
-title: "Guía de Inicio Rápido — Sistema de Auditoría de CoinTracking"
-level: B
-domain: cointracking
-source: "Internal documentation"
-authority: verified
-last_verified: 2026-07-05
-valid_from: 2024-01-01
-valid_until: 2027-12-31
-confidence: medium
-version: 1.0
-
-tags:
-  - todo
-  - needs-review
-
-notes: "Metadatos agregados automáticamente. Verificar y actualizar conforme ADR-032."
----
-
-# Guía de Inicio Rápido — Sistema de Auditoría de CoinTracking
-
-**Para:** Usuarios nuevos del agente auditor  
-**Tiempo:** 5 minutos  
-**Objetivo:** Entender dónde buscar información
-
----
 
 ## 🚀 En 3 Pasos
 
@@ -46,6 +20,15 @@ Busca el síntoma (ej: "saldo negativo", "duplicados", "missing cost basis") y s
 20 casos auditados de verdad. Busca uno similar al tuyo → diagnostica el problema.
 
 ---
+
+
+# Guía de Inicio Rápido — Sistema de Auditoría de CoinTracking
+
+**Para:** Usuarios nuevos del agente auditor  
+**Tiempo:** 5 minutos  
+**Objetivo:** Entender dónde buscar información
+
+
 
 ## 🗺️ El Sistema en 6 Niveles
 

@@ -1,40 +1,4 @@
 ---
-id: KB-B1-XXX
-title: "Checklist de documentación a solicitar al usuario"
-level: B
-domain: cointracking
-source: "Internal documentation"
-authority: verified
-last_verified: 2026-07-05
-valid_from: 2024-01-01
-valid_until: 2027-12-31
-confidence: medium
-version: 1.0
-
-tags:
-  - todo
-  - needs-review
-
-notes: "Metadatos agregados automáticamente. Verificar y actualizar conforme ADR-032."
----
-
-# Checklist de documentación a solicitar al usuario
-
-**Tipo:** Conocimiento operativo (obra propia), basado en el catálogo oficial de CoinTracking
-**Fuente:** `reference/CATALOG.md` (categorías "Analysis", "Tax-Reports + Realized & Unrealized Gains", "Data Validation")
-**Última verificación:** 2026-07-03
-**Vigencia:** el catálogo de informes de CoinTracking puede ampliarse o renombrarse; reverificar los nombres de informe en la web antes de pedirlos si esta fecha es antigua (ADR-008).
-
-Esta guía resuelve una pregunta operativa: además del **MCP** (datos en vivo) y del **CSV "Trade Table"**, ¿qué más merece la pena pedir al usuario? Hay dos fuentes distintas, con propósitos distintos:
-
-- **§A — Informes propios de CoinTracking** que el MCP/CSV no cubren (o cubren de forma indirecta) y que sirven de **validación cruzada** frente al mismo motor de CoinTracking.
-- **§B — Información del exchange original**, a la que el agente **no tiene acceso** (ni por MCP ni por CSV de CoinTracking), y que solo el usuario puede aportar directamente desde la web/app del exchange.
-
-No pidas todo esto de golpe (ADR-009, evitar fatiga de confirmación): usa **§A-mínimo** al arrancar una auditoría, y el resto **bajo demanda**, cuando un hallazgo concreto lo justifique.
-
-**Cómo guiar la descarga:** cuando pidas al usuario uno de los informes de §A, explícale cómo descargarlo con `knowledge/cointracking/WEB_APP_GUIDE.md` §7bis (patrón general de exportación + ubicación conocida de cada informe, y cuándo hace falta reverificar el artículo oficial antes de dar el paso clic a clic).
-
----
 
 ## §A — Informes de CoinTracking (además de MCP + Trade Table)
 
@@ -62,6 +26,25 @@ Ya cubierto en el Paso 0 de `audit-cointracking`: el **CSV "Trade Table"** como 
 > **Nota de vigencia:** el formato exacto (columnas, separador, nombre de fichero) de cada informe no está aún verificado contra una exportación real en este repositorio. Antes de asumir columnas concretas, contrastar contra el export que aporte el usuario o contra el artículo oficial correspondiente (ADR-008/009).
 
 ---
+
+
+# Checklist de documentación a solicitar al usuario
+
+**Tipo:** Conocimiento operativo (obra propia), basado en el catálogo oficial de CoinTracking
+**Fuente:** `reference/CATALOG.md` (categorías "Analysis", "Tax-Reports + Realized & Unrealized Gains", "Data Validation")
+**Última verificación:** 2026-07-03
+**Vigencia:** el catálogo de informes de CoinTracking puede ampliarse o renombrarse; reverificar los nombres de informe en la web antes de pedirlos si esta fecha es antigua (ADR-008).
+
+Esta guía resuelve una pregunta operativa: además del **MCP** (datos en vivo) y del **CSV "Trade Table"**, ¿qué más merece la pena pedir al usuario? Hay dos fuentes distintas, con propósitos distintos:
+
+- **§A — Informes propios de CoinTracking** que el MCP/CSV no cubren (o cubren de forma indirecta) y que sirven de **validación cruzada** frente al mismo motor de CoinTracking.
+- **§B — Información del exchange original**, a la que el agente **no tiene acceso** (ni por MCP ni por CSV de CoinTracking), y que solo el usuario puede aportar directamente desde la web/app del exchange.
+
+No pidas todo esto de golpe (ADR-009, evitar fatiga de confirmación): usa **§A-mínimo** al arrancar una auditoría, y el resto **bajo demanda**, cuando un hallazgo concreto lo justifique.
+
+**Cómo guiar la descarga:** cuando pidas al usuario uno de los informes de §A, explícale cómo descargarlo con `knowledge/cointracking/WEB_APP_GUIDE.md` §7bis (patrón general de exportación + ubicación conocida de cada informe, y cuándo hace falta reverificar el artículo oficial antes de dar el paso clic a clic).
+
+
 
 ## §B — Información del exchange original (fuera del alcance de CoinTracking)
 

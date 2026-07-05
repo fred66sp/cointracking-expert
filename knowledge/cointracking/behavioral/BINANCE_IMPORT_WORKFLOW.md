@@ -1,24 +1,4 @@
 ---
-id: KB-B1-XXX
-title: "Untitled Document"
-level: B
-domain: cointracking
-source: "Internal documentation"
-authority: verified
-last_verified: 2026-07-05
-valid_from: 2024-01-01
-valid_until: 2027-12-31
-confidence: medium
-version: 1.0
-
-tags:
-  - todo
-  - needs-review
-
-notes: "Metadatos agregados automáticamente. Verificar y actualizar conforme ADR-032."
----
-
----
 id: KB-B2-008
 title: "Workflow de Importación de Binance: API vs CSV Paso a Paso"
 level: B
@@ -48,6 +28,9 @@ tags:
 
 notes: "Guía paso a paso: cómo importar Binance en CoinTracking (API recomendado)."
 ---
+
+
+
 
 # Workflow de Importación de Binance: API vs CSV
 

@@ -1,5 +1,5 @@
 ---
-id: KB-B1-XXX
+id: KB-B1-017
 title: "Pendientes de fundamentar / verificar"
 level: B
 domain: cointracking

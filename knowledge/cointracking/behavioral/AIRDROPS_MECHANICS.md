@@ -1,24 +1,4 @@
 ---
-id: KB-B1-XXX
-title: "Untitled Document"
-level: B
-domain: cointracking
-source: "Internal documentation"
-authority: verified
-last_verified: 2026-07-05
-valid_from: 2024-01-01
-valid_until: 2027-12-31
-confidence: medium
-version: 1.0
-
-tags:
-  - todo
-  - needs-review
-
-notes: "Metadatos agregados automáticamente. Verificar y actualizar conforme ADR-032."
----
-
----
 id: KB-B1-002
 title: "Cómo CoinTracking maneja Airdrops (regalos de tokens)"
 level: B
@@ -27,7 +7,7 @@ source: "Casos reales CT-010 + análisis"
 authority: verified
 last_verified: 2026-07-05
 valid_from: 2024-01-01
-valid_until: null
+valid_until: 2027-07-03
 confidence: medium
 version: 1.0
 
@@ -47,6 +27,9 @@ tags:
 
 notes: "Operativo: cómo CoinTracking importa y clasifica airdrops; errores comunes."
 ---
+
+
+
 
 # Cómo CoinTracking Maneja Airdrops
 

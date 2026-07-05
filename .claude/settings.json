@@ -24,7 +24,14 @@
       "Bash(ls -la \"h:\\\\cointracking-expert\\\\\" | head -30)",
       "Read(//h//**)",
       "Bash(python tools/add_yaml_to_docs.py --dry-run)",
-      "Bash(python tools/add_yaml_to_docs.py --apply)"
+      "Bash(python tools/add_yaml_to_docs.py --apply)",
+      "Bash(xargs -I {} sh -c 'echo \"=== {} ===\"; head -5 \"{}\"')",
+      "Bash(cat)",
+      "Read(//tmp/**)",
+      "Bash(sed -i 's/id: KB-B1-XXX/id: KB-B1-014/' knowledge/cointracking/reference/CATALOG.md)",
+      "Bash(sed -i 's/id: KB-B1-XXX/id: KB-B1-015/' knowledge/exchanges/official/BINANCE.md)",
+      "Bash(sed -i 's/id: KB-B1-XXX/id: KB-B1-016/' knowledge/reference/context/BINANCE_EU_MICA_EXIT.md)",
+      "Bash(sed -i 's/id: KB-B1-XXX/id: KB-B1-017/' knowledge/taxation/spain/PENDIENTES.md)"
     ],
     "additionalDirectories": [
       "H:\\cointracking-expert\\cointracking-mcp\\cmd"

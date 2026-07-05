@@ -1,24 +1,4 @@
 ---
-id: KB-B1-XXX
-title: "Untitled Document"
-level: B
-domain: cointracking
-source: "Internal documentation"
-authority: verified
-last_verified: 2026-07-05
-valid_from: 2024-01-01
-valid_until: 2027-12-31
-confidence: medium
-version: 1.0
-
-tags:
-  - todo
-  - needs-review
-
-notes: "Metadatos agregados automáticamente. Verificar y actualizar conforme ADR-032."
----
-
----
 id: KB-B4-001
 title: "Integración Ledger Live con CoinTracking"
 level: B
@@ -48,6 +28,9 @@ tags:
 
 notes: "Ledger Live es wallet hardware (cold storage). No es exchange. Operaciones en blockchain (on-chain). Requiere importación manual o dirección pública en CoinTracking."
 ---
+
+
+
 
 # Integración Ledger Live
 

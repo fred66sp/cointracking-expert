@@ -1,32 +1,4 @@
 ---
-id: KB-B1-XXX
-title: "Formatos CT-List — visualización compacta de listas en la conversación"
-level: B
-domain: cointracking
-source: "Internal documentation"
-authority: verified
-last_verified: 2026-07-05
-valid_from: 2024-01-01
-valid_until: 2027-12-31
-confidence: medium
-version: 1.0
-
-tags:
-  - todo
-  - needs-review
-
-notes: "Metadatos agregados automáticamente. Verificar y actualizar conforme ADR-032."
----
-
-# Formatos CT-List — visualización compacta de listas en la conversación
-
-**Ámbito (importante):** estos formatos son para **la conversación interactiva con el usuario** (chat), cuando hay que mostrarle listas de operaciones, hallazgos, balances o el recorrido de fondos. **No sustituyen** los informes formales de `reports/output/<proyecto>/` (plantilla `templates/AUDIT_REPORT.md`), que siguen necesitando tablas Markdown y el formato evidencia → causa → impacto → recomendación por trazabilidad ante el asesor (ADR-009/ADR-011). Son dos audiencias distintas: el usuario en el chat (necesita lectura rápida) y el asesor en el informe (necesita trazabilidad completa).
-
-Adaptado 2026-07-04 de una propuesta del usuario ("CT-List"), corrigiendo dos imprecisiones antes de fijarlo: el ejemplo original usaba "Recepción" para un depósito (no es un tipo real de CoinTracking — el verificado es `Depósito`) y citaba el aviso de coste faltante en inglés ("Missing Purchase History") en vez de su forma en español ya documentada (`COST_BASIS_AND_VALIDATION.md` §3.1).
-
-> 🔑 **Regla de uso (igual que el CT-Task, ADR-024):** estos bloques **nunca sustituyen** la explicación en lenguaje llano de `CLAUDE.md` — van justo debajo de ella, o intercalados hallazgo por hallazgo. Ante cualquier ⚠/✗, sigue traduciendo el hallazgo a **qué significa / por qué le importa / qué hacer ahora** (regla ya existente en `CLAUDE.md` §"Usuario objetivo y estilo de guía"). Usa siempre los **tipos de operación ya verificados** contra los datos reales del proyecto (`CSV_FORMAT.md` §3/§12): `Operación`, `Depósito`, `Retirada`, `Ingresos`, `Ingresos por intereses`, `Gasto`, `Staking`, `Recompensa / Bonificación`, `Otras comisiones`. Trata cualquier otro tipo como `[VERIFICAR]`.
-
----
 
 ## CT-Timeline — revisar un historial o seguir el orden cronológico
 
@@ -118,6 +90,17 @@ MetaMask
 Ya documentado en `WEB_APP_GUIDE.md` §4bis (ADR-024). No se repite aquí; usar ese formato tal cual.
 
 ---
+
+
+# Formatos CT-List — visualización compacta de listas en la conversación
+
+**Ámbito (importante):** estos formatos son para **la conversación interactiva con el usuario** (chat), cuando hay que mostrarle listas de operaciones, hallazgos, balances o el recorrido de fondos. **No sustituyen** los informes formales de `reports/output/<proyecto>/` (plantilla `templates/AUDIT_REPORT.md`), que siguen necesitando tablas Markdown y el formato evidencia → causa → impacto → recomendación por trazabilidad ante el asesor (ADR-009/ADR-011). Son dos audiencias distintas: el usuario en el chat (necesita lectura rápida) y el asesor en el informe (necesita trazabilidad completa).
+
+Adaptado 2026-07-04 de una propuesta del usuario ("CT-List"), corrigiendo dos imprecisiones antes de fijarlo: el ejemplo original usaba "Recepción" para un depósito (no es un tipo real de CoinTracking — el verificado es `Depósito`) y citaba el aviso de coste faltante en inglés ("Missing Purchase History") en vez de su forma en español ya documentada (`COST_BASIS_AND_VALIDATION.md` §3.1).
+
+> 🔑 **Regla de uso (igual que el CT-Task, ADR-024):** estos bloques **nunca sustituyen** la explicación en lenguaje llano de `CLAUDE.md` — van justo debajo de ella, o intercalados hallazgo por hallazgo. Ante cualquier ⚠/✗, sigue traduciendo el hallazgo a **qué significa / por qué le importa / qué hacer ahora** (regla ya existente en `CLAUDE.md` §"Usuario objetivo y estilo de guía"). Usa siempre los **tipos de operación ya verificados** contra los datos reales del proyecto (`CSV_FORMAT.md` §3/§12): `Operación`, `Depósito`, `Retirada`, `Ingresos`, `Ingresos por intereses`, `Gasto`, `Staking`, `Recompensa / Bonificación`, `Otras comisiones`. Trata cualquier otro tipo como `[VERIFICAR]`.
+
+
 
 ## Selección automática del formato
 

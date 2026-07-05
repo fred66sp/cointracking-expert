@@ -1,30 +1,4 @@
 ---
-id: KB-B1-XXX
-title: "Mantenimiento de la Base de Conocimiento"
-level: B
-domain: cointracking
-source: "Internal documentation"
-authority: verified
-last_verified: 2026-07-05
-valid_from: 2024-01-01
-valid_until: 2027-12-31
-confidence: medium
-version: 1.0
-
-tags:
-  - todo
-  - needs-review
-
-notes: "Metadatos agregados automáticamente. Verificar y actualizar conforme ADR-032."
----
-
-# Mantenimiento de la Base de Conocimiento
-
-**Documento:** Cómo agregar, actualizar y deprecar documentos de conocimiento  
-**Audiencia:** Desarrolladores, especialistas de criptomonedas  
-**Última actualización:** 2026-07-05
-
----
 
 ## 🎯 Propósito
 
@@ -36,6 +10,15 @@ La base de conocimiento es el **cerebro auditor**. Debe mantenerse:
 - ✅ **Navegable:** Índices actualizados, sin brechas
 
 ---
+
+
+# Mantenimiento de la Base de Conocimiento
+
+**Documento:** Cómo agregar, actualizar y deprecar documentos de conocimiento  
+**Audiencia:** Desarrolladores, especialistas de criptomonedas  
+**Última actualización:** 2026-07-05
+
+
 
 ## 📂 Estructura de Carpetas
 

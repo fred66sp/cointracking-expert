@@ -1,5 +1,5 @@
 ---
-id: KB-B1-XXX
+id: KB-B1-016
 title: "Salida de Binance de la UE por MiCA (2026-07) — impacto en reconciliación"
 level: B
 domain: cointracking

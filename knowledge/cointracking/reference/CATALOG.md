@@ -1,5 +1,5 @@
 ---
-id: KB-B1-XXX
+id: KB-B1-014
 title: "Catálogo de la base de conocimiento oficial de CoinTracking"
 level: B
 domain: cointracking

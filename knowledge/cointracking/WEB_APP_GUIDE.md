@@ -1,24 +1,4 @@
 ---
-id: KB-B1-XXX
-title: "Untitled Document"
-level: B
-domain: cointracking
-source: "Internal documentation"
-authority: verified
-last_verified: 2026-07-05
-valid_from: 2024-01-01
-valid_until: 2027-12-31
-confidence: medium
-version: 1.0
-
-tags:
-  - todo
-  - needs-review
-
-notes: "Metadatos agregados automáticamente. Verificar y actualizar conforme ADR-032."
----
-
----
 id: KB-A2-004
 title: "Guía de uso de la web de CoinTracking (remediación y operación)"
 level: A
@@ -49,6 +29,9 @@ tags:
 
 notes: "Interfaz de CT cambia regularmente. CRÍTICO: antes de dar pasos clic a clic, reverificar en artículo oficial citado."
 ---
+
+
+
 
 # Guía de uso de la web de CoinTracking (remediación y operación)
 

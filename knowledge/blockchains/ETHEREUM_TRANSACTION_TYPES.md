@@ -1,24 +1,4 @@
 ---
-id: KB-B1-XXX
-title: "Untitled Document"
-level: B
-domain: cointracking
-source: "Internal documentation"
-authority: verified
-last_verified: 2026-07-05
-valid_from: 2024-01-01
-valid_until: 2027-12-31
-confidence: medium
-version: 1.0
-
-tags:
-  - todo
-  - needs-review
-
-notes: "Metadatos agregados automáticamente. Verificar y actualizar conforme ADR-032."
----
-
----
 id: KB-B3-001
 title: "Tipos de transacciones Ethereum y cómo afectan a CoinTracking"
 level: B
@@ -27,7 +7,7 @@ source: "Ethereum Yellow Paper + casos reales"
 authority: verified
 last_verified: 2026-07-05
 valid_from: 2024-01-01
-valid_until: null
+valid_until: 2027-07-03
 confidence: high
 version: 1.0
 
@@ -47,6 +27,9 @@ tags:
 
 notes: "Operativo: tipos de tx en Ethereum y cómo aparecen en CoinTracking."
 ---
+
+
+
 
 # Tipos de Transacciones Ethereum y su Impacto en CoinTracking
 
