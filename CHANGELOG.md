@@ -6,7 +6,18 @@ Todos los cambios notables en el proyecto CoinTracking Expert se documentan en e
 
 ## [No lanzado]
 
-### 2026-07-05: SESIÓN COMPLETA — Mejoras Internas + Documentación de Usuario
+### 2026-07-05: SESIÓN COMPLETA — Sistema 100% Optimizado + Documentación
+
+**FASE 4-5 OPTIMIZACIÓN (Completadas):**
+- `tools/version_tracker.py` (NUEVO) — rastreador de versiones de ADRs/KB
+  - Detección automática de cambios en documentos
+  - Invalidación inteligente de caché
+- `tools/cache_ttl_manager.py` (NUEVO) — caché con TTL dinámico
+  - Trades: permanente, Balance: 15 min, Gains: si trades OK
+  - `get_or_fetch_dynamic()` — TTL automático según tipo
+- `docs/CACHE_PHASES_4_5_USAGE.md` (NUEVO) — documentación completa de uso
+  - Ejemplos en skills
+  - Flujo de cómo evita llamadas MCP innecesarias
 
 **MEJORAS INTERNAS (Opción B completada):**
 - `QUICK_START.md` (NUEVO) — Entrada usuario nuevo (5 min): qué es, qué puede hacer, cómo empezar
