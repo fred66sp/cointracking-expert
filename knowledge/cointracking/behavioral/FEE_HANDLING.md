@@ -1,5 +1,5 @@
 ---
-id: KB-B1-010
+id: KB-B1-019
 title: "Cómo CoinTracking maneja Comisiones (Fees) en diferentes monedas"
 level: B
 domain: cointracking

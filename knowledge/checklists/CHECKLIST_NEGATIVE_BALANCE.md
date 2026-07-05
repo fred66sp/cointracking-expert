@@ -7,7 +7,7 @@ source: "PATTERN_BALANCE_RECONCILIATION"
 authority: verified
 last_verified: 2026-07-05
 valid_from: 2024-01-01
-valid_until: null
+valid_until: 2027-12-31
 confidence: high
 version: 1.0
 

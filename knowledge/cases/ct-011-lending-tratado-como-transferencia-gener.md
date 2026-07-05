@@ -7,7 +7,7 @@ source: "Análisis de casos reales auditados"
 authority: "verified"
 last_verified: "2026-07-05"
 valid_from: "2024-01-01"
-valid_until:
+valid_until: 2027-12-31
 confidence: "medium"
 version: "1.0"
 related_adr:

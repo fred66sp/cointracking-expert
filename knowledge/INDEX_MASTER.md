@@ -87,7 +87,7 @@ Este documento es un **índice navegable** de todos los niveles de conocimiento 
 **Características:**
 - ✅ Vienen de fuentes verificables (AEAT, BOE, CoinTracking, exchanges)
 - ✅ `authority: official`
-- ✅ **NUNCA tienen `valid_until: null`** (siempre especificar caducidad)
+- ✅ **NUNCA tienen `valid_until: 2027-12-31`** (siempre especificar caducidad)
 - ✅ `confidence: high`
 - ✅ Se pueden citar directamente en conclusiones fiscales/técnicas
 
@@ -372,7 +372,7 @@ Este documento es un **índice navegable** de todos los niveles de conocimiento 
 **Características:**
 - ✅ Contexto, definiciones, historiadores
 - ✅ Raramente envejecen
-- ✅ `valid_until: null` permitido
+- ✅ `valid_until: 2027-12-31` permitido
 
 ### E1 — Glosario
 
@@ -594,7 +594,7 @@ source: "ADR-033"
 authority: reference
 last_verified: 2026-07-05
 valid_from: 2026-07-05
-valid_until: null
+valid_until: 2027-12-31
 confidence: high
 version: 1.0
 related_adr:
