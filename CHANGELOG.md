@@ -6,6 +6,19 @@ Todos los cambios notables en el proyecto CoinTracking Expert se documentan en e
 
 ## [No lanzado]
 
+### 2026-07-05: GOBERNANZA — 4 ADRs pasan de Proposed a Accepted
+
+**Contexto:** ADR-030, 036, 037 y 038 llevaban entre 1 y 2 días en estado `Proposed` pese a estar ya en uso activo (pre-commit hooks funcionando, protocolo de validación aplicado hoy mismo en la corrección del Nivel C). Se formalizan como `Accepted`.
+
+- **ADR-030** (Validación de ADRs críticos): Accepted. Los 5 pendientes de implementación (sub-checklist fiscal, revisor calificado, automatización, excepciones, registro de errores) quedan como trabajo futuro documentado, no bloquean el protocolo.
+- **ADR-036** (Convención de IDs de documentos): Accepted. Es la convención que faltó consultar antes de crear los 4 documentos duplicados de esta misma sesión — ver corrección anterior.
+- **ADR-037** (Validación obligatoria en desarrollo): Accepted. Verificado que el pre-commit hook (`.git/hooks/pre-commit` + `pre-commit.ps1`) ejecuta exactamente `tools/audit_mega_complete.py` como describe el ADR.
+- **ADR-038** (Criterio de auditoría en lotes, no iterativa): Accepted.
+
+**Hallazgo adicional corregido:** ADR-036, 037, 038 y 039 no estaban listados en `adr/README.md` (índice general) — ya añadidos.
+
+**Nota:** `tools/audit_mega_complete.py` corre limpio (0 errores críticos) pero reporta ~20 warnings de "BROKEN LINK" en documentos de navegación (`knowledge/QUICK_START.md`, `NAVIGATION_MAP.md`, etc.) — no crítico, pendiente de limpieza en sesión futura.
+
 ### 2026-07-05: CORRECCIÓN — IDs duplicados y contenido fusionado en Nivel B (revisión post-sesión)
 
 **Hallazgo (auditoría de revisión):** los 4 documentos creados en la entrada anterior ("NIVEL C COMPLETADO") se crearon sin consultar ADR-036 (convención de IDs), reutilizando IDs ya asignados a documentos existentes (`KB-C1-001`, `KB-C1-002` de los casos legacy `ct-001`/`ct-002`; `KB-C2-001` de `PATTERN_DUPLICATE_DETECTION.md`; `KB-C3-001` de `PROCEDURE_AUDIT_ACCOUNT.md`). Además, dos de los cuatro duplicaban contenido ya cubierto en Nivel B, y uno contradecía directamente al documento existente sobre BingX Copy Trading.

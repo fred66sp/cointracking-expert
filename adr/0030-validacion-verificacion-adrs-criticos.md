@@ -1,8 +1,9 @@
 # ADR-030: Validación y verificación de ADRs críticos antes de commit
 
-**Status:** Proposed
+**Status:** Accepted
 
 **Date:** 2026-07-04
+**Accepted:** 2026-07-05 — protocolo en uso activo (aplicado en la corrección de Nivel C del 2026-07-05); pendientes de implementación futura (sub-checklist fiscal, automatización de detección) no bloquean la aceptación del protocolo en sí.
 
 ## Context
 

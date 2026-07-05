@@ -1,8 +1,8 @@
 # ADR-037: Validación Obligatoria en Desarrollo
 
-**Status:** Proposed  
+**Status:** Accepted  
 **Proposed:** 2026-07-05  
-**Accepted:** -  
+**Accepted:** 2026-07-05  
 **Last Updated:** 2026-07-05
 
 ---

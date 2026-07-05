@@ -39,6 +39,10 @@ Este directorio contiene las decisiones arquitectonicas del proyecto, documentad
 - [ADR-033: Sistema de conocimiento jerárquico (6 niveles A-F)](./0033-sistema-conocimiento-jerarquico.md)
 - [ADR-034: Stack de tecnología Python](./0034-stack-de-tecnología-python.md)
 - [ADR-035: Representación del modelo de dominio en Python](./0035-representación-del-modelo-de-dominio-en-python.md)
+- [ADR-036: Convención de IDs de documentos de conocimiento](./0036-convencion-de-ids-de-documentos.md)
+- [ADR-037: Validación obligatoria en desarrollo (pre-commit hooks)](./0037-validacion-obligatoria-en-desarrollo.md)
+- [ADR-038: Criterio de auditoría en lotes, no iterativa](./0038-criterio-auditoria-lotes-no-iterativa.md)
+- [ADR-039: Optimización de tokens y caché (arquitectura de 3 capas)](./0039-optimizacion-tokens-y-cache.md)
 
 ## Proceso de ADR
 

@@ -1,8 +1,8 @@
 # ADR-038: Criterio de Auditoría (Lotes, No Iterativa)
 
-**Status:** Proposed  
+**Status:** Accepted  
 **Proposed:** 2026-07-05  
-**Accepted:** -  
+**Accepted:** 2026-07-05  
 **Last Updated:** 2026-07-05
 
 ---
