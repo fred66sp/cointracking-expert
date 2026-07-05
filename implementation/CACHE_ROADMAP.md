@@ -44,48 +44,71 @@
 
 ---
 
-## Fases Futuras (Opcionales)
+## Fases Futuras (En Implementación)
 
-### Fase 4: Versionado de Caché
+### Fase 4: Versionado de Caché ✅
 
 **Objetivo:** Detectar automáticamente si la caché es vigente.
 
-**Tareas:**
-- [ ] Extender manifest para incluir versiones:
+**Status:** COMPLETADA 2026-07-05
+
+**Implementación:**
+- ✅ `tools/version_tracker.py` — rastreador de versiones de ADRs/KB
+  - Extrae `version:` de frontmatter YAML
+  - Compara versiones actuales vs caché
+  - Explica qué versiones cambiaron
+- ✅ Extender `CacheManager`:
+  - Método `is_cache_valid_by_version()` — verifica si caché es válida
+  - Método `get_or_fetch_with_version_check()` — automáticamente invalida si versiones cambian
+  - Guarda versiones en manifest
+- ✅ Manifest extendido:
   ```json
   {
     "cache_key": "get_trades_...",
-    "generated_at": "2026-07-05T10:42:00Z",
-    "adr_versions": {"ADR-039": "1.0"},
-    "knowledge_versions": {"CAPITAL_GAINS": "2.1"},
-    "mcp_version": "1.3.2"
+    "created": "2026-07-05T10:42:00Z",
+    "versions": {
+      "adr_0039": "1.0",
+      "kb_capital_gains": "2.1",
+      "mcp": "1.3.2"
+    }
   }
   ```
-- [ ] Añadir método `is_valid(adr_versions, knowledge_versions)` a CacheManager
-- [ ] Invalidar si algún ADR o KB cambió de versión
 
-**Impacto:** Menor invalidación innecesaria; más confianza en caché.
+**Impacto:** Caché se invalida automáticamente si ADRs o KB cambian versión.
 
 ---
 
-### Fase 5: Niveles de Caché Dinámicos
+### Fase 5: Niveles de Caché Dinámicos ✅
 
 **Objetivo:** TTL distintos por tipo de información.
 
-**Tareas:**
-- [ ] Definir estrategia de TTL por tipo:
-  ```python
-  TTL = {
-    'trades': 'permanent_until_import_change',
-    'balance': 15 * 60,  # 15 min
-    'holdings': 15 * 60,
-    'tax_report': 24 * 60 * 60,  # 24h
-  }
-  ```
-- [ ] Implementar en CacheManager: `get_or_fetch(..., ttl_type='trades')`
-- [ ] Auto-invalidación basada en cambios detectados (not just by age)
+**Status:** COMPLETADA 2026-07-05
 
-**Impacto:** Mejor balance entre frescura y ahorro.
+**Implementación:**
+- ✅ `tools/cache_ttl_manager.py` — gestor de caché con TTL dinámico
+  - Extiende CacheManager
+  - Define TTL por tipo de dato:
+    ```python
+    {
+      'get_trades': {'ttl_hours': 999999, 'invalidate_on': ['user_import', 'version_change']},
+      'get_grouped_balance': {'ttl_hours': 0.25, 'invalidate_on': ['user_operation']},  # 15 min
+      'get_gains': {'ttl_hours': 999999, 'invalidate_on': ['trades_change']},
+      'get_historical_summary': {'ttl_hours': 24},
+    }
+    ```
+  - Método `get_or_fetch_dynamic()` — usa TTL automáticamente según tipo
+  - Método `explain_ttl_strategy()` — documenta la estrategia
+
+**TTL Por Tipo:**
+| Tipo | TTL | Razón |
+|------|-----|-------|
+| Trades | Permanente* | No cambia salvo reimportación |
+| Balance/Holdings | 15 min | Estado vivo |
+| Gains (FIFO) | Permanente* | Determinista si trades no cambian |
+| Tax Report | 24h | Anual |
+| Histórico | 24h | Cambia diariamente |
+
+**Impacto:** Balance perfecto entre frescura de datos y ahorro de llamadas.
 
 ---
 

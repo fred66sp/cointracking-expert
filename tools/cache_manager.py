@@ -59,6 +59,11 @@ from pathlib import Path
 from datetime import datetime, timedelta
 from typing import Any, Dict, Optional
 
+# Importar version tracker
+import sys
+sys.path.insert(0, str(Path(__file__).parent))
+from version_tracker import VersionTracker
+
 class CacheManager:
     def __init__(self, project_name: str, cache_dir: str = '.cache/cointracking'):
         """Inicializa gestor de caché para un proyecto."""
@@ -67,6 +72,10 @@ class CacheManager:
         self.cache_dir.mkdir(parents=True, exist_ok=True)
         self.manifest_path = self.cache_dir / 'manifest.json'
         self.manifest = self._load_manifest()
+
+        # Version tracking (Fase 4)
+        self.version_tracker = VersionTracker()
+        self.current_versions = self.version_tracker.get_current_versions()
 
     def _load_manifest(self) -> Dict:
         """Carga manifest de caché (metadata de archivos)."""
@@ -192,6 +201,103 @@ class CacheManager:
         self._save_manifest()
         print(f"[CACHE CLEARED] Pattern '{pattern}' (affected keys: {sum(1 for k in self.manifest if pattern.lower() in k.lower())})")
 
+    def is_cache_valid_by_version(self, cached_versions: Dict[str, str] = None) -> bool:
+        """
+        Verificar si caché sigue siendo válida comparando versiones.
+
+        (Fase 4: Versionado automático)
+
+        Args:
+            cached_versions: Versiones cuando se guardó el caché.
+                            Si None, usa las del manifest actual.
+
+        Returns:
+            True si versiones coinciden, False si algo cambió
+        """
+        if cached_versions is None:
+            # Leer versiones del manifest
+            cached_versions = self.manifest.get('versions', {})
+            if not cached_versions:
+                # Si no hay versiones en manifest, asumir inválido (forzar refresh)
+                return False
+
+        # Comparar con versiones actuales
+        valid = self.version_tracker.is_cache_valid(cached_versions, self.current_versions)
+
+        if not valid:
+            # Explicar qué cambió
+            diff = self.version_tracker.get_version_diff(cached_versions, self.current_versions)
+            print(f"[CACHE INVALIDATED] Cambios de versión detectados:")
+            print(self.version_tracker.explain_invalidation(diff))
+
+        return valid
+
+    def get_or_fetch_with_version_check(
+        self,
+        call_name: str,
+        params: Dict,
+        mcp_call_fn,
+        max_age_hours: int = 24,
+        force_refresh: bool = False
+    ) -> Any:
+        """
+        Get or fetch con validación automática de versiones.
+
+        (Fase 4: Versionado automático)
+
+        Similar a get_or_fetch(), pero además:
+          1. Verifica que las versiones de ADRs/KB no cambiaron
+          2. Invalida automáticamente si algo cambió
+          3. Refetcha datos sin esperar TTL
+        """
+        cache_key = self._cache_key(call_name, params)
+
+        # Primero: Verificar versiones
+        cached_data = self.manifest.get('entries', {}).get(cache_key)
+        if cached_data and not force_refresh:
+            cached_versions = cached_data.get('versions')
+            if cached_versions:
+                if not self.is_cache_valid_by_version(cached_versions):
+                    # Versiones cambiaron → invalidar y refetch
+                    force_refresh = True
+
+        # Luego: Intentar cargar de caché (con TTL normal)
+        if not force_refresh:
+            cached_result, age_hours = self._load_cache(cache_key)
+            if cached_result is not None and age_hours < max_age_hours:
+                print(f"[CACHE HIT] {call_name} ({age_hours:.1f}h old, versions OK)")
+                return cached_result
+
+        # Caché no disponible/viejo/inválido → fetch y guardar con versiones
+        print(f"[CACHE MISS] {call_name} - MCP call")
+        data = mcp_call_fn(call_name, params)
+        self._save_cache_with_versions(cache_key, call_name, params, data)
+
+        return data
+
+    def _save_cache_with_versions(self, cache_key: str, call_name: str, params: Dict, data: Any) -> None:
+        """Guardar caché incluyendo versiones de ADRs/KB."""
+        cache_file = self._cache_file(cache_key)
+
+        cache_entry = {
+            'call_name': call_name,
+            'params': params,
+            'timestamp': time.time(),
+            'data': data,
+            'versions': self.current_versions  # Guardar versiones actuales
+        }
+
+        cache_file.write_text(json.dumps(cache_entry, indent=2, default=str))
+
+        # Actualizar manifest
+        self.manifest[cache_key] = {
+            'call_name': call_name,
+            'created': datetime.now().isoformat(),
+            'file_size_kb': cache_file.stat().st_size / 1024,
+            'versions': self.current_versions
+        }
+        self._save_manifest()
+
     def stats(self) -> Dict:
         """Estadísticas del caché."""
         total_size = sum(
@@ -203,7 +309,8 @@ class CacheManager:
             'project': self.project_name,
             'total_entries': len(self.manifest),
             'total_size_kb': round(total_size, 2),
-            'entries': self.manifest
+            'entries': self.manifest,
+            'current_versions': self.current_versions
         }
 
 

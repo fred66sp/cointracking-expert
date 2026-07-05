@@ -45,7 +45,16 @@
       "Bash(chmod +x .git/hooks/pre-commit)",
       "Bash(git commit -m 'Documentar cambios de exchange y procedimientos de migracion \\(2026\\) *)",
       "Bash(git commit -m 'Actualizar CHANGELOG con resumen de sesion: Fase 3 + Documentacion de Exchanges *)",
-      "Bash(git commit -m 'Refactorizar ADR-039: De especificacion tecnica a ADR arquitectonico puro *)"
+      "Bash(git commit -m 'Refactorizar ADR-039: De especificacion tecnica a ADR arquitectonico puro *)",
+      "Bash(git commit -m 'Actualizar CHANGELOG: Refactorizacion arquitectonica de ADR-039 *)",
+      "Bash(git commit *)",
+      "Bash(git commit -m 'Mejoras internas: Documentacion de usuario y ejemplos codigo *)",
+      "Bash(git commit -m 'Final: Actualizar CHANGELOG con mejoras internas completadas *)",
+      "Bash(python tools/version_tracker.py)",
+      "Bash(python tools/cache_ttl_manager.py)",
+      "Bash(python cache_ttl_manager.py)",
+      "Bash(python \"h:\\\\cointracking-expert\\\\tools\\\\cache_ttl_manager.py\")",
+      "Bash(git commit -m 'Fase 4-5: Versionado automático y TTL dinámico de caché *)"
     ],
     "additionalDirectories": [
       "H:\\cointracking-expert\\cointracking-mcp\\cmd"
