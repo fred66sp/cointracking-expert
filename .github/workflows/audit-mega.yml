@@ -1,0 +1,63 @@
+name: Auditoría MEGA (ADR-038)
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    name: Validar documentos (0 errores críticos)
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Instalar dependencias
+        run: |
+          python -m pip install pyyaml
+
+      - name: Ejecutar Auditoría MEGA
+        run: |
+          python tools/audit_mega_complete.py > audit_output.txt 2>&1
+          cat audit_output.txt
+
+      - name: Verificar errores críticos
+        run: |
+          if grep -q "Errores críticos: 0" audit_output.txt; then
+            echo "✅ Auditoría MEGA pasó: 0 errores críticos"
+            exit 0
+          else
+            echo "❌ Auditoría MEGA falló: hay errores críticos"
+            grep -A 50 "ERRORES CRÍTICOS" audit_output.txt || true
+            exit 1
+          fi
+
+      - name: Guardar reporte (si falló)
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: audit-report
+          path: audit_output.txt
+
+      - name: Comentar en PR (si falló)
+        if: failure() && github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            const report = fs.readFileSync('audit_output.txt', 'utf8');
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `❌ **Auditoría MEGA falló**\n\n\`\`\`\n${report.substring(0, 2000)}\n\`\`\``
+            });

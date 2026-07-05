@@ -26,6 +26,37 @@ El agente vive en Claude Code, se apoya en una base de conocimiento propia y aud
 
 ---
 
+## Para desarrolladores / Contribuyentes
+
+### Protocolo de Desarrollo (ADR-036/37/38)
+
+**Antes de modificar la base de conocimiento, lee:**
+1. 📋 [adr/0036-convencion-de-ids-de-documentos.md](adr/0036-convencion-de-ids-de-documentos.md) — Convención de IDs (KB-[NIVEL][SUB]-NNN)
+2. 📋 [adr/0037-validacion-obligatoria-en-desarrollo.md](adr/0037-validacion-obligatoria-en-desarrollo.md) — Validación DURANTE creación, no después
+3. 📋 [adr/0038-criterio-auditoria-lotes-no-iterativa.md](adr/0038-criterio-auditoria-lotes-no-iterativa.md) — Auditoría MEGA completa
+
+**Workflow para crear/modificar documentos:**
+```bash
+# 1. Crear documento con YAML completo (ver ADR-036)
+# 2. Escribir contenido
+# 3. VALIDAR ANTES de commit:
+python tools/audit_mega_complete.py
+
+# 4. Si hay errores: FIX y re-valida
+# 5. Si está limpio: git commit (hook valida automáticamente)
+```
+
+**Instalar pre-commit hook (validación local):**
+```bash
+powershell -ExecutionPolicy Bypass .\tools\install_hooks.ps1
+# O en bash:
+chmod +x .git/hooks/pre-commit
+```
+
+**CI/CD automático:** GitHub Actions valida en cada push (ver `.github/workflows/audit-mega.yml`)
+
+---
+
 ## Para usuarios
 
 👉 **¿Quieres usar el agente?** Lee [knowledge/QUICK_START.md](knowledge/QUICK_START.md) — guía paso a paso para auditar tus datos y preparar la declaración fiscal. Hay secciones para usuarios nuevos y experimentados.

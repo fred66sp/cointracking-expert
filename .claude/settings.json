@@ -35,7 +35,8 @@
       "Bash(grep -r \"^id: KB-A1-001$\" knowledge --include=\"*.md\")",
       "Bash(grep -r \"^id: KB-B1-002$\" knowledge --include=\"*.md\")",
       "Bash(grep -r \"^id: KB-C1-002$\" knowledge --include=\"*.md\")",
-      "Bash(grep -r \"^id: KB-D1-001$\" knowledge --include=\"*.md\")"
+      "Bash(grep -r \"^id: KB-D1-001$\" knowledge --include=\"*.md\")",
+      "Bash(git commit -m 'Implementar ADR-037/38: Pre-commit hooks + CI/CD + Documentación *)"
     ],
     "additionalDirectories": [
       "H:\\cointracking-expert\\cointracking-mcp\\cmd"
