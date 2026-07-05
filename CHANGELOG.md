@@ -6,7 +6,13 @@ Todos los cambios notables en el proyecto CoinTracking Expert se documentan en e
 
 ## [No lanzado]
 
-### 2026-07-05: FASE 3 — Optimización de Tokens Validada + Arquitectura Refactorizada
+### 2026-07-05: SESIÓN COMPLETA — Mejoras Internas + Documentación de Usuario
+
+**MEJORAS INTERNAS (Opción B completada):**
+- `QUICK_START.md` (NUEVO) — Entrada usuario nuevo (5 min): qué es, qué puede hacer, cómo empezar
+- `NAVIGATION_MAP.md` (NUEVO) — Índice de navegación: busca por necesidad/carpeta/flujo
+- `tools/cache_manager.py` — Docstring expandido con filosofía + ejemplo real de uso en skill
+- Validación: pre-commit hooks funcionan correctamente (✓ test ejecutado)
 
 **REFACTORIZACIÓN ARQUITECTÓNICA (Feedback Copilot integrado):**
 - ADR-039 transformado de especificación técnica → ADR arquitectónico puro
