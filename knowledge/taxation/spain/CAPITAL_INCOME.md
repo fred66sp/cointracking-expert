@@ -1,13 +1,13 @@
 ---
 id: KB-A1-003
-title: "Rendimientos y otras rentas por criptomonedas (IRPF España 2025)"
+title: "Rendimientos y otras rentas por criptomonedas (IRPF España 2025-2026)"
 level: A
 domain: taxation
-source: "DGT — Consultas V1766-22, 0018-23, V1948-21; LIRPF arts. 25, 27, 33-34"
+source: "DGT — Consultas V1766-22, 0018-23, V1948-21; LIRPF arts. 25, 27, 33-34 (vigente 2025-2026)"
 authority: official
-last_verified: 2026-07-02
+last_verified: 2026-07-05
 valid_from: 2025-01-01
-valid_until: 2025-12-31
+valid_until: 2026-12-31
 confidence: medium
 version: 1.0
 

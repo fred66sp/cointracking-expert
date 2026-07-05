@@ -1,13 +1,13 @@
 ---
 id: KB-A1-002
-title: "Ganancias y pérdidas patrimoniales por criptomonedas (IRPF España 2025)"
+title: "Ganancias y pérdidas patrimoniales por criptomonedas (IRPF España 2025-2026)"
 level: A
 domain: taxation
-source: "AEAT — Manual práctico IRPF 2025, LIRPF arts. 14, 33, 35, 37.1.h, 46.b, 49"
+source: "AEAT — Manual práctico IRPF 2025, LIRPF arts. 14, 33, 35, 37.1.h, 46.b, 49 (vigente 2025-2026)"
 authority: official
-last_verified: 2026-07-02
+last_verified: 2026-07-05
 valid_from: 2025-01-01
-valid_until: 2025-12-31
+valid_until: 2026-12-31
 confidence: high
 version: 1.0
 
