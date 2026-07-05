@@ -6,6 +6,12 @@ Todos los cambios notables en el proyecto CoinTracking Expert se documentan en e
 
 ## [No lanzado]
 
+### 2026-07-05: ADR-041 — Procesos MCP huérfanos en Windows + limpieza del proyecto legado `agp`
+
+**Caso real que motivó el ADR:** al borrar la caché del proyecto legado `demo`, el borrado falló con "file busy" — la investigación reveló **7 servidores MCP corriendo a la vez** (6 huérfanos de sesiones de Claude Code cerradas; en Windows el hijo stdio no siempre muere con su padre). Uno de los huérfanos retenía el SQLite de `demo`. Resuelto con el protocolo que ADR-041 deja escrito: confirmar ventanas abiertas con el usuario, matar huérfanos de viejo a nuevo verificando tras cada baja que el MCP propio sigue vivo (`cache_stats`), y reintentar el borrado hasta que caiga el holder. Prevención automática (watchdog de PPID) evaluada y pospuesta a propósito — ver ADR.
+
+**Limpieza de proyectos legados (a petición del usuario):** `agp` (renombrado a `agp2025` el 03-07) y `demo` eliminados por completo: carpetas de `reports/output/` y cachés MCP (vía `cointracking_delete_project`, cuyo guard de proyecto activo saltó correctamente — validación en vivo de ADR-023). Los 2 informes de validación del sistema que vivían en `agp/` se preservaron en la raíz de `reports/output/` — **no** en `/reports` versionado, porque contienen datos reales de la cartera del usuario (balance total y desglose por activo) y la regla es que los datos reales nunca se versionan. Convención resultante: raíz de `reports/output/` = informes de sistema con datos reales (fuera de git); subcarpetas = proyectos; `/reports` = solo documentos sin datos personales. Memoria del agente actualizada (`project_structure`, índice). Estado final: un solo proyecto (`agp2025`), una sola caché, un solo servidor MCP.
+
 ### 2026-07-05: ADR-040 — Credenciales por proyecto en el MCP (multi-cuenta opcional)
 
 **Cierra la última limitación de diseño del MCP:** hasta ahora todos los proyectos consultaban obligatoriamente la misma cuenta de CoinTracking (credenciales del proceso, ADR-016) — auditar dos cuentas distintas exigía reiniciar el servidor y el aviso documental era la única protección contra contaminar la caché con datos de la cuenta equivocada.

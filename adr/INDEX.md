@@ -4,7 +4,7 @@
 
 **Característica:** Registro de decisiones arquitectónicas (MADR format).
 
-**Total:** 40 ADRs (001-040, todos Accepted salvo notas puntuales — ver `adr/README.md` para el índice secuencial completo, este documento los agrupa por nivel de conocimiento). Corregido 2026-07-05: este índice llevaba desactualizado desde la creación de ADR-033, con conteo, temas y sección "Pendientes" incorrectos.
+**Total:** 41 ADRs (001-041, todos Accepted salvo notas puntuales — ver `adr/README.md` para el índice secuencial completo, este documento los agrupa por nivel de conocimiento). Corregido 2026-07-05: este índice llevaba desactualizado desde la creación de ADR-033, con conteo, temas y sección "Pendientes" incorrectos.
 
 ---
 
@@ -189,6 +189,8 @@
 
 - **ADR-040:** Credenciales por proyecto en el MCP — multi-cuenta opcional vía `--project-env-dir` + `<proyecto>.env` (fail-closed; los secretos nunca pasan por la conversación)
 
+- **ADR-041:** Procesos MCP huérfanos en Windows — síntoma "file busy" al borrar cachés; protocolo: contar ventanas abiertas, matar viejo→nuevo verificando vida del MCP propio tras cada baja
+
 ---
 
 ## Relacionados Cruzados
@@ -216,7 +218,7 @@ Esta sección listaba temas de "Capa 2: Conciliación" reservados para ADR-034 a
 | Flujo de conciliación (pipeline invariante) | `knowledge/procedures/PROCEDURE_AUDIT_ACCOUNT.md` (KB-C3-001) |
 | Cost Basis / FIFO (cuándo confiar en CT) | `knowledge/cointracking/official/COST_BASIS_AND_VALIDATION.md` (Nivel A2) |
 
-Si en el futuro se necesita un ADR nuevo, usar el siguiente número libre (041+), nunca reutilizar uno ya asignado.
+Si en el futuro se necesita un ADR nuevo, usar el siguiente número libre (042+), nunca reutilizar uno ya asignado.
 
 ---
 
@@ -231,7 +233,7 @@ Si en el futuro se necesita un ADR nuevo, usar el siguiente número libre (041+)
 
 ## Status
 
-- 40 ADRs creados y formalizados (todos Accepted salvo notas puntuales — ver `adr/README.md`)
+- 41 ADRs creados y formalizados (todos Accepted salvo notas puntuales — ver `adr/README.md`)
 - Gobernanza de desarrollo (036-038), optimización de caché (039) y Nivel C (patrones/procedimientos) cubren lo que esta sección marcaba como pendiente/bloqueante
 - Pendiente real, sin resolver: la discrepancia de declaraciones ya presentadas del proyecto `agp2025` (ver memoria de proyecto, no es un tema de ADR)
 

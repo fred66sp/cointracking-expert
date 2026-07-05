@@ -44,6 +44,7 @@ Este directorio contiene las decisiones arquitectonicas del proyecto, documentad
 - [ADR-038: Criterio de auditoría en lotes, no iterativa](./0038-criterio-auditoria-lotes-no-iterativa.md)
 - [ADR-039: Optimización de tokens y caché (arquitectura de 3 capas)](./0039-optimizacion-tokens-y-cache.md)
 - [ADR-040: Credenciales por proyecto en el MCP (multi-cuenta opcional)](./0040-credenciales-por-proyecto-en-el-mcp.md)
+- [ADR-041: Procesos MCP huérfanos en Windows — diagnóstico y protocolo de limpieza](./0041-procesos-mcp-huerfanos-en-windows.md)
 
 ## Proceso de ADR
 
