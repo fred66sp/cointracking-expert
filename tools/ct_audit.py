@@ -142,7 +142,13 @@ def negative_balances(rows, exchange=None):
 
 
 def find_orphan_transfers(rows, window_min=1440):
-    """Depósitos/retiradas sin contraparte. Nivel 1: Tx Hash. Nivel 2: moneda+importe(≈venta−fee)+ventana+cuenta distinta."""
+    """Depósitos/retiradas sin contraparte. Nivel 1: Tx Hash. Nivel 2: moneda+importe(≈venta−fee)+ventana+cuenta distinta.
+
+    El emparejamiento es 1:1 exclusivo: una retirada ya reclamada por un depósito
+    no puede ser reclamada por otro (bug corregido 2026-07-05, ver CHANGELOG — sin
+    esta exclusión, dos depósitos idénticos podían "compartir" la misma retirada
+    única y ninguno se reportaba como huérfano, aunque uno de los dos
+    necesariamente lo era)."""
     deps = [r for r in rows if r[C_TIPO] in DEPOSIT_TYPES]
     wds = [r for r in rows if r[C_TIPO] in WITHDRAWAL_TYPES]
     win = timedelta(minutes=window_min)
@@ -151,14 +157,18 @@ def find_orphan_transfers(rows, window_min=1440):
         fee = D(w[C_FEE]) if w[C_FEECUR] == w[C_SELLCUR] else Decimal(0)
         return D(w[C_SELL]) - fee
 
-    def match(dep):
+    def match(dep, matched_wd):
         h = dep[C_TXHASH]
         for w in wds:
+            if id(w) in matched_wd:
+                continue
             if h and w[C_TXHASH] and h == w[C_TXHASH]:
                 return ("hash", w)
         dcur, damt, ddate = dep[C_BUYCUR], D(dep[C_BUY]), parse_date(dep[C_DATE])
         best = None
         for w in wds:
+            if id(w) in matched_wd:
+                continue
             if w[C_SELLCUR] != dcur or w[C_EXCH] == dep[C_EXCH]:
                 continue
             if abs(wd_expected(w) - damt) > TOL:
@@ -170,10 +180,25 @@ def find_orphan_transfers(rows, window_min=1440):
                     best = (w, dt)
         return ("heur", best[0]) if best else (None, None)
 
+    # Los emparejamientos por Tx Hash son inequívocos (el hash no miente) y se
+    # resuelven primero, en una pasada separada, para que nunca compitan por
+    # el mismo hueco con un match heurístico más débil.
     orphan_dep = []
     matched_wd = set()
+    unresolved_deps = []
     for d in deps:
-        kind, w = match(d)
+        kind, w = match(d, matched_wd)
+        if kind == "hash":
+            matched_wd.add(id(w))
+        else:
+            unresolved_deps.append(d)
+
+    # Los depósitos sin Tx Hash se resuelven por heurística, ordenados por
+    # fecha para que el orden de la fila en el CSV no decida arbitrariamente
+    # qué depósito "gana" una retirada disputada entre varios candidatos.
+    unresolved_deps.sort(key=lambda d: parse_date(d[C_DATE]) or datetime.min)
+    for d in unresolved_deps:
+        kind, w = match(d, matched_wd)
         if kind is None:
             orphan_dep.append({"cuenta": d[C_EXCH], "activo": d[C_BUYCUR], "importe": d[C_BUY],
                                "fecha": d[C_DATE], "fiat": d[C_BUYCUR] in FIAT,

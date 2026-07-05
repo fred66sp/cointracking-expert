@@ -25,3 +25,25 @@ python tools/ct_audit.py tests/fixtures/sample_trades.csv --check all \
 - Distinción fiat vs cripto en huérfanos y negativos.
 - Detección de duplicado exacto por reimportación.
 - Colisión de ticker con sufijo (`SOL2` ≠ `SOL`).
+
+---
+
+## Fixture 2: `sample_trades_double_claim.csv` — emparejamiento exclusivo
+
+Regresión del bug encontrado 2026-07-05 (ver `CHANGELOG.md`): el emparejamiento heurístico de transferencias no era exclusivo — dos depósitos idénticos podían "compartir" la misma retirada única, y ninguno se reportaba como huérfano aunque uno de los dos necesariamente lo era.
+
+**Escenario:** 1 retirada de 1 BTC (Binance) + 2 depósitos idénticos de 1 BTC (Kraken a las 12:30, Coinbase a las 12:45), ambos dentro de la ventana temporal y sin Tx Hash.
+
+**Cómo ejecutar:**
+```
+python tools/ct_audit.py tests/fixtures/sample_trades_double_claim.csv --check transfers
+```
+
+**Debe cumplirse:**
+
+| Chequeo | Resultado esperado |
+|---|---|
+| **Depósitos huérfanos** | 1: el depósito de Coinbase (12:45) — el más tardío pierde el desempate. |
+| **Retiradas huérfanas** | 0 (la retirada se empareja con el depósito de Kraken, el más antiguo). |
+
+**Regla de desempate:** cuando varios depósitos podrían matchear con la misma retirada, gana el más antiguo (orden por fecha, no por posición en el CSV) — el resto queda huérfano de verdad, no oculto por un match compartido.

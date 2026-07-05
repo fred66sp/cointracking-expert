@@ -4,10 +4,12 @@ import (
 	"bytes"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"path/filepath"
 	"testing"
 
 	"github.com/alfredogp/cointracking-mcp/internal/api"
+	"github.com/alfredogp/cointracking-mcp/internal/cache"
 	"github.com/alfredogp/cointracking-mcp/internal/config"
 	"github.com/alfredogp/cointracking-mcp/internal/logging"
 )
@@ -215,5 +217,98 @@ func TestSwitchProject(t *testing.T) {
 	}
 	if apiCalls != 2 {
 		t.Fatalf("expected no additional API call switching back to a previously-visited project, got %d", apiCalls)
+	}
+}
+
+// TestSwitchProjectRollsBackOnOpenFailure covers the bug found 2026-07-05
+// (see CHANGELOG.md): if opening the target project's cache fails, the
+// previous project's store had already been closed. The failure mode isn't a
+// crash — Store.Get treats a "database is closed" error from a query on the
+// closed *sql.DB as a plain cache miss, so cachedCall silently falls back to
+// calling the API again. The real damage is quieter: L2 (disk) persistence
+// for the "current" project silently stops working (writes fail in the
+// background via SetAsync's error callback, reads always miss), so nothing
+// written after the failed switch survives a close/reopen — until the server
+// is restarted, with no visible error at the time. This forces that failure
+// (a regular file where the new project's cache directory needs to go, so
+// os.MkdirAll fails) and verifies disk persistence still works after the
+// rollback, by closing and reopening the app and confirming a FROM_DISK hit
+// instead of a second API call.
+func TestSwitchProjectRollsBackOnOpenFailure(t *testing.T) {
+	apiCalls := 0
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		apiCalls++
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{"success":1,"balance":{"BTC":"1.5"}}`))
+	}))
+	defer srv.Close()
+	restore := api.SetAPIURLForTesting(srv.URL)
+	defer restore()
+
+	cacheDir := t.TempDir()
+	cfg := &config.Config{
+		APIKey: "k", APISecret: "s", Tier: "pro", Project: "agp",
+		CacheSize: 100, CacheDir: cacheDir, LogLevel: "error", LogFormat: "text", Timezone: "UTC",
+	}
+	log := logging.New(&bytes.Buffer{}, logging.ParseLevel(cfg.LogLevel), false, nil)
+
+	app, err := NewApp(cfg, log)
+	if err != nil {
+		t.Fatalf("NewApp: %v", err)
+	}
+
+	if _, _, err := cachedCall(app, "getBalance", nil); err != nil {
+		t.Fatalf("agp warmup call: %v", err)
+	}
+	if apiCalls != 1 {
+		t.Fatalf("expected 1 API call after warmup, got %d", apiCalls)
+	}
+
+	// Sabotage: create a regular file at the path the new project's cache
+	// directory would need to occupy, so os.MkdirAll fails inside
+	// openProjectCache when SwitchProject tries to open it.
+	blockedPath := filepath.Join(cacheDir, "cliente_c")
+	if err := os.WriteFile(blockedPath, []byte("not a directory"), 0o644); err != nil {
+		t.Fatalf("setup: writing blocking file: %v", err)
+	}
+
+	if _, err := app.SwitchProject("cliente_c"); err == nil {
+		t.Fatal("expected SwitchProject to fail when the target dir is blocked by a file")
+	}
+	if app.Project() != "agp" {
+		t.Fatalf("expected rollback to leave project=agp, got %s", app.Project())
+	}
+
+	// A cache miss here (e.g. a different key) forces a fresh API call and
+	// an L2 write — this is the write that silently fails without the fix.
+	if _, src, err := cachedCall(app, "getTrades", map[string]string{"limit": "5"}); err != nil || src != cache.FromAPI {
+		t.Fatalf("post-rollback fresh call must hit the API, got src=%s err=%v", src, err)
+	}
+	if apiCalls != 2 {
+		t.Fatalf("expected 2 API calls total, got %d", apiCalls)
+	}
+
+	// The real assertion: close and reopen against the same cache dir/project.
+	// With the bug, the write above never reached disk (store was closed),
+	// so this would silently re-call the API instead of hitting L2.
+	if err := app.Close(); err != nil {
+		t.Fatalf("Close: %v", err)
+	}
+	app2, err := NewApp(cfg, log)
+	if err != nil {
+		t.Fatalf("reopening NewApp: %v", err)
+	}
+	defer app2.Close()
+
+	// NewApp preloads L1 from disk at startup (openProjectCache calls
+	// store.LoadAll()), so a hit here comes back as FROM_MEMORY, not
+	// FROM_DISK — the proof that persistence survived the rollback is that
+	// apiCalls stays at 2 below, not that this specific entry reads as
+	// FROM_MEMORY vs FROM_DISK.
+	if _, _, err := cachedCall(app2, "getTrades", map[string]string{"limit": "5"}); err != nil {
+		t.Fatalf("post-reopen call failed: %v", err)
+	}
+	if apiCalls != 2 {
+		t.Fatalf("expected no additional API call on reopen (data should have persisted to disk), got %d", apiCalls)
 	}
 }

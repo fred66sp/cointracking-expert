@@ -6,6 +6,18 @@ Todos los cambios notables en el proyecto CoinTracking Expert se documentan en e
 
 ## [No lanzado]
 
+### 2026-07-05: Revisión de robustez — servidor MCP (Go) y `ct_audit.py`
+
+**Servidor MCP en Go:** 24 tests existentes pasan limpio (`go build`, `go vet`, `go test ./...`); código de calidad alta en general (LRU thread-safe con mutex, persistencia SQLite con `SetMaxOpenConns(1)` y upsert correcto, HMAC-SHA512 + nonce monotónico bien implementados, validación de nombre de proyecto contra path traversal). Un hallazgo real:
+
+- **`SwitchProject` podía dejar el servidor en estado inconsistente:** si al cambiar de proyecto fallaba abrir la caché del proyecto destino (p. ej. problema de disco/permisos), el proyecto anterior ya había cerrado su store SQLite. Sin rollback, `a.cache`/`a.store` seguían apuntando a ese store cerrado. El fallo no era un crash visible: `Store.Get` trata un error de "database is closed" como un simple cache-miss, así que el servidor seguía "funcionando" aparentemente, pero la persistencia en disco quedaba silenciosamente rota hasta reiniciar (escrituras fallando en segundo plano, sin aviso). **Corregido:** `SwitchProject` ahora intenta reabrir el proyecto anterior si falla abrir el nuevo, dejando el servidor en un estado conocido y funcional en vez de uno roto. Nuevo test `TestSwitchProjectRollsBackOnOpenFailure` (`internal/tools/integration_test.go`) que fuerza el fallo y verifica que la persistencia sobrevive — confirmado que detecta el bug original (revertir el fix hace fallar el test: 3 llamadas API en vez de 2, la escritura a disco se pierde).
+
+**`tools/ct_audit.py` (chequeos deterministas de auditoría):** pasa su prueba de regresión de oro (`tests/fixtures/sample_trades.csv` + `EXPECTED.md`) exactamente igual, sin cambios de output. Un hallazgo real en el emparejamiento de transferencias:
+
+- **El emparejamiento heurístico de huérfanas no era exclusivo (1:1):** si dos depósitos idénticos (mismo importe/moneda, dentro de la ventana temporal) podían matchear con la misma retirada única, ambos "la reclamaban" sin que el código lo notara — ninguno se reportaba como huérfano, aunque uno de los dos necesariamente lo era (falso negativo: oculta un `Missing Purchase History` real). Relevante porque el proyecto ya documentó casos reales de operaciones batching con importes idénticos (caso FLOKI, ADR-014/019). **Corregido:** el emparejamiento ahora excluye retiradas ya reclamadas; Tx Hash se resuelve primero (es inequívoco) y luego la heurística, ordenada por fecha para que el depósito más antiguo gane el desempate en vez de decidirlo el orden arbitrario del CSV. Nuevo fixture de regresión permanente `tests/fixtures/sample_trades_double_claim.csv` + sección en `EXPECTED.md`; confirmado que detecta el bug original (sin el fix, ambos depósitos se reportaban como no-huérfanos).
+
+**Verificado:** `go test ./...` (25 tests, incluido el nuevo) + `ct_audit.py` contra ambos fixtures de oro + `validate_yaml_metadata.py` → 0 errores críticos.
+
 ### 2026-07-05: Referencias rotas — bug en el propio validador + 8 links reales corregidos
 
 **Hallazgo:** `tools/audit_mega_complete.py` (el validador que ejecuta el pre-commit hook) reportaba ~100 warnings "BROKEN LINK" en documentos de navegación (`NAVIGATION_MAP.md`, `INDEX_MASTER.md`, `CHEAT_SHEET.md`, `KNOWLEDGE_MAINTENANCE.md`, etc.). Al investigar, la causa raíz **no eran los documentos — era un bug en el propio validador**: resolvía todos los links markdown relativos contra la raíz del repo en vez de contra el directorio del archivo que contiene el link (semántica estándar de links relativos en Markdown, que el validador no respetaba).

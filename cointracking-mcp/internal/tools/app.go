@@ -154,6 +154,7 @@ func (a *App) SwitchProject(name string) (*SwitchProjectResult, error) {
 		}, nil
 	}
 
+	prevCfg := a.cfg
 	prevProject := a.cfg.Project
 	prevCleared := a.cache.L1.Clear()
 	a.store.Flush()
@@ -166,7 +167,23 @@ func (a *App) SwitchProject(name string) (*SwitchProjectResult, error) {
 
 	mgr, store, loaded, err := openProjectCache(&newCfg, a.Log)
 	if err != nil {
-		return nil, fmt.Errorf("switching to project %q: %w", name, err)
+		// The previous project's store is already closed at this point.
+		// Leaving a.cache/a.store pointing at it would mean every
+		// subsequent tool call fails against a closed SQLite handle
+		// instead of a clear error. Try to reopen the previous project
+		// so the server stays in a known-good state instead of a broken
+		// one — the caller still finds out the switch itself failed.
+		rollbackMgr, rollbackStore, _, rollbackErr := openProjectCache(prevCfg, a.Log)
+		if rollbackErr == nil {
+			a.cache = rollbackMgr
+			a.store = rollbackStore
+			a.Log.Warnf("switch_project: failed to open %q (%s); rolled back to %q", name, err, prevProject)
+			return nil, fmt.Errorf("switching to project %q: %w (permaneces en %q)", name, err, prevProject)
+		}
+		a.Log.Errorf("switch_project: failed to open %q (%s) AND failed to roll back to %q (%s) — server has no usable cache until restarted",
+			name, err, prevProject, rollbackErr)
+		return nil, fmt.Errorf("switching to project %q: %w (y no se pudo volver a %q: %v — reinicia el servidor MCP)",
+			name, err, prevProject, rollbackErr)
 	}
 
 	a.cfg = &newCfg
