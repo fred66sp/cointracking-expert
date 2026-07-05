@@ -44,7 +44,44 @@
 
 ---
 
-## Fases Futuras (En Implementación)
+## Todas las Fases Completadas
+
+### Fase 6: Dashboard de Caché ✅
+
+**Objetivo:** Visualizar ahorros en tiempo real.
+
+**Status:** COMPLETADA 2026-07-05
+
+**Implementación:**
+- ✅ `tools/cache_metrics.py` — rastreador de hits/misses/ahorros
+- ✅ Integración automática en CacheTTLManager
+- ✅ `tools/cache_cli.py` — CLI para reportes
+- ✅ Período disponibles: session, today, week, month, lifetime, detailed
+
+**Métricas Registradas:**
+- Hits (caché reutilizado)
+- Misses (MCP llamado)
+- Tokens ahorrados / gastados
+- Hit rate (%)
+- Histórico por día/semana/mes
+
+**Ejemplo de Salida:**
+```
+Operaciones:
+  Hits: 3, Misses: 1, Hit Rate: 75.0%
+
+Tokens:
+  Ahorrados: 4335
+  Gastados: 400
+  Neto: 3935
+  Ahorro %: 91.6%
+```
+
+**Beneficio:** Usuario ve exactamente cuánto ahorra ("He ahorrado 445K tokens este mes").
+
+---
+
+## Fases Futuras (Opcionales)
 
 ### Fase 4: Versionado de Caché ✅
 

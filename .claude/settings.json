@@ -54,7 +54,11 @@
       "Bash(python tools/cache_ttl_manager.py)",
       "Bash(python cache_ttl_manager.py)",
       "Bash(python \"h:\\\\cointracking-expert\\\\tools\\\\cache_ttl_manager.py\")",
-      "Bash(git commit -m 'Fase 4-5: Versionado automático y TTL dinámico de caché *)"
+      "Bash(git commit -m 'Fase 4-5: Versionado automático y TTL dinámico de caché *)",
+      "Bash(git commit -m 'CHANGELOG final: Fases 4-5 completadas *)",
+      "Bash(python \"h:\\\\cointracking-expert\\\\tools\\\\cache_metrics.py\")",
+      "Bash(python \"h:\\\\cointracking-expert\\\\tools\\\\cache_cli.py\" test_project lifetime)",
+      "Bash(git commit -m 'Fase 6: Dashboard de Caché - COMPLETADA *)"
     ],
     "additionalDirectories": [
       "H:\\cointracking-expert\\cointracking-mcp\\cmd"
