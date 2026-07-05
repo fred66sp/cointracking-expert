@@ -16,28 +16,42 @@ import (
 )
 
 // App holds the shared state every tool handler needs: the API client, the
-// cache manager, config, and logger. Credentials/tier/rate limiter are fixed
-// for the process lifetime, but cfg/cache/store are swapped live by
+// cache manager, config, and logger. cfg/cache/store — and, since ADR-040,
+// client/rate too (per-project credentials) — are swapped live by
 // SwitchProject (one project active at a time, per SPEC 01/03), so handlers
 // must go through the accessor methods below instead of reading fields
 // directly — that's what keeps a switch mid-request from racing a read.
 type App struct {
-	Client *api.Client
-	Rate   *api.RateTracker
-	Log    *logging.Logger
+	Log *logging.Logger
 
-	mu    sync.RWMutex
-	cfg   *config.Config
-	cache *cache.Manager
-	store *cache.Store
+	mu     sync.RWMutex
+	cfg    *config.Config
+	cache  *cache.Manager
+	store  *cache.Store
+	client *api.Client
+	rate   *api.RateTracker
+	creds  *config.ProjectCredentials
 }
 
 // NewApp wires the client, rate tracker, and L1/L2 cache per the configured
 // project, per SPEC/03-cache-strategy.md (cache isolated under
-// {CACHE_PERSIST_DIR}/{PROJECT_NAME}/).
+// {CACHE_PERSIST_DIR}/{PROJECT_NAME}/). Credentials resolve per project when
+// --project-env-dir is set (ADR-040); otherwise the process credentials apply.
 func NewApp(cfg *config.Config, log *logging.Logger) (*App, error) {
-	rate := api.NewRateTracker(cfg.RateLimit())
-	client := api.NewClient(cfg.APIKey, cfg.APISecret, rate)
+	creds, err := cfg.ResolveProjectCredentials(cfg.Project)
+	if err != nil {
+		return nil, err
+	}
+	limit, err := config.RateLimitForTier(creds.Tier)
+	if err != nil {
+		return nil, err
+	}
+	if creds.Source == "project-env" {
+		log.Infof("Credenciales por proyecto (ADR-040): %q usa %s (API key %s, tier %s)",
+			cfg.Project, cfg.ProjectEnvDir, config.Obfuscate(creds.APIKey), creds.Tier)
+	}
+	rate := api.NewRateTracker(limit)
+	client := api.NewClient(creds.APIKey, creds.APISecret, rate)
 
 	mgr, store, _, err := openProjectCache(cfg, log)
 	if err != nil {
@@ -46,8 +60,9 @@ func NewApp(cfg *config.Config, log *logging.Logger) (*App, error) {
 
 	return &App{
 		cfg:    cfg,
-		Client: client,
-		Rate:   rate,
+		client: client,
+		rate:   rate,
+		creds:  creds,
 		cache:  mgr,
 		Log:    log,
 		store:  store,
@@ -119,6 +134,21 @@ func (a *App) Store() *cache.Store {
 	return a.store
 }
 
+// Client returns the API client for the currently active project's account
+// (per-project credentials, ADR-040; process credentials by default).
+func (a *App) Client() *api.Client {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
+	return a.client
+}
+
+// Rate returns the rate tracker for the currently active account.
+func (a *App) Rate() *api.RateTracker {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
+	return a.rate
+}
+
 // ErrProjectActive is returned by WithProjectLockedIfNotActive when name is
 // the currently active project.
 var ErrProjectActive = fmt.Errorf("project is currently active")
@@ -142,30 +172,35 @@ func (a *App) WithProjectLockedIfNotActive(name string, fn func() error) error {
 }
 
 // SwitchProjectResult reports what SwitchProject did, for the MCP tool's
-// response.
+// response. CredentialsSource/APIKeyObfuscated make the active account
+// auditable in every switch without ever exposing a secret (ADR-040/011).
 type SwitchProjectResult struct {
 	Project               string `json:"project"`
 	PreviousProject       string `json:"previous_project,omitempty"`
 	AlreadyActive         bool   `json:"already_active"`
 	EntriesClearedPrev    int    `json:"entries_cleared_previous_project"`
 	EntriesLoadedFromDisk int    `json:"entries_loaded_from_disk"`
+	CredentialsSource     string `json:"credentials_source"`
+	APIKeyObfuscated      string `json:"api_key_obfuscated"`
 	Message               string `json:"message"`
 }
 
 // SwitchProject moves the server from whatever project is currently active
 // to name, live: flushes and closes the current project's cache, then opens
-// (or creates) name's cache the same way NewApp does at startup. Credentials,
-// tier, and rate limiter are per-process and untouched — ONLY the cache
-// directory changes. This means all projects in one server process talk to
-// the SAME CoinTracking account: fresh API calls after a switch still return
-// that account's data, and only cached data is isolated per project. Do NOT
-// use project switching to audit two different CoinTracking accounts — that
-// would silently fill project B's cache with account A's data (ADR-016:
-// "credenciales... son del proceso, no del proyecto"; wording here fixed
-// 2026-07-05, it previously claimed the switch changed "which account's data"
-// the tools return, which was wrong). This is what lets the ADR-013 "active
-// project" gate switch projects mid-conversation without restarting the MCP
-// server or touching .mcp.json.
+// (or creates) name's cache the same way NewApp does at startup.
+//
+// Which ACCOUNT the tools query after the switch depends on --project-env-dir
+// (ADR-040): if {project-env-dir}/{name}.env exists, the target project gets
+// its own API client (and fresh rate tracker — CoinTracking's hourly limit is
+// per key); otherwise the process credentials keep applying and the current
+// client/rate are reused (preserving the consumed hourly window). Without
+// --project-env-dir every project talks to the SAME CoinTracking account and
+// only cached data is isolated — in that mode, do NOT use project switching
+// to audit two different accounts.
+//
+// The target's credentials are resolved and validated BEFORE anything is
+// closed (a malformed .env aborts cleanly without touching state), and the
+// client swap happens only after the target cache opened successfully.
 func (a *App) SwitchProject(name string) (*SwitchProjectResult, error) {
 	if err := config.ValidateProjectName(name); err != nil {
 		return nil, err
@@ -176,10 +211,24 @@ func (a *App) SwitchProject(name string) (*SwitchProjectResult, error) {
 
 	if name == a.cfg.Project {
 		return &SwitchProjectResult{
-			Project:       name,
-			AlreadyActive: true,
-			Message:       fmt.Sprintf("El proyecto %q ya estaba activo; no se ha tocado la caché.", name),
+			Project:           name,
+			AlreadyActive:     true,
+			CredentialsSource: a.creds.Source,
+			APIKeyObfuscated:  config.Obfuscate(a.creds.APIKey),
+			Message:           fmt.Sprintf("El proyecto %q ya estaba activo; no se ha tocado la caché.", name),
 		}, nil
+	}
+
+	// Fail-early (ADR-040): resolver credenciales del destino antes de cerrar
+	// nada. Un .env malformado o incompleto aborta aquí, con el proyecto
+	// actual intacto.
+	newCreds, err := a.cfg.ResolveProjectCredentials(name)
+	if err != nil {
+		return nil, err
+	}
+	newLimit, err := config.RateLimitForTier(newCreds.Tier)
+	if err != nil {
+		return nil, err
 	}
 
 	prevCfg := a.cfg
@@ -218,6 +267,17 @@ func (a *App) SwitchProject(name string) (*SwitchProjectResult, error) {
 	a.cache = mgr
 	a.store = store
 
+	// Swap de cuenta solo si las credenciales resueltas difieren; si son las
+	// mismas se conservan cliente y tracker (mantiene la ventana horaria ya
+	// consumida — el límite de CoinTracking es por API key).
+	if newCreds.APIKey != a.creds.APIKey || newCreds.APISecret != a.creds.APISecret {
+		a.rate = api.NewRateTracker(newLimit)
+		a.client = api.NewClient(newCreds.APIKey, newCreds.APISecret, a.rate)
+		a.Log.Infof("Cuenta cambiada con el proyecto (ADR-040): %q usa API key %s (fuente: %s, tier %s)",
+			name, config.Obfuscate(newCreds.APIKey), newCreds.Source, newCreds.Tier)
+	}
+	a.creds = newCreds
+
 	a.Log.Infof("Proyecto cambiado: %q -> %q (%d entradas liberadas de memoria, %d cargadas de disco)",
 		prevProject, name, prevCleared, loaded)
 
@@ -226,8 +286,11 @@ func (a *App) SwitchProject(name string) (*SwitchProjectResult, error) {
 		PreviousProject:       prevProject,
 		EntriesClearedPrev:    prevCleared,
 		EntriesLoadedFromDisk: loaded,
-		Message: fmt.Sprintf("Proyecto activo cambiado de %q a %q. Caché aislada en %s.",
-			prevProject, name, filepath.Join(newCfg.CacheDir, name)),
+		CredentialsSource:     newCreds.Source,
+		APIKeyObfuscated:      config.Obfuscate(newCreds.APIKey),
+		Message: fmt.Sprintf("Proyecto activo cambiado de %q a %q. Caché aislada en %s. Cuenta: API key %s (%s).",
+			prevProject, name, filepath.Join(newCfg.CacheDir, name),
+			config.Obfuscate(newCreds.APIKey), newCreds.Source),
 	}, nil
 }
 

@@ -21,7 +21,7 @@ func cachedCall(app *App, method string, params map[string]string) (json.RawMess
 	}
 
 	start := time.Now()
-	raw, err := app.Client.RequestRaw(method, params)
+	raw, err := app.Client().RequestRaw(method, params)
 	if err != nil {
 		app.Log.Debugf("%s(%v) -> CACHE MISS -> API CALL FAILED (%s): %s", method, params, time.Since(start), err)
 		return nil, "", err

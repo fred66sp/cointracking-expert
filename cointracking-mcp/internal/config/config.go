@@ -6,7 +6,9 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"path/filepath"
 	"regexp"
+	"strings"
 )
 
 var projectNameRe = regexp.MustCompile(`^[A-Za-z0-9_-]+$`)
@@ -42,6 +44,12 @@ type Config struct {
 	CacheSize int
 	CacheDir  string
 
+	// ProjectEnvDir, si no está vacío, habilita credenciales por proyecto
+	// (ADR-040): al activar un proyecto se busca {ProjectEnvDir}/{project}.env
+	// con COINTRACKING_API_KEY / COINTRACKING_API_SECRET (y COINTRACKING_TIER
+	// opcional). Vacío = todas las llamadas usan las credenciales del proceso.
+	ProjectEnvDir string
+
 	LogLevel  string
 	LogFormat string
 
@@ -60,6 +68,7 @@ func Parse(args []string) (*Config, error) {
 	project := fs.String("project", "default", "Project name (isolates cache)")
 	cacheMaxSize := fs.Int("cache-max-size", 0, "Max cache entries (default: per tier)")
 	cacheDir := fs.String("cache-dir", "./cache", "Cache persistence directory")
+	projectEnvDir := fs.String("project-env-dir", "", "Directory with per-project credential files <project>.env (ADR-040); empty = single-account mode")
 	logLevel := fs.String("log-level", "info", "Log level: debug|info|warn|error")
 	logFormat := fs.String("log-format", "text", "Log format: text|json")
 	timezone := fs.String("timezone", "UTC", "IANA timezone for log timestamps")
@@ -69,12 +78,13 @@ func Parse(args []string) (*Config, error) {
 	}
 
 	cfg := &Config{
-		Tier:      *tier,
-		Project:   *project,
-		CacheDir:  *cacheDir,
-		LogLevel:  *logLevel,
-		LogFormat: *logFormat,
-		Timezone:  *timezone,
+		Tier:          *tier,
+		Project:       *project,
+		CacheDir:      *cacheDir,
+		ProjectEnvDir: *projectEnvDir,
+		LogLevel:      *logLevel,
+		LogFormat:     *logFormat,
+		Timezone:      *timezone,
 	}
 
 	// Credentials: CLI flag > envvar > fatal error.
@@ -132,6 +142,90 @@ func ValidateProjectName(name string) error {
 // RateLimit returns the hourly API call limit for the configured tier.
 func (c *Config) RateLimit() int {
 	return tiers[c.Tier].RateLimit
+}
+
+// RateLimitForTier returns the hourly API limit for an arbitrary tier name
+// (per-project tier override, ADR-040).
+func RateLimitForTier(tier string) (int, error) {
+	limits, ok := tiers[tier]
+	if !ok {
+		return 0, fmt.Errorf("tier inválido: %q (válidos: pro, expert, unlimited)", tier)
+	}
+	return limits.RateLimit, nil
+}
+
+// ProjectCredentials is the result of resolving which CoinTracking account a
+// project uses (ADR-040).
+type ProjectCredentials struct {
+	APIKey    string
+	APISecret string
+	Tier      string
+	// Source is "process" (fallback/default) or "project-env" (loaded from
+	// {ProjectEnvDir}/{project}.env).
+	Source string
+}
+
+// ResolveProjectCredentials decides which credentials a project uses, per
+// ADR-040. Fail-closed by design: a credentials file that EXISTS but is
+// incomplete or unreadable is an error, never a silent fallback to the
+// process account — querying the wrong CoinTracking account is exactly the
+// accident this feature exists to prevent.
+func (c *Config) ResolveProjectCredentials(project string) (*ProjectCredentials, error) {
+	fromProcess := &ProjectCredentials{
+		APIKey: c.APIKey, APISecret: c.APISecret, Tier: c.Tier, Source: "process",
+	}
+	if c.ProjectEnvDir == "" {
+		return fromProcess, nil
+	}
+	envPath := filepath.Join(c.ProjectEnvDir, project+".env")
+	if _, err := os.Stat(envPath); os.IsNotExist(err) {
+		return fromProcess, nil
+	}
+	vars, err := parseEnvFile(envPath)
+	if err != nil {
+		return nil, fmt.Errorf("leyendo credenciales de proyecto %s: %w", envPath, err)
+	}
+	key, secret := vars["COINTRACKING_API_KEY"], vars["COINTRACKING_API_SECRET"]
+	if key == "" || secret == "" {
+		return nil, fmt.Errorf(
+			"%s existe pero está incompleto (COINTRACKING_API_KEY y COINTRACKING_API_SECRET son obligatorios) — "+
+				"se aborta en vez de degradar a la cuenta del proceso (ADR-040 fail-closed)", envPath)
+	}
+	tier := vars["COINTRACKING_TIER"]
+	if tier == "" {
+		tier = c.Tier
+	}
+	if _, err := RateLimitForTier(tier); err != nil {
+		return nil, fmt.Errorf("en %s: %w", envPath, err)
+	}
+	return &ProjectCredentials{APIKey: key, APISecret: secret, Tier: tier, Source: "project-env"}, nil
+}
+
+// parseEnvFile reads a minimal KEY=VALUE file: blank lines and #-comments
+// ignored, optional surrounding single/double quotes stripped. No expansion,
+// no "export" prefix — deliberately strict and predictable.
+func parseEnvFile(path string) (map[string]string, error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	vars := make(map[string]string)
+	for i, line := range strings.Split(string(data), "\n") {
+		line = strings.TrimSpace(strings.TrimSuffix(line, "\r"))
+		if line == "" || strings.HasPrefix(line, "#") {
+			continue
+		}
+		k, v, ok := strings.Cut(line, "=")
+		if !ok {
+			return nil, fmt.Errorf("línea %d: se esperaba KEY=VALUE, encontrado %q", i+1, line)
+		}
+		k, v = strings.TrimSpace(k), strings.TrimSpace(v)
+		if len(v) >= 2 && (v[0] == '"' && v[len(v)-1] == '"' || v[0] == '\'' && v[len(v)-1] == '\'') {
+			v = v[1 : len(v)-1]
+		}
+		vars[k] = v
+	}
+	return vars, nil
 }
 
 // Obfuscate renders a credential as "first6***last3" for safe logging

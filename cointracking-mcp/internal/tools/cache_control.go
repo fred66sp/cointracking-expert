@@ -82,7 +82,8 @@ func cacheStatsHandler(app *App) func(context.Context, *mcp.CallToolRequest, Cac
 			hitRate = float64(s.Hits) / float64(total)
 		}
 
-		methodStats := app.Rate.MethodStats()
+		rate := app.Rate()
+		methodStats := rate.MethodStats()
 		calls := make([]methodCallStat, 0, len(methodStats))
 		for _, m := range methodStats {
 			calls = append(calls, methodCallStat{Method: m.Method, Count: m.Count, LastCall: m.LastCall.UTC().Format("2006-01-02T15:04:05Z")})
@@ -91,7 +92,7 @@ func cacheStatsHandler(app *App) func(context.Context, *mcp.CallToolRequest, Cac
 		out := CacheStatsOut{
 			Size: s.Size, MaxSize: s.MaxSize, Hits: s.Hits, Misses: s.Misses,
 			TotalCalls: total, HitRate: hitRate,
-			RateLimit: app.Rate.Limit(), UsedThisHour: app.Rate.UsedInWindow(),
+			RateLimit: rate.Limit(), UsedThisHour: rate.UsedInWindow(),
 			CallsToAPI: calls,
 		}
 		raw, _ := json.Marshal(out)

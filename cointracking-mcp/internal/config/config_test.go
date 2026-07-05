@@ -1,6 +1,9 @@
 package config
 
-import "testing"
+import (
+	"os"
+	"testing"
+)
 
 func TestObfuscate(t *testing.T) {
 	cases := []struct {
@@ -90,5 +93,84 @@ func TestParseInvalidValues(t *testing.T) {
 		if _, err := Parse(args); err == nil {
 			t.Errorf("%s: expected validation error, got none", name)
 		}
+	}
+}
+
+// --- ADR-040: credenciales por proyecto ---
+
+func newEnvDirConfig(t *testing.T) (*Config, string) {
+	t.Helper()
+	dir := t.TempDir()
+	cfg, err := Parse([]string{"--api-key", "proc-key", "--api-secret", "proc-secret",
+		"--tier", "pro", "--project-env-dir", dir})
+	if err != nil {
+		t.Fatalf("Parse: %v", err)
+	}
+	return cfg, dir
+}
+
+func TestResolveCredentialsProcessFallbacks(t *testing.T) {
+	// Sin --project-env-dir: siempre proceso.
+	cfg, err := Parse([]string{"--api-key", "proc-key", "--api-secret", "proc-secret"})
+	if err != nil {
+		t.Fatalf("Parse: %v", err)
+	}
+	c, err := cfg.ResolveProjectCredentials("cualquiera")
+	if err != nil || c.Source != "process" || c.APIKey != "proc-key" {
+		t.Fatalf("expected process fallback, got %+v err=%v", c, err)
+	}
+
+	// Con dir pero sin fichero para el proyecto: también proceso.
+	cfg2, _ := newEnvDirConfig(t)
+	c2, err := cfg2.ResolveProjectCredentials("sin_fichero")
+	if err != nil || c2.Source != "process" || c2.APIKey != "proc-key" {
+		t.Fatalf("expected process fallback for missing file, got %+v err=%v", c2, err)
+	}
+}
+
+func TestResolveCredentialsFromProjectEnv(t *testing.T) {
+	cfg, dir := newEnvDirConfig(t)
+	envContent := "# cuenta del cliente B\nCOINTRACKING_API_KEY = \"b-key\"\nCOINTRACKING_API_SECRET='b-secret'\nCOINTRACKING_TIER=unlimited\n"
+	if err := os.WriteFile(dir+"/cliente_b.env", []byte(envContent), 0o600); err != nil {
+		t.Fatalf("setup: %v", err)
+	}
+	c, err := cfg.ResolveProjectCredentials("cliente_b")
+	if err != nil {
+		t.Fatalf("ResolveProjectCredentials: %v", err)
+	}
+	if c.Source != "project-env" || c.APIKey != "b-key" || c.APISecret != "b-secret" || c.Tier != "unlimited" {
+		t.Fatalf("bad resolution: %+v", c)
+	}
+	if lim, _ := RateLimitForTier(c.Tier); lim != 60 {
+		t.Fatalf("expected unlimited=60 calls/h, got %d", lim)
+	}
+}
+
+func TestResolveCredentialsFailClosed(t *testing.T) {
+	cfg, dir := newEnvDirConfig(t)
+
+	// Fichero incompleto (falta el secret) -> error, nunca fallback silencioso.
+	if err := os.WriteFile(dir+"/incompleto.env", []byte("COINTRACKING_API_KEY=x\n"), 0o600); err != nil {
+		t.Fatalf("setup: %v", err)
+	}
+	if _, err := cfg.ResolveProjectCredentials("incompleto"); err == nil {
+		t.Fatal("expected error for incomplete env file (fail-closed), got none")
+	}
+
+	// Tier inválido en el fichero -> error.
+	bad := "COINTRACKING_API_KEY=x\nCOINTRACKING_API_SECRET=y\nCOINTRACKING_TIER=gold\n"
+	if err := os.WriteFile(dir+"/tier_malo.env", []byte(bad), 0o600); err != nil {
+		t.Fatalf("setup: %v", err)
+	}
+	if _, err := cfg.ResolveProjectCredentials("tier_malo"); err == nil {
+		t.Fatal("expected error for invalid tier in env file, got none")
+	}
+
+	// Línea sin '=' -> error de parseo.
+	if err := os.WriteFile(dir+"/roto.env", []byte("esto no es un env\n"), 0o600); err != nil {
+		t.Fatalf("setup: %v", err)
+	}
+	if _, err := cfg.ResolveProjectCredentials("roto"); err == nil {
+		t.Fatal("expected parse error for malformed env file, got none")
 	}
 }

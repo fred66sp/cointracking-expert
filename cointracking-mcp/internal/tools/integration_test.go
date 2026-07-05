@@ -400,3 +400,110 @@ func TestWithProjectLockedIfNotActiveClosesTheDeleteRaceWindow(t *testing.T) {
 		t.Fatalf("expected cliente_b active after the switch finally ran, got %s", app.Project())
 	}
 }
+
+// TestSwitchProjectSwapsAccountCredentials covers ADR-040 end-to-end: with
+// --project-env-dir set, switching to a project that has its own .env must
+// make subsequent API calls authenticate as THAT account (asserted via the
+// Key header the fake CoinTracking server receives), while projects without
+// a .env keep the process account AND the same rate-tracker window. A
+// malformed .env must abort the switch before anything is closed.
+func TestSwitchProjectSwapsAccountCredentials(t *testing.T) {
+	var lastKey string
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		lastKey = r.Header.Get("Key")
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{"success":1,"balance":{"BTC":"1.5"}}`))
+	}))
+	defer srv.Close()
+	restore := api.SetAPIURLForTesting(srv.URL)
+	defer restore()
+
+	envDir := t.TempDir()
+	envB := "COINTRACKING_API_KEY=cuenta-b-key\nCOINTRACKING_API_SECRET=cuenta-b-secret\nCOINTRACKING_TIER=unlimited\n"
+	if err := os.WriteFile(filepath.Join(envDir, "cliente_b.env"), []byte(envB), 0o600); err != nil {
+		t.Fatalf("setup env: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(envDir, "roto.env"), []byte("COINTRACKING_API_KEY=solo-key\n"), 0o600); err != nil {
+		t.Fatalf("setup env roto: %v", err)
+	}
+
+	cfg := &config.Config{
+		APIKey: "cuenta-a-key", APISecret: "cuenta-a-secret", Tier: "pro", Project: "agp",
+		CacheSize: 100, CacheDir: t.TempDir(), ProjectEnvDir: envDir,
+		LogLevel: "error", LogFormat: "text", Timezone: "UTC",
+	}
+	log := logging.New(&bytes.Buffer{}, logging.ParseLevel(cfg.LogLevel), false, nil)
+
+	app, err := NewApp(cfg, log)
+	if err != nil {
+		t.Fatalf("NewApp: %v", err)
+	}
+	defer app.Close()
+
+	// 1. Proyecto inicial sin .env propio -> cuenta del proceso (A).
+	if _, _, err := cachedCall(app, "getBalance", nil); err != nil {
+		t.Fatalf("agp call: %v", err)
+	}
+	if lastKey != "cuenta-a-key" {
+		t.Fatalf("expected process account key, got %q", lastKey)
+	}
+	usedA := app.Rate().UsedInWindow()
+
+	// 2. Switch a proyecto CON .env -> las llamadas frescas van como cuenta B,
+	//    con tracker propio (ventana a cero) y tier del fichero (unlimited=60).
+	res, err := app.SwitchProject("cliente_b")
+	if err != nil {
+		t.Fatalf("SwitchProject(cliente_b): %v", err)
+	}
+	if res.CredentialsSource != "project-env" {
+		t.Fatalf("expected credentials_source=project-env, got %q", res.CredentialsSource)
+	}
+	if _, _, err := cachedCall(app, "getBalance", nil); err != nil {
+		t.Fatalf("cliente_b call: %v", err)
+	}
+	if lastKey != "cuenta-b-key" {
+		t.Fatalf("expected account B key after switch, got %q", lastKey)
+	}
+	if app.Rate().Limit() != 60 {
+		t.Fatalf("expected tier from env file (unlimited=60), got %d", app.Rate().Limit())
+	}
+	if app.Rate().UsedInWindow() != 1 {
+		t.Fatalf("expected fresh rate window for account B (1 call), got %d", app.Rate().UsedInWindow())
+	}
+
+	// 3. Switch a proyecto SIN .env -> vuelve la cuenta del proceso; y como
+	//    A ya se usó antes, su llamada nueva se autentica como A de nuevo.
+	if _, err := app.SwitchProject("cliente_c"); err != nil {
+		t.Fatalf("SwitchProject(cliente_c): %v", err)
+	}
+	if _, _, err := cachedCall(app, "getTrades", map[string]string{"limit": "1"}); err != nil {
+		t.Fatalf("cliente_c call: %v", err)
+	}
+	if lastKey != "cuenta-a-key" {
+		t.Fatalf("expected process account key for env-less project, got %q", lastKey)
+	}
+	_ = usedA // la ventana de A tras B->C es nueva (tracker de A se recreó); documentado en ADR-040
+
+	// 4. Switch entre dos proyectos que comparten cuenta (proceso) debe
+	//    REUTILIZAR cliente y tracker (conserva la ventana consumida).
+	usedBefore := app.Rate().UsedInWindow()
+	if _, err := app.SwitchProject("cliente_d"); err != nil {
+		t.Fatalf("SwitchProject(cliente_d): %v", err)
+	}
+	if app.Rate().UsedInWindow() != usedBefore {
+		t.Fatalf("expected preserved rate window switching between same-account projects: %d != %d",
+			app.Rate().UsedInWindow(), usedBefore)
+	}
+
+	// 5. .env malformado -> el switch aborta ANTES de cerrar nada: el
+	//    proyecto actual sigue activo y funcional.
+	if _, err := app.SwitchProject("roto"); err == nil {
+		t.Fatal("expected error switching to project with incomplete .env (fail-closed)")
+	}
+	if app.Project() != "cliente_d" {
+		t.Fatalf("project must be unchanged after failed credential resolution, got %s", app.Project())
+	}
+	if _, _, err := cachedCall(app, "getBalance", nil); err != nil {
+		t.Fatalf("current project must stay functional after aborted switch: %v", err)
+	}
+}

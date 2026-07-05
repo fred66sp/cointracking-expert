@@ -75,6 +75,7 @@ COINTRACKING_API_KEY=old_key ./cointracking-mcp --api-key new_key
 |-----------|----------|---------|-------------|
 | Cache Max Size | `--cache-max-size` | Según tier | Máximo de entradas en caché (LRU) |
 | Cache Persist Dir | `--cache-dir` | `./cache` | Ruta para persistencia en disco |
+| Project Env Dir | `--project-env-dir` | *(vacío = desactivado)* | Credenciales por proyecto (ADR-040): si `{dir}/{proyecto}.env` existe, ese proyecto usa su propia cuenta de CoinTracking (`COINTRACKING_API_KEY`/`COINTRACKING_API_SECRET`, `COINTRACKING_TIER` opcional). Sin fichero → credenciales del proceso. Fichero incompleto → error, nunca fallback silencioso. El directorio no se versiona jamás. |
 
 **Defaults de CACHE_MAX_SIZE por ACCOUNT_TIER:**
 - `--tier pro` → 5000 entradas (cubre 3.500 registros)

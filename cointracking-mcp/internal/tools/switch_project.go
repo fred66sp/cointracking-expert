@@ -18,11 +18,12 @@ func switchProjectTool() *mcp.Tool {
 			"closes the current project's cache, then opens (or creates) the target project's cache under the " +
 			"same cache-dir, isolated per SPEC/03-cache-strategy.md. Call this whenever the conversation's active " +
 			"project changes (ADR-013), before any cointracking_get_* call, so data from different projects is " +
-			"never mixed. Credentials, account tier, and the hourly rate limit are per-process and unaffected — " +
-			"every project in this server instance queries the SAME CoinTracking account. Switching projects " +
-			"isolates cached data, NOT accounts: to audit a different CoinTracking account, restart the MCP with " +
-			"that account's credentials instead (otherwise the new project's cache would silently fill with the " +
-			"wrong account's data).",
+			"never mixed. Which ACCOUNT the tools query depends on --project-env-dir (ADR-040): if the server was " +
+			"started with it and <project>.env exists there, the target project uses its own CoinTracking " +
+			"credentials (own API key, own rate limit); otherwise the process credentials apply and every project " +
+			"queries the same account. The response's credentials_source/api_key_obfuscated always tell you which " +
+			"account is active. Without --project-env-dir, do NOT use project switching to audit two different " +
+			"accounts — the new project's cache would silently fill with the wrong account's data.",
 		Annotations: &mcp.ToolAnnotations{Title: "Switch Project"},
 	}
 }

@@ -6,6 +6,20 @@ Todos los cambios notables en el proyecto CoinTracking Expert se documentan en e
 
 ## [No lanzado]
 
+### 2026-07-05: ADR-040 — Credenciales por proyecto en el MCP (multi-cuenta opcional)
+
+**Cierra la última limitación de diseño del MCP:** hasta ahora todos los proyectos consultaban obligatoriamente la misma cuenta de CoinTracking (credenciales del proceso, ADR-016) — auditar dos cuentas distintas exigía reiniciar el servidor y el aviso documental era la única protección contra contaminar la caché con datos de la cuenta equivocada.
+
+**Diseño (ADR-040, fail-closed):**
+- Nuevo flag opcional `--project-env-dir <dir>`: si `{dir}/{proyecto}.env` existe, ese proyecto usa su propia cuenta (`COINTRACKING_API_KEY`/`COINTRACKING_API_SECRET`, `COINTRACKING_TIER` opcional) con cliente y limitador de tasa propios (el límite horario de CoinTracking es por API key). Sin fichero → credenciales del proceso, comportamiento idéntico al anterior.
+- **Fichero incompleto o malformado = error que aborta el switch**, nunca fallback silencioso a la cuenta del proceso — consultar la cuenta equivocada es justo el accidente que esto previene.
+- Los secretos **nunca pasan por la conversación**: viven en ficheros locales (ya cubiertos por `*.env` en `.gitignore`). La respuesta de `switch_project` incluye `credentials_source` + API key **ofuscada** para que siempre se sepa qué cuenta está activa sin exponer nada.
+- Orden seguro en el switch: credenciales del destino se resuelven y validan **antes** de cerrar nada; el swap de cliente ocurre solo tras abrir con éxito la caché destino (mismo patrón de rollback existente). Proyectos que comparten cuenta reutilizan cliente y tracker (conservan la ventana horaria consumida).
+
+**Verificación:** 4 tests nuevos — 3 de config (fallbacks a proceso, carga desde `.env` con comillas/comentarios/tier, fail-closed con fichero incompleto/tier inválido/línea malformada) + 1 de integración end-to-end que asevera la cabecera `Key` que recibe el servidor falso por petición (cuenta A → switch a proyecto con `.env` → cuenta B con tracker fresco y tier del fichero → proyecto sin `.env` → cuenta A de nuevo → switch mismo-cuenta conserva ventana de tasa → `.env` roto aborta sin tocar estado). Suite completa en verde; binario `dist/` recompilado.
+
+**Docs alineadas:** descripción del tool `switch_project`, comentarios de `app.go`, `CLAUDE.md` §MCP sincronizado, `SPEC/06-configuration.md`, e índices de ADRs (README + INDEX, ahora 40).
+
 ### 2026-07-05: Cerrados los 2 flecos del informe de ahorro de tokens
 
 **1. Limpieza automática de la caché Python (crecía sin límite).** Nuevo `CacheManager.cleanup()`, invocado en cada apertura: poda entradas con más de 90 días (por mtime) y, si el directorio supera 50 MB, las más antiguas hasta bajar del límite. Solo toca ficheros listados en el manifest — `metrics.json` y cualquier otro artefacto quedan intactos. Trade-off documentado: una entrada muy leída pero no reescrita en 90 días también se poda (coste: un refetch puntual). El lado Go no lo necesitaba (TTLs de 10 min–2 h + purga al arrancar). Verificado: poda por edad, poda por tamaño, protección de `metrics.json`, reapertura con manifest saneado, y suite completa de benchmarks sin regresión (47%/75%).

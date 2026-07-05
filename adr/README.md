@@ -43,6 +43,7 @@ Este directorio contiene las decisiones arquitectonicas del proyecto, documentad
 - [ADR-037: Validación obligatoria en desarrollo (pre-commit hooks)](./0037-validacion-obligatoria-en-desarrollo.md)
 - [ADR-038: Criterio de auditoría en lotes, no iterativa](./0038-criterio-auditoria-lotes-no-iterativa.md)
 - [ADR-039: Optimización de tokens y caché (arquitectura de 3 capas)](./0039-optimizacion-tokens-y-cache.md)
+- [ADR-040: Credenciales por proyecto en el MCP (multi-cuenta opcional)](./0040-credenciales-por-proyecto-en-el-mcp.md)
 
 ## Proceso de ADR
 
