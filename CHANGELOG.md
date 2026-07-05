@@ -6,7 +6,23 @@ Todos los cambios notables en el proyecto CoinTracking Expert se documentan en e
 
 ## [No lanzado]
 
-### 2026-07-05: FASE 3 — Optimización de Tokens Validada + Documentación de Exchanges
+### 2026-07-05: FASE 3 — Optimización de Tokens Validada + Arquitectura Refactorizada
+
+**REFACTORIZACIÓN ARQUITECTÓNICA (Feedback Copilot integrado):**
+- ADR-039 transformado de especificación técnica → ADR arquitectónico puro
+- Nuevos documentos de soporte:
+  - `docs/performance/TOKEN_BENCHMARKS.md` — cifras concretas (versionadas trimestral)
+  - `implementation/CACHE_ROADMAP.md` — roadmap de fases (flexible)
+- Añadidos 3 principios arquitectónicos:
+  1. Integridad de auditoría (optimización ≠ cambio de resultado)
+  2. No cachear conclusiones (solo datos + intermedios reproducibles)
+  3. Minimización de contexto (mínimo info para decisión trazable)
+- Separación clara: Optimización MCP vs optimización LLM
+- Niveles de TTL dinámicos (Trades: permanente, Balance: 15min, etc.)
+- Estrategia de invalidación completa (9 criterios)
+- Versionado de caché (detecta automáticamente obsolescencia)
+- ADR-039 ahora perenne (independiente de cambios de modelo)
+- Commit: ab4b7c0
 
 **OPTIMIZACIÓN (ADR-039 ACCEPTED):**
 - Validación de CacheManager en producción con datos reales (agp2025: 1.670+ operaciones)
