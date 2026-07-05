@@ -1,235 +1,108 @@
 # Roadmap de Implementación — ADR-039 (Caché y Optimización)
 
-**Documento de soporte para ADR-039**  
-**Estado:** Fase 3 completada (2026-07-05)  
+**Documento de soporte para ADR-039**
+**Estado:** ver tabla de fases abajo — corregido 2026-07-05 tras encontrar contradicciones internas (partes del documento decían "completada 2026-07-05" y otras "planificada 2026-09/11" para las mismas fases).
 **⚠️ Este documento puede cambiar; el ADR-039 es estable.**
 
 ---
 
-## Fases (Completadas)
+## Estado Real por Fase
 
-### Fase 1: Caché Persistente ✅
+| Fase | Código | ¿Conectado a las skills en producción? | Estado |
+|------|--------|------------------------------------------|--------|
+| **1. Caché persistente** | `tools/cache_manager.py` (`get_or_fetch`) | Base de la que heredan las demás fases | Completa |
+| **2. Integración en skills** | `.claude/skills/*/SKILL.md` | ✅ Sí — actualizado 2026-07-05 a `CacheTTLManager.get_or_fetch_dynamic()` (antes usaban `CacheManager.get_or_fetch()` básico, sin versionado ni TTL dinámico) | Completa |
+| **3. Validación** | `tools/benchmark_skills.py`, `tools/test_cache_savings.py` | N/A (son scripts de test) | Completa — 47-75% ahorro reproducible |
+| **4. Versionado automático** | `tools/version_tracker.py`, `CacheManager.get_or_fetch_with_version_check()` | ✅ Sí, vía `CacheTTLManager.get_or_fetch_dynamic()` — bug de manifest y crash de encoding corregidos 2026-07-05 | Completa y conectada |
+| **5. TTL dinámico** | `tools/cache_ttl_manager.py` (`CacheTTLManager.get_or_fetch_dynamic()`) | ✅ Sí — ambas skills lo usan desde 2026-07-05 | Completa y conectada |
+| **6. Métricas/dashboard** | `tools/cache_metrics.py`, `tools/cache_cli.py` | ✅ Sí, automático dentro de `get_or_fetch_dynamic()` | Completa y conectada |
 
-**Timeline:** Completada 2026-07-04  
-**Entregables:**
-- `tools/cache_manager.py` — gestor de caché con TTL, invalidación, manifest
+**Historial de la corrección (2026-07-05):** hasta esta fecha, las skills usaban `CacheManager.get_or_fetch()` (Fase 1) con `max_age_hours` fijo pasado a mano — las Fases 4-6 existían como código correcto pero standalone, nunca invocado desde el flujo real de auditoría. El CHANGELOG previo a esta corrección decía "Integrado en skills" para las Fases 4-6, lo cual era impreciso. Se corrigió cambiando el import y la llamada en ambos `SKILL.md` a `CacheTTLManager`/`get_or_fetch_dynamic()` (misma interfaz, cambio de bajo riesgo). Además se corrigió un bug real que habría hecho el versionado inoperante incluso conectado (ver `CHANGELOG.md`: acceso incorrecto al manifest + crash de encoding Unicode en Windows).
+
+**Limitación que persiste, documentada honestamente:** `VersionTracker` solo detecta `version:` en frontmatter YAML. Los ADRs (`adr/*.md`, formato MADR plano) no tienen frontmatter, así que cambiar un ADR no invalida ningún caché — solo cambios en `knowledge/` lo hacen. No es un bug; es un límite del formato actual de los ADRs.
+
+---
+
+## Detalle de Cada Fase
+
+### Fase 1: Caché Persistente ✅ (completa, en uso)
+
+- `tools/cache_manager.py` — gestor de caché con TTL fijo, invalidación, manifest
 - `.cache/cointracking/<proyecto>/` — estructura de almacenamiento
-- Integración MCP: métodos `get_or_fetch()`, `invalidate_all()`, `invalidate_pattern()`
+- Métodos: `get_or_fetch()`, `invalidate_all()`, `invalidate_pattern()`
 
-**Resultado:** Caché funcionando, almacenando trades/balances con versionado.
+### Fase 2: Integración en Skills ✅ (completa)
 
----
+- `/audit-cointracking` SKILL: Paso 0 usa `CacheTTLManager.get_or_fetch_dynamic()`
+- `/spanish-tax-return` SKILL: Paso 1 usa `CacheTTLManager.get_or_fetch_dynamic()`
+- Hasta 2026-07-05 usaban `CacheManager.get_or_fetch()` básico (Fase 1 sin versionado ni TTL dinámico) — corregido, ver historial arriba
 
-### Fase 2: Integración en Skills ✅
+### Fase 3: Validación ✅ (completa)
 
-**Timeline:** Completada 2026-07-05  
-**Entregables:**
-- `/audit-cointracking` SKILL: Paso 0 con instrucciones CacheManager
-- `/spanish-tax-return` SKILL: Paso 1 con reutilización de caché
-- Documentación de uso en skills (ejemplos Python)
-
-**Resultado:** Skills usan CacheManager automáticamente; caché transparente al usuario.
-
----
-
-### Fase 3: Validación ✅
-
-**Timeline:** Completada 2026-07-05  
-**Entregables:**
 - `tools/benchmark_skills.py` — test automatizado (3 auditorías + IRPF)
 - `tools/test_cache_savings.py` — demostración de ahorro de caché
 - `reports/SKILLS_BENCHMARK_REPORT.md` — informe de resultados en producción
+- Validado en agp2025 (caso real, 1.670+ operaciones): 47-75% ahorro comprobado
 
-**Resultado:** Validado en agp2025 (caso real, 1.670+ operaciones): 47-75% ahorro comprobado.
+### Fase 4: Versionado Automático — completa y conectada
 
----
+- `tools/version_tracker.py` — rastreador de versiones, extrae `version:` de frontmatter YAML
+  - **Limitación real:** solo funciona para `knowledge/` (tiene frontmatter YAML). Los ADRs (`adr/*.md`) usan formato MADR plano sin frontmatter, así que no son rastreables — cambiar un ADR no invalida caché con el formato actual. Cambiar un documento de `knowledge/` sí lo hace.
+- `CacheManager.is_cache_valid_by_version()`, `get_or_fetch_with_version_check()` — funcionales tras el fix de 2026-07-05 (bug de acceso a manifest + crash de encoding en Windows, ambos corregidos; ver CHANGELOG)
+- **Invocado por ambas skills** desde 2026-07-05, vía `CacheTTLManager.get_or_fetch_dynamic()`.
 
-## Todas las Fases Completadas
+### Fase 5: TTL Dinámico — completa y conectada
 
-### Fase 6: Dashboard de Caché ✅
-
-**Objetivo:** Visualizar ahorros en tiempo real.
-
-**Status:** COMPLETADA 2026-07-05
-
-**Implementación:**
-- ✅ `tools/cache_metrics.py` — rastreador de hits/misses/ahorros
-- ✅ Integración automática en CacheTTLManager
-- ✅ `tools/cache_cli.py` — CLI para reportes
-- ✅ Período disponibles: session, today, week, month, lifetime, detailed
-
-**Métricas Registradas:**
-- Hits (caché reutilizado)
-- Misses (MCP llamado)
-- Tokens ahorrados / gastados
-- Hit rate (%)
-- Histórico por día/semana/mes
-
-**Ejemplo de Salida:**
-```
-Operaciones:
-  Hits: 3, Misses: 1, Hit Rate: 75.0%
-
-Tokens:
-  Ahorrados: 4335
-  Gastados: 400
-  Neto: 3935
-  Ahorro %: 91.6%
-```
-
-**Beneficio:** Usuario ve exactamente cuánto ahorra ("He ahorrado 445K tokens este mes").
-
----
-
-## Fases Futuras (Opcionales)
-
-### Fase 4: Versionado de Caché ✅
-
-**Objetivo:** Detectar automáticamente si la caché es vigente.
-
-**Status:** COMPLETADA 2026-07-05
-
-**Implementación:**
-- ✅ `tools/version_tracker.py` — rastreador de versiones de ADRs/KB
-  - Extrae `version:` de frontmatter YAML
-  - Compara versiones actuales vs caché
-  - Explica qué versiones cambiaron
-- ✅ Extender `CacheManager`:
-  - Método `is_cache_valid_by_version()` — verifica si caché es válida
-  - Método `get_or_fetch_with_version_check()` — automáticamente invalida si versiones cambian
-  - Guarda versiones en manifest
-- ✅ Manifest extendido:
-  ```json
+- `tools/cache_ttl_manager.py` (`CacheTTLManager`) — extiende `CacheManager` con TTL por tipo de dato:
+  ```python
   {
-    "cache_key": "get_trades_...",
-    "created": "2026-07-05T10:42:00Z",
-    "versions": {
-      "adr_0039": "1.0",
-      "kb_capital_gains": "2.1",
-      "mcp": "1.3.2"
-    }
+    'get_trades': {'ttl_hours': 999999, 'invalidate_on': ['user_import', 'version_change']},
+    'get_grouped_balance': {'ttl_hours': 0.25, 'invalidate_on': ['user_operation']},  # 15 min
+    'get_gains': {'ttl_hours': 999999, 'invalidate_on': ['trades_change']},
+    'get_historical_summary': {'ttl_hours': 24},
   }
   ```
+- Método `get_or_fetch_dynamic()` funcional (tras el fix de 2026-07-05, ahora también verifica versión antes de servir un hit con TTL permanente)
+- **Invocado por ambas skills** desde 2026-07-05.
 
-**Impacto:** Caché se invalida automáticamente si ADRs o KB cambian versión.
+### Fase 6: Dashboard de Caché — completa y conectada
 
----
-
-### Fase 5: Niveles de Caché Dinámicos ✅
-
-**Objetivo:** TTL distintos por tipo de información.
-
-**Status:** COMPLETADA 2026-07-05
-
-**Implementación:**
-- ✅ `tools/cache_ttl_manager.py` — gestor de caché con TTL dinámico
-  - Extiende CacheManager
-  - Define TTL por tipo de dato:
-    ```python
-    {
-      'get_trades': {'ttl_hours': 999999, 'invalidate_on': ['user_import', 'version_change']},
-      'get_grouped_balance': {'ttl_hours': 0.25, 'invalidate_on': ['user_operation']},  # 15 min
-      'get_gains': {'ttl_hours': 999999, 'invalidate_on': ['trades_change']},
-      'get_historical_summary': {'ttl_hours': 24},
-    }
-    ```
-  - Método `get_or_fetch_dynamic()` — usa TTL automáticamente según tipo
-  - Método `explain_ttl_strategy()` — documenta la estrategia
-
-**TTL Por Tipo:**
-| Tipo | TTL | Razón |
-|------|-----|-------|
-| Trades | Permanente* | No cambia salvo reimportación |
-| Balance/Holdings | 15 min | Estado vivo |
-| Gains (FIFO) | Permanente* | Determinista si trades no cambian |
-| Tax Report | 24h | Anual |
-| Histórico | 24h | Cambia diariamente |
-
-**Impacto:** Balance perfecto entre frescura de datos y ahorro de llamadas.
-
----
-
-### Fase 6: Dashboard de Caché
-
-**Objetivo:** Visibilidad de ahorros de caché en CLI.
-
-**Tareas:**
-- [ ] Integrar `rtk gain --cache` → mostrar estadísticas:
-  - Hits/misses
-  - Tokens ahorrados por operación
-  - Histórico de ahorro
-
-**Impacto:** Usuario ve directamente el ROI de la optimización.
-
----
-
-## Decisiones de Arquitectura (Referencia)
-
-| Decisión | Implementado | Ubicación |
-|----------|-------------|-----------|
-| Caché persistente vs. en memoria | Persistente | Phase 1 ✅ |
-| TTL por defecto | 24h (configurable) | Phase 1 ✅ |
-| Invalidación por patrón | Sí (pattern matching) | Phase 1 ✅ |
-| Procesamiento local | Sí (Python, no contexto LLM) | Phase 2 ✅ |
-| Versionado | No aún (Phase 4) | TODO |
-| TTL dinámico | No aún (Phase 5) | TODO |
-| Never cache conclusions | Sí (principio, no técnica) | ADR-039 ✅ |
+- `tools/cache_metrics.py` — rastreador de hits/misses/ahorros, persistido en `.cache/cointracking/<proyecto>/metrics.json`
+- `tools/cache_cli.py` — CLI para reportes (`session`, `today`, `week`, `month`, `lifetime`, `detailed`)
+- Se integra automáticamente **dentro de `CacheTTLManager.get_or_fetch_dynamic()`** — al usarlo ambas skills, las métricas ahora sí se registran en uso real, no solo en scripts de test/benchmark.
 
 ---
 
 ## Riesgos y Mitigación
 
-### Riesgo: Caché desincronizada
+### Riesgo: Caché desincronizada por cambio de conocimiento
 
-**Síntoma:** Usuario ve datos viejos en auditoría.  
-**Mitigación:** Phase 4 (versionado) detecta automáticamente.
+**Síntoma:** Usuario corrige una regla en `knowledge/`, pero una auditoría con caché de `get_trades`/`get_gains` ya guardado sigue usando conclusiones calculadas con la regla vieja.
+**Mitigación real hoy:** automática desde 2026-07-05 — al conectar las skills a `CacheTTLManager`, un cambio de versión en `knowledge/` invalida el caché aunque el TTL sea "permanente". Sigue sin cubrir cambios en `adr/` (ver limitación de Fase 4 arriba); para esos casos, invalidar caché manualmente (`cointracking_invalidate_cache`).
 
 ### Riesgo: Hit rate bajo al inicio
 
-**Síntoma:** Primeras auditorías sin ahorro.  
+**Síntoma:** Primeras auditorías sin ahorro.
 **Mitigación:** Aceptable; ahorro acumula en auditorías posteriores.
 
 ### Riesgo: Overhead de I/O
 
-**Síntoma:** Lectura/escritura de disco más lenta que MCP.  
+**Síntoma:** Lectura/escritura de disco más lenta que MCP.
 **Mitigación:** `.cache/` local, JSON compacto; benchmarks confirman OK.
 
 ### Riesgo: Crecimiento descontrolado de caché
 
-**Síntoma:** `.cache/` ocupa GB tras meses de uso.  
-**Mitigación:** Añadir limpieza automática (LRU) en Phase 4.
+**Síntoma:** `.cache/` ocupa espacio creciente tras meses de uso.
+**Mitigación:** pendiente — no hay limpieza automática (LRU) implementada.
 
 ---
 
 ## Dependencias Externas
 
 - [ ] Cambios en API MCP: revisar formatos de respuesta
-- [ ] Cambios en ADR-037 (validación): actualizar manifest
-- [ ] Cambios en knowledge base: revisar invalidación
+- [ ] Cambios en knowledge base: ya disparan invalidación automática (Fase 4 conectada); verificar tras cada edición de `version:` en frontmatter
 
 ---
 
-## Métricas de Éxito
-
-- ✅ Fase 1: CacheManager implementado y funcional
-- ✅ Fase 2: Skills usando caché automáticamente
-- ✅ Fase 3: 47%+ ahorro validado en producción
-- ⏳ Fase 4: Caché versioned (en espera)
-- ⏳ Fase 5: TTL dinámico (en espera)
-- ⏳ Fase 6: Dashboard (en espera)
-
----
-
-## Próximos Hitos
-
-| Fecha | Hito | Estado |
-|------|------|--------|
-| 2026-07-05 | Fase 3 completada + validación | ✅ DONE |
-| 2026-09-05 | Fase 4: Versionado (planificado) | ⏳ TODO |
-| 2026-11-05 | Fase 5: TTL dinámico (planificado) | ⏳ TODO |
-| 2026-12-31 | Revisión anual: Impacto real vs. estimado | ⏳ TODO |
-
----
-
-**Este documento describe la cronología de implementación.**  
+**Este documento describe la cronología de implementación real.**
 **Para los principios y decisiones arquitectónicas, ver ADR-039.**

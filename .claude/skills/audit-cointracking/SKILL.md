@@ -29,12 +29,14 @@ Después:
    - Si no hay ninguno, dilo y detente: no inventes datos.
    - **Documentación adicional bajo demanda:** si un hallazgo concreto lo justifica (duplicados dudosos, transferencia huérfana, discrepancia de balance…), consulta `knowledge/cointracking/DOCUMENT_CHECKLIST.md` para saber qué informe extra de CoinTracking pedir (§A) o qué dato del propio exchange solicitar al usuario (§B, p. ej. trade_id para ADR-014). No lo pidas todo de entrada; solo lo que el hallazgo requiera.
 3. **Normaliza mentalmente** según el conocimiento: fechas a UTC desde `Europe/Madrid` con DST (ADR-005), importes con precisión decimal, ticker completo con sufijo (`SOL` ≠ `SOL2`), parsear por posición (3 columnas `Cur.`).
-4. **Sé económico (ADR-010/ADR-039).** Usa `CacheManager` para reutilizar datos (ver `tools/cache_manager.py`):
+4. **Sé económico (ADR-010/ADR-039).** Usa `CacheTTLManager` para reutilizar datos con TTL automático por tipo y versionado (ver `tools/cache_ttl_manager.py`; corregido 2026-07-05, ver CHANGELOG):
    ```python
-   from tools.cache_manager import CacheManager
-   mgr = CacheManager(project_name)  # <proyecto activo>
-   # get_or_fetch reutiliza datos < 24h, falso solo si es necesario
-   balance = mgr.get_or_fetch('get_grouped_balance', {...}, mcp_call_fn=..., max_age_hours=24)
+   from tools.cache_ttl_manager import CacheTTLManager
+   mgr = CacheTTLManager(project_name)  # <proyecto activo>
+   # get_or_fetch_dynamic aplica TTL según tipo de dato (trades: permanente,
+   # balance: 15min, etc.) e invalida automáticamente si un documento de
+   # knowledge/ subió de versión — no hace falta pasar max_age_hours a mano
+   balance = mgr.get_or_fetch_dynamic('get_grouped_balance', {...}, mcp_call_fn=...)
    ```
    - Caché persiste en `.cache/cointracking/<proyecto>/` (marca de tiempo automática)
    - Invalida si el usuario hizo cambios: `mgr.invalidate_pattern('get_trades')`

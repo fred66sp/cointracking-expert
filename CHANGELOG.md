@@ -23,6 +23,10 @@ Todos los cambios notables en el proyecto CoinTracking Expert se documentan en e
 
 **Por qué importa:** sin este fix, si se corregía una regla en `knowledge/` (p. ej. un umbral fiscal o una regla de clasificación), una auditoría con caché de `get_trades`/`get_gains` ya guardado seguiría usando conclusiones calculadas con la regla vieja indefinidamente, sin ningún aviso.
 
+**Hallazgo adicional, más grave que el bug en sí:** aunque el código de Fase 4-6 (versionado, TTL dinámico, métricas) funcionaba (una vez arreglado), **ninguna skill lo invocaba**. `audit-cointracking` y `spanish-tax-return` seguían usando `CacheManager.get_or_fetch()` (Fase 1 básica, `max_age_hours` fijo pasado a mano) — el CHANGELOG anterior decía "Integrado en skills" para las Fases 4-6, lo cual era impreciso. Corregido: ambos `SKILL.md` ahora importan `CacheTTLManager` y llaman a `get_or_fetch_dynamic()` (mismo patrón, cambio de bajo riesgo). `implementation/CACHE_ROADMAP.md` reescrito — tenía además contradicciones internas (secciones que decían "completada 2026-07-05" y otras "planificada 2026-09/2026-11" para las mismas fases).
+
+**Verificado tras conectar las skills:** `tools/benchmark_skills.py` sigue reproduciendo 47-75% de ahorro sin regresión; `validate_yaml_metadata.py` → 0 errores críticos.
+
 ### 2026-07-05: GOBERNANZA — 6 ADRs adicionales pasan de Proposed a Accepted, 1 referencia rota corregida
 
 Revisión completa de estados de ADRs (36 documentos) encontró 3 más en `Proposed` pese a estar en uso activo, y 1 con formato de status no estándar:

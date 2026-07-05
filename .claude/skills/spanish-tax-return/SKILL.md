@@ -43,12 +43,12 @@ Solo tras este diálogo, continúa con el Paso 1.
 
 **No des ninguna cifra fiscal sobre datos sin reconciliar.**
 
-- **Reutiliza si ya está hecho.** Si en **esta misma conversación** ya se ejecutó una auditoría (p. ej. el usuario invocó `/audit-cointracking` antes) sobre **la misma fuente y sin cambios desde entonces**, **reutiliza sus hallazgos**; **no la repitas** (evita gastar llamadas a la API, límite 60/h). Usa `CacheManager` para automatizar esto (ver `tools/cache_manager.py`):
+- **Reutiliza si ya está hecho.** Si en **esta misma conversación** ya se ejecutó una auditoría (p. ej. el usuario invocó `/audit-cointracking` antes) sobre **la misma fuente y sin cambios desde entonces**, **reutiliza sus hallazgos**; **no la repitas** (evita gastar llamadas a la API, límite 60/h). Usa `CacheTTLManager` para automatizar esto con TTL por tipo y versionado (ver `tools/cache_ttl_manager.py`):
   ```python
-  from tools.cache_manager import CacheManager
-  mgr = CacheManager(project_name)
-  # Los datos cachetados < 24h se reutilizan automáticamente
-  balance = mgr.get_or_fetch('get_grouped_balance', {...}, mcp_call_fn=..., max_age_hours=24)
+  from tools.cache_ttl_manager import CacheTTLManager
+  mgr = CacheTTLManager(project_name)
+  # TTL automático por tipo de dato + invalida si knowledge/ subió de versión
+  balance = mgr.get_or_fetch_dynamic('get_grouped_balance', {...}, mcp_call_fn=...)
   ```
   Dilo: "reutilizo la auditoría que acabamos de hacer (datos en caché)".
 - **Re-audita solo si:** no se ha hecho aún, los **datos han cambiado** (el usuario corrigió operaciones), o cambió la fuente.
@@ -59,10 +59,10 @@ Solo tras este diálogo, continúa con el Paso 1.
 
 ## Paso 2 — Eventos imponibles del ejercicio
 
-**Optimización de tokens (ADR-039):** Procesa datos localmente, no en contexto LLM. Usa `tools/ct_audit.py` y `CacheManager` para análisis local antes de pasar resultados compactos al contexto. Ejemplo:
+**Optimización de tokens (ADR-039):** Procesa datos localmente, no en contexto LLM. Usa `tools/ct_audit.py` y `CacheTTLManager` para análisis local antes de pasar resultados compactos al contexto. Ejemplo:
 ```python
-mgr = CacheManager(project_name)
-trades = mgr.get_or_fetch('get_trades', {...}, mcp_call_fn=..., max_age_hours=1)
+mgr = CacheTTLManager(project_name)
+trades = mgr.get_or_fetch_dynamic('get_trades', {...}, mcp_call_fn=...)
 # Procesar en Python (sin contexto):
 taxable_events = analyze_trades_locally(trades)  # Devuelve resumen, no JSON crudo
 # Pasar solo resumen al contexto (~200 tokens vs ~3000 sin procesar)
