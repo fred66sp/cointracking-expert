@@ -31,6 +31,17 @@ notes: "Cómo resolver una transferencia huérfana (falta withdrawal o deposit).
 
 # Procedimiento: Emparejar Transferencias
 
+## Causas Raíz Comunes (diagnostica antes de actuar)
+
+Antes de asumir que es un error de importación, identifica cuál de estas 4 causas aplica — cada una tiene una resolución distinta:
+
+| Causa | Síntoma | Resolución |
+|-------|---------|-----------|
+| **1. Blockchain delay** (más común) | Depósito aparece 1 día después en el exchange destino | Se resuelve solo al reimportar; no requiere acción |
+| **2. Importación parcial** | Falta un rango de fechas completo en el exchange destino | Importar el período faltante |
+| **3. Depósito no acreditado** (raro) | Blockchain confirma la TX pero el exchange destino no la refleja | Contactar soporte del exchange; posible pérdida real |
+| **4. Migración incompleta** | Retirada iniciada pero nunca llegó a ningún sitio (ni blockchain la confirma) | Verificar dirección y reintentar desde el exchange origen |
+
 ## Síntoma
 
 - Balance negativo en el exchange destino

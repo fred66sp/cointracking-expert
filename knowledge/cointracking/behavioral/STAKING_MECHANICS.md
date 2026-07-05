@@ -3,13 +3,13 @@ id: KB-B1-001
 title: "Cómo CoinTracking maneja Staking y Rewards"
 level: B
 domain: cointracking
-source: "Análisis de casos reales + centro de ayuda CT"
+source: "Análisis de casos reales + centro de ayuda CT + auditoría agp2025"
 authority: verified
 last_verified: 2026-07-05
 valid_from: 2024-01-01
 valid_until: 2027-07-03
 confidence: high
-version: 1.0
+version: 1.1
 
 related_adr:
   - ADR-003
@@ -151,7 +151,53 @@ Reports → Gains:
 
 ---
 
+## Tipos de Staking y Casos Especiales
+
+No todo el staking se comporta igual. Además del staking flexible (arriba), hay tres variantes con matices propios:
+
+### Staking bloqueado (período fijo: 30/60/90 días)
+
+- CoinTracking registra la recompensa en la **fecha de liberación**, no cuando se inicia el bloqueo.
+- El principal devuelto el mismo día **no es una venta** — es retorno de lo que ya era tuyo. Solo la recompensa neta es Income.
+
+### DeFi Staking / Liquid Staking (Lido, Rocket Pool: stETH, rETH, etc.)
+
+Más complejo porque recibes un token derivado que representa tu stake:
+
+```
+Escenario 1 — Depositar: 1 ETH → 1 stETH
+  ¿Es venta? NO (cambio de forma 1:1, no consume base de coste)
+
+Escenario 2 — El stETH crece (recompensas compuestas)
+  CoinTracking a veces NO importa este crecimiento automáticamente
+  → Si no aparece, crear manualmente basándose en el historial del protocolo
+
+Escenario 3 — Vender el stETH
+  ¿Es venta? SÍ (vendes el token de staking)
+  Base de coste: principal original + recompensas acumuladas hasta la venta
+```
+
+### Staking delegado (pools)
+
+No tienes las monedas directamente, las tiene el pool. Fiscalmente es igual que staking directo (RCM) — el riesgo de que el pool falle es operativo, no cambia la clasificación fiscal.
+
+---
+
+## Regla de Oro: Valor a Fecha de Recepción (no a hoy)
+
+Error muy común: declarar el valor EUR de la recompensa a fecha de **hoy** en vez de a fecha de **recepción**.
+
+```
+15 junio 2024: recibo 0.05 ETH, precio ese día: 2.500 €/ETH → declaro 125 €
+Hoy: ese ETH vale 3.200 €/ETH → NO declaro 160 €, sigue siendo 125 €
+```
+
+Ese valor de recepción es además el **coste de adquisición** de esas monedas para el FIFO futuro (si luego las vendes).
+
+---
+
 ## Integración
 
 - **ADR-003:** Modelo de transacciones — Staking deposit ≠ Income reward
 - **CAPITAL_INCOME.md:** Tratamiento fiscal de los rendimientos
+- **Caso real (agp2025):** ETH staking en Binance, 10 ETH bloqueados desde 2024-06-01, 0.42 ETH en recompensas mensuales verificadas contra Binance Earn history, ~1.020 € de RCM estimado

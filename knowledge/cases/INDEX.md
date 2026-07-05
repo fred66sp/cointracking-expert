@@ -1,57 +1,68 @@
-# Nivel C: Casos Específicos y Patrones de Auditoría
+# Nivel C: Casos, Patrones y Procedimientos
 
-**Ubicación:** `knowledge/cases/`
+**Ubicación:** `knowledge/cases/` (C1), `knowledge/patterns/` (C2), `knowledge/procedures/` (C3)
 
-**Característica:** Documentación de **patrones reales auditados** y procedimientos específicos para resolver problemas comunes en auditorías de CoinTracking.
+**Característica:** Documentación de **casos reales auditados**, los patrones que se derivan de ellos, y los procedimientos operativos para resolverlos.
 
-**Autoridad:** `verified` — casos reales del proyecto `agp2025` = máxima confianza, no es teoría
+**Autoridad:** `verified` — casos reales del usuario = máxima confianza, no es teoría
+
+**Convención de IDs:** ver ADR-036. `C1` = casos individuales, `C2` = patrones de reconciliación, `C3` = procedimientos.
 
 ---
 
-## Estructura Jerárquica (Semilla 1.0)
+## C1: Casos Reales Auditados (20 casos)
 
-Nivel C se divide en **3 bloques temáticos** organizados por complejidad y relación:
+Cada caso documenta un hallazgo real, por qué ocurre, cómo se confunde con otra cosa, y cómo resolverlo.
 
-### C1: Operaciones Especiales por Exchange
+1. [ct-001-transferencia-entre-exchanges-importada-.md](ct-001-transferencia-entre-exchanges-importada-.md) (KB-C1-001) — Transferencia entre exchanges importada solo en origen
+2. [ct-002-venta-sin-historial-de-compra-previo-mis.md](ct-002-venta-sin-historial-de-compra-previo-mis.md) (KB-C1-002) — Venta sin historial de compra previo (Missing Purchase History)
+3. [ct-003-api-y-csv-importados-simultaneamente-dup.md](ct-003-api-y-csv-importados-simultaneamente-dup.md) (KB-C1-003) — API y CSV importados simultáneamente (duplicado por doble fuente)
+4. [ct-004-balance-negativo-por-orden-cronologico-i.md](ct-004-balance-negativo-por-orden-cronologico-i.md) (KB-C1-004) — Balance negativo por orden cronológico incorrecto (zona horaria)
+5. [ct-005-recompensas-de-staking-clasificadas-como.md](ct-005-recompensas-de-staking-clasificadas-como.md) (KB-C1-005) — Recompensas de staking clasificadas como depósito genérico
+6. [ct-006-binance-convert-importado-como-venta-y-c.md](ct-006-binance-convert-importado-como-venta-y-c.md) (KB-C1-006) — Binance Convert importado como venta y compra independientes
+7. [ct-007-transferencia-interna-confundida-con-ven.md](ct-007-transferencia-interna-confundida-con-ven.md) (KB-C1-007) — Transferencia interna confundida con venta
+8. [ct-008-duplicados-aparentes-por-ejecucion-parci.md](ct-008-duplicados-aparentes-por-ejecucion-parci.md) (KB-C1-008) — Duplicados aparentes por ejecución parcial de una orden
+9. [ct-009-comision-fee-omitida-en-la-importacion.md](ct-009-comision-fee-omitida-en-la-importacion.md) (KB-C1-009) — Comisión (fee) omitida en la importación
+10. [ct-010-airdrop-registrado-como-compra-con-coste.md](ct-010-airdrop-registrado-como-compra-con-coste.md) (KB-C1-010) — Airdrop registrado como compra con coste artificial
+11. [ct-011-lending-tratado-como-transferencia-gener.md](ct-011-lending-tratado-como-transferencia-gener.md) (KB-C1-011) — Lending tratado como transferencia genérica
+12. [ct-012-balance-negativo-por-importacion-parcial.md](ct-012-balance-negativo-por-importacion-parcial.md) (KB-C1-012) — Balance negativo por importación parcial vía API
+13. [ct-013-wallet-externa-no-importada-fondos-desap.md](ct-013-wallet-externa-no-importada-fondos-desap.md) (KB-C1-013) — Wallet externa no importada, fondos desaparecen
+14. [ct-014-recompensas-de-mineria-mining-registrada.md](ct-014-recompensas-de-mineria-mining-registrada.md) (KB-C1-014) — Recompensas de minería (mining) registradas como depósito
+15. [ct-015-swap-defi-fragmentado-en-varias-operacio.md](ct-015-swap-defi-fragmentado-en-varias-operacio.md) (KB-C1-015) — Swap DeFi fragmentado en varias operaciones on-chain
+16. [ct-016-duplicados-por-reimportacion-completa-de.md](ct-016-duplicados-por-reimportacion-completa-de.md) (KB-C1-016) — Duplicados por reimportación completa del mismo periodo
+17. [ct-017-coste-cero-por-compra-omitida-de-ejercic.md](ct-017-coste-cero-por-compra-omitida-de-ejercic.md) (KB-C1-017) — Coste cero por compra omitida de ejercicios anteriores
+18. [ct-018-token-renombrado-interpretado-como-un-ac.md](ct-018-token-renombrado-interpretado-como-un-ac.md) (KB-C1-018) — Token renombrado interpretado como un activo distinto
+19. [ct-019-balance-negativo-tras-eliminar-una-compr.md](ct-019-balance-negativo-tras-eliminar-una-compr.md) (KB-C1-019) — Balance negativo tras eliminar una compra confundida con duplicado
+20. [ct-020-advertencia-tecnica-interpretada-como-er.md](ct-020-advertencia-tecnica-interpretada-como-er.md) (KB-C1-020) — Advertencia técnica interpretada como error fiscal definitivo
 
-**Cómo importan y qué peculiaridades tiene cada exchange**
+---
 
-- [**C1-001: Binance Spot Mechanics**](C1_BINANCE_SPOT_MECHANICS.md) (KB-C1-001)
-  - Dust → BNB auto-conversión
-  - Binance Convert (cambios internos)
-  - Swaps (integraciones DeFi)
-  - Binance Earn/Staking (no se importa bien)
-  - **Caso real:** agp2025 (1.000+ ops, limpio)
+## C2: Patrones de Reconciliación (derivados de los casos C1)
 
-- [**C1-002: BingX Copy Trading Losses**](C1_BINGX_COPY_TRADING_LOSSES.md) (KB-C1-002)
-  - **Problema crítico:** Copy Trading no se exporta
-  - Cómo detectar las pérdidas "Lost"
-  - **Tratamiento fiscal:** ¿Se deduce o no? (TBD, requiere asesor)
-  - **Caso real:** agp2025 (-694,67 USDT, no deducible hasta verificar)
+Generalizaciones extraídas de varios casos C1 — qué buscar, no un caso puntual.
 
-### C2: Rendimientos y Eventos de Ingresos
+- [`knowledge/patterns/PATTERN_DUPLICATE_DETECTION.md`](../patterns/PATTERN_DUPLICATE_DETECTION.md) (KB-C2-001) — Matriz: qué hace/no hace duplicado (deriva de CT-003, CT-008, CT-016)
+- [`knowledge/patterns/PATTERN_BALANCE_RECONCILIATION.md`](../patterns/PATTERN_BALANCE_RECONCILIATION.md) (KB-C2-002) — Cómo reconocer saldos inconsistentes
+- [`knowledge/patterns/PATTERN_TRANSFER_MATCHING.md`](../patterns/PATTERN_TRANSFER_MATCHING.md) (KB-C2-003) — Heurísticas para emparejar withdrawal/deposit
+- [`knowledge/patterns/PATTERN_PURCHASE_POOL_EXHAUSTION.md`](../patterns/PATTERN_PURCHASE_POOL_EXHAUSTION.md) (KB-C2-004) — Síntomas de "purchase pool consumed" (deriva de CT-002, CT-017)
 
-**Staking, Earn, Rewards — clasificación y auditoría fiscal**
+---
 
-- [**C2-001: Staking and Rewards**](C2_STAKING_AND_REWARDS.md) (KB-C2-001)
-  - Tipos de staking (simple, bloqueado, DeFi)
-  - **Clasificación fiscal:** RCM (Rendimiento de Capital Mobiliario)
-  - Valor a declarar: EUR a fecha de recepción (no a hoy)
-  - Liquid staking (stETH, xSOL) — casos complejos
-  - Auditoría paso a paso
-  - **Caso típico:** ETH Staking en Binance
+## C3: Procedimientos Operativos (cómo resolver, paso a paso)
 
-### C3: Transferencias y Problemas de Importación
+- [`knowledge/procedures/PROCEDURE_AUDIT_ACCOUNT.md`](../procedures/PROCEDURE_AUDIT_ACCOUNT.md) (KB-C3-001) — 6 fases de auditoría completa
+- [`knowledge/procedures/PROCEDURE_RECONCILE_TRANSFERS.md`](../procedures/PROCEDURE_RECONCILE_TRANSFERS.md) (KB-C3-002) — Emparejar withdrawal/deposit, incluye 4 causas raíz de transferencias huérfanas (blockchain delay, importación parcial, no acreditado, migración incompleta)
+- [`knowledge/procedures/PROCEDURE_FIX_MISSING_PURCHASE_HISTORY.md`](../procedures/PROCEDURE_FIX_MISSING_PURCHASE_HISTORY.md) (KB-C3-003) — Resolver origen de coste ausente
 
-**Cómo empareja transferencias, qué son las "huérfanas" y cómo resolverlas**
+---
 
-- [**C3-001: Orphan Transfers Resolution**](C3_ORPHAN_TRANSFERS_RESOLUTION.md) (KB-C3-001)
-  - Qué es una transferencia huérfana
-  - 4 causas raíz (delay, importación parcial, no acreditado, migración incompleta)
-  - Detección en CoinTracking
-  - Resolución: Nivel 1 (Tx Hash) y Nivel 2 (Heurística)
-  - Emparejamiento manual y verificación
-  - **Caso real:** MiCA Migration (Binance → Coinbase)
+## Peculiaridades de Exchange Específicas (viven en Nivel B, no C)
+
+Las mecánicas específicas de cada exchange (qué genera cada tipo de operación, casos límite) están en `knowledge/cointracking/behavioral/`, no en Nivel C — Nivel C es para casos/patrones/procedimientos, Nivel B es para "cómo funciona la plataforma". Documentos relevantes, con hallazgos de agp2025 ya incorporados:
+
+- [`BINANCE_SPOT_MECHANICS.md`](../cointracking/behavioral/BINANCE_SPOT_MECHANICS.md) (KB-B2-001) — incluye dust→BNB, Binance Convert, swaps DeFi, Binance Earn
+- [`BINGX_MECHANICS.md`](../cointracking/behavioral/BINGX_MECHANICS.md) (KB-B2-010) — incluye el caso verificado de Copy Trading no exportado (agp2025, ~694,67 USDT)
+- [`STAKING_MECHANICS.md`](../cointracking/behavioral/STAKING_MECHANICS.md) (KB-B1-001) — incluye tipos de staking (bloqueado, liquid/DeFi), clasificación fiscal RCM, regla de valor a fecha de recepción
 
 ---
 
@@ -59,76 +70,18 @@ Nivel C se divide en **3 bloques temáticos** organizados por complejidad y rela
 
 ### Para Auditor/Usuario
 
-Si encuentras un patrón específico durante la auditoría:
-
-1. **Identifica el patrón:** "Copy Trading losses", "Staking rewards", "Orphan transfer"
-2. **Busca en Nivel C** el documento correspondiente
-3. **Sigue el checklist y procedimiento** (paso a paso)
-4. **Verifica contra la fuente real** (exchange, blockchain, asesor si aplica)
+1. **¿Hallazgo puntual?** Busca en C1 (¿ya hay un caso parecido documentado?)
+2. **¿Patrón recurrente?** Busca en C2 (¿qué categoría de problema es?)
+3. **¿Necesitas resolverlo paso a paso?** Busca en C3 (procedimiento operativo)
+4. **¿Es específico de un exchange?** Busca en Nivel B `behavioral/`
 
 ### Para Documentación
 
-**Cuándo agregar a Nivel C:**
-- Encontraste un patrón real en auditoría
-- Es suficientemente común (>1 usuario lo tiene)
-- Tiene procedimiento/checklist claro y verificado
-- Tiene implicación fiscal o de auditoría material
-
-**Formato de documento:**
-```
----
-id: KB-C[1-3]-[NUM]
-title: descriptivo + nombre caso real
-level: C
-domain: cointracking
-source: verificable (usuario, fecha)
-authority: verified
-last_verified: AAAA-MM-DD
-valid_until: AAAA-MM-DD
-confidence: high
-version: 1.0
-tags: [palabras clave]
----
-
-# [Título]
-1. ¿Qué es?
-2. Cómo aparece/se detecta
-3. Auditoría paso a paso
-4. Tratamiento (fiscal/técnico)
-5. Caso real verificado
-6. Checklist completo
-```
-
----
-
-## Estadísticas de Cobertura
-
-| Bloque | Documentos | Estado | Verificación |
-|--------|-----------|--------|-----------|
-| **C1** | 2 de ∞ | ✅ En progreso | agp2025 |
-| **C2** | 1 de ∞ | ✅ En progreso | Binance Earn |
-| **C3** | 1 de ∞ | ✅ En progreso | MiCA Migration |
-| **TOTAL** | 4 | ✅ Semilla 1.0 | Verified |
-
----
-
-## Próximas Adiciones (No Solicitadas Aún)
-
-**Exchange Mechanics (C1):**
-- C1-003: Bybit/OKX Futures mechanics
-- C1-004: Kraken staking
-- C1-005: Coinbase Earn/Staking
-
-**Income & Rewards (C2):**
-- C2-002: Airdrops y airdrops condicionales
-- C2-003: Lending rewards (Celsius, Aave)
-- C2-004: Mining income
-
-**Transfer Patterns (C3):**
-- C3-002: Bridge operations (Polygon, Arbitrum, Optimism)
-- C3-003: Wrapped tokens (wBTC, wETH, xSOL)
-- C3-004: Token migration events (USDT→USDC forzoso, etc.)
-- C3-005: Smart contract failures (failed TX, revert)
+**Antes de crear un documento nuevo en `knowledge/cases/`:**
+1. Consulta ADR-036 (convención de IDs) — no reutilices IDs existentes
+2. Verifica que no exista ya contenido similar en Nivel B (`cointracking/behavioral/`) o en los C1-C3 existentes
+3. Si el contenido es "cómo funciona X exchange/mecánica", va en Nivel B, no en Nivel C
+4. Si es un caso real nuevo, continúa la numeración: siguiente caso C1 sería `KB-C1-021`
 
 ---
 
@@ -136,26 +89,18 @@ tags: [palabras clave]
 
 | Relación | Conexión |
 |----------|----------|
-| **Nivel B** | Nivel C **ejemplifica** los casos reales de Nivel B |
-| **Nivel A** | Nivel C **verifica y valida** los principios de Nivel A |
-| **ADRs** | Nivel C **operacionaliza** lo decidido en ADRs (validación, vigencia) |
-| **Skills** | Nivel C **guía el diagnostico** en `/audit-cointracking` y `/spanish-tax-return` |
+| **Nivel B** | Documenta mecánicas de exchanges/protocolos; C1 son casos que ilustran fallos sobre esas mecánicas |
+| **Nivel A** | Nivel C verifica y valida los principios de Nivel A (fiscal, CSV oficial) |
+| **ADRs** | Nivel C operacionaliza lo decidido en ADRs (validación, vigencia, convención de IDs) |
+| **Nivel D** | Checklists y árboles de decisión se construyen a partir de los casos C1 |
+| **Skills** | Nivel C guía el diagnóstico en `/audit-cointracking` y `/spanish-tax-return` |
 
 ---
 
 ## Política de Vigencia (ADR-008/ADR-022)
 
-Cada documento declara:
-- `last_verified`: Cuándo se verificó por última vez contra caso real
-- `valid_until`: Fecha caducidad de validez
-- `source`: Dónde verificar si caduca
-
-**Antes de citar un caso en auditoría:**
-1. Comprobar que no esté expirado
-2. Si expira pronto (< 30 días), reverificar contra dato real
-3. Si expira por regulación (fiscal/exchange), buscar web breve
+Cada documento declara `last_verified`, `valid_until` y `source`. Antes de citar un caso en auditoría: comprobar que no esté expirado; si expira pronto, reverificar contra dato real.
 
 ---
 
-**Última actualización:** 2026-07-05  
-**Versión:** 1.0 (semilla inicial de 4 documentos)
+**Última actualización:** 2026-07-05 (corrección: eliminada colisión de IDs con documentos nuevos mal ubicados; hallazgos fusionados en Nivel B correspondiente)

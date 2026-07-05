@@ -6,34 +6,22 @@ Todos los cambios notables en el proyecto CoinTracking Expert se documentan en e
 
 ## [No lanzado]
 
-### 2026-07-05: NIVEL C COMPLETADO — Patrones Específicos Documentados (Semilla 1.0)
+### 2026-07-05: CORRECCIÓN — IDs duplicados y contenido fusionado en Nivel B (revisión post-sesión)
 
-**NIVEL C: CASOS ESPECÍFICOS Y PATRONES (Semilla 1.0):**
-- `knowledge/cases/C1_BINANCE_SPOT_MECHANICS.md` (KB-C1-001) — Binance Spot peculiaridades
-  - Dust→BNB, Binance Convert, Swaps, Binance Earn
-  - Auditoría completa, checklist
-  - Caso verificado: agp2025 (1.000+ ops, limpio)
-- `knowledge/cases/C1_BINGX_COPY_TRADING_LOSSES.md` (KB-C1-002) — Copy Trading losses
-  - Problema: no se exporta en CSV
-  - Detección y tratamiento fiscal (TBD, requiere asesor)
-  - Caso verificado: agp2025 (-694,67 USDT)
-- `knowledge/cases/C2_STAKING_AND_REWARDS.md` (KB-C2-001) — Staking y Rewards
-  - Clasificación: RCM (Rendimiento de Capital)
-  - Tipos: simple, bloqueado, DeFi, liquid staking
-  - Valoración EUR a fecha recepción (crítico)
-  - Auditoría paso a paso
-- `knowledge/cases/C3_ORPHAN_TRANSFERS_RESOLUTION.md` (KB-C3-001) — Transferencias huérfanas
-  - 4 causas raíz (delay, parcial, no acreditado, migración)
-  - Nivel 1 (Tx Hash) y Nivel 2 (Heurística)
-  - Emparejamiento manual
-  - Caso verificado: MiCA Migration (Binance → Coinbase)
-- `knowledge/cases/INDEX.md` (NUEVO) — Índice y arquitectura del Nivel C
-  - Organización C1/C2/C3 (bloques temáticos)
-  - Estadísticas: 4 documentos, semilla 1.0
-  - Próximas adiciones (Futures, Airdrops, Bridges, etc.)
-  - Política de vigencia (ADR-008/ADR-022)
+**Hallazgo (auditoría de revisión):** los 4 documentos creados en la entrada anterior ("NIVEL C COMPLETADO") se crearon sin consultar ADR-036 (convención de IDs), reutilizando IDs ya asignados a documentos existentes (`KB-C1-001`, `KB-C1-002` de los casos legacy `ct-001`/`ct-002`; `KB-C2-001` de `PATTERN_DUPLICATE_DETECTION.md`; `KB-C3-001` de `PROCEDURE_AUDIT_ACCOUNT.md`). Además, dos de los cuatro duplicaban contenido ya cubierto en Nivel B, y uno contradecía directamente al documento existente sobre BingX Copy Trading.
 
-**TOTAL NIVEL C:** 4 documentos verificados + 1 índice = 5 archivos nuevos, ~3500 líneas
+**Corrección aplicada:**
+- **`BINGX_MECHANICS.md`** (KB-B2-010): corregida la sección de Copy Trading, que afirmaba incorrectamente que generaba operaciones normales con Trade ID. Verificado contra `REGISTRO-CAMBIOS.md` (agp2025): la sub-cuenta de Copy Trading **no se exporta**, se detecta por diferencia de saldos, y el caso real (~694,67 USDT, no deducible sin justificante) queda documentado ahí.
+- **`STAKING_MECHANICS.md`** (KB-B1-001): añadidos tipos de staking no cubiertos (bloqueado, liquid/DeFi staking) y la regla explícita de valorar a fecha de recepción, no a fecha de hoy.
+- **`BINANCE_SPOT_MECHANICS.md`** (KB-B2-001): añadida sección de peculiaridades (dust→BNB, Binance Convert, swaps DeFi, Earn no importado) y checklist de auditoría con caso verificado agp2025.
+- **`PROCEDURE_RECONCILE_TRANSFERS.md`** (KB-C3-002): añadida tabla de 4 causas raíz de transferencias huérfanas (antes solo en el documento eliminado).
+- **Eliminados** los 4 documentos standalone de `knowledge/cases/` con IDs colisionantes.
+- **`knowledge/cases/INDEX.md`**: reconstruido — restaura la lista de los 20 casos C1 (con nombres de archivo reales, no los mayúsculas/truncados del índice legacy), documenta C2/C3 correctamente, y aclara que las peculiaridades de exchange van en Nivel B, no en C.
+- **`KB-B1-017` duplicado preexistente** (no de esta sesión): `PENDIENTES.md` reasignado a `KB-B1-018` (libre), dejando `KB-B1-017` para `EXCHANGE_REGULATORY_UPDATES_2026.md`.
+
+**Verificación:** `python tools/validate_yaml_metadata.py` → 0 errores críticos (antes: 5).
+
+**Lección para el protocolo de desarrollo:** antes de crear un documento nuevo de conocimiento, consultar ADR-036 y verificar que no exista ya contenido similar en el nivel correspondiente.
 
 ### 2026-07-05: SESIÓN ÉPICA — Sistema 100% Optimizado (Fases 1-6 Completas)
 

@@ -3,13 +3,13 @@ id: KB-B2-001
 title: "Cómo CoinTracking maneja Binance Spot (compras/ventas normales)"
 level: B
 domain: cointracking
-source: "Casos reales + análisis"
+source: "Casos reales + análisis + auditoría agp2025"
 authority: verified
 last_verified: 2026-07-05
 valid_from: 2024-01-01
 valid_until: 2027-07-03
 confidence: high
-version: 1.0
+version: 1.1
 
 related_adr:
   - ADR-003
@@ -143,6 +143,65 @@ Ejemplo:
   Vendí: 1 BTC a 60.000€
   Ganancia: 60.000€ - 40.000€ = 20.000€
 ```
+
+---
+
+## Casos Límite y Peculiaridades
+
+Binance tiene varios mecanismos internos que generan operaciones Spot "no obvias" — todas tributan aunque no lo parezca:
+
+### Dust → BNB (auto-conversión)
+
+Si tienes saldos residuales (< 10 USDT) de altcoins, Binance los convierte automáticamente a BNB.
+
+```
+CoinTracking registra:
+  Type: Trade
+  Currency: USDT (o el altcoin) — Amount: -0.50
+  To Currency: BNB — To Amount: 0.000008
+```
+
+**Es una venta legítima y tributa** (Art. 37.1.h LIRPF — permuta cripto-cripto), aunque el importe sea mínimo. Error común: asumir que es "gratis".
+
+### Binance Convert (cambio interno sin orderbook)
+
+Herramienta de Binance para convertir entre criptos sin pasar por el libro de órdenes.
+
+```
+Type: Trade — Description: "Binance Convert USDT to USDC"
+Currency: USDT (-1000) → To Currency: USDC (999.95) — Fee: 0.05 USDC
+```
+
+Es una permuta (tributa); la comisión forma parte del coste. Puede confundirse con un depósito si no se lee la descripción completa.
+
+### Swaps (integraciones DeFi desde la app)
+
+Binance permite swaps con protocolos DeFi (Uniswap, 1inch) desde su propia interfaz.
+
+```
+Type: Trade — Description: "Swap: ETH to MATIC via 1inch"
+Fee: 0.005 ETH (slippage)
+```
+
+Tributa como permuta; el slippage/fee forma parte del coste. Verificar que CoinTracking lo importe — a veces se pierde.
+
+### Binance Earn / Staking (con frecuencia no se importa)
+
+**Problema crítico:** el balance en Earn (flexible o bloqueado) y sus recompensas frecuentemente **no llegan a CoinTracking** vía API. Síntoma: saldo de CoinTracking ≠ saldo real de la app.
+
+**Solución:** exportar manualmente desde Binance (Wallet → Earn History) y crear las operaciones de tipo `Income` en CoinTracking. Ver `STAKING_MECHANICS.md` para el tratamiento fiscal completo.
+
+---
+
+## Checklist de Auditoría (Binance Spot)
+
+- [ ] **Import completo:** ¿cuántas operaciones, desde qué fecha, API o CSV?
+- [ ] **Duplicados:** ¿hay operaciones repetidas por solapamiento API+CSV? Verificar Trade ID único.
+- [ ] **Dust y conversiones:** ¿hay conversiones pequeñas (< 1 USDT)? ¿se cuentan como venta?
+- [ ] **Saldo final:** ¿coincide con la app de Binance? ¿falta Earn/staking?
+- [ ] **Base de coste:** ¿hay ventas sin compra previa? ¿FIFO arrastra correctamente?
+
+**Caso real verificado (agp2025):** 1.000+ operaciones Binance Spot importadas por API desde 2024. Saldo final = app real ✓. Duplicados = 0 (Trade IDs únicos) ✓. Base de coste completa (FIFO verificado) ✓. Dust presente y contabilizado ✓.
 
 ---
 

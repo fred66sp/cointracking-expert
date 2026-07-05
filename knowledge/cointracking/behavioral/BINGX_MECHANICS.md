@@ -3,13 +3,13 @@ id: KB-B2-010
 title: "Mecánicas de BingX: Trading Spot y Derivados"
 level: B
 domain: cointracking
-source: "BingX official docs + análisis de casos reales"
+source: "BingX official docs + análisis de casos reales + auditoría agp2025 (2026-07-03)"
 authority: verified
 last_verified: 2026-07-05
 valid_from: 2024-01-01
 valid_until: 2027-07-05
 confidence: high
-version: 1.0
+version: 1.1
 
 related_adr:
   - ADR-003
@@ -145,14 +145,29 @@ Cada 8 horas, BingX cobra/paga funding fee si tienes posiciones abiertas:
 - Aparece como "Fee" o "Income" según signo
 - Incluirlo en cost basis si es fee
 
-### 3. Copy Trading
+### 3. Copy Trading — ⚠️ Sub-cuenta NO exportada (crítico)
 
-Si usas Copy Trading (réplica automática), cada operación del trader copiado genera una operación tuya:
-- Type: Trade
-- Trade ID: Presente (automático)
-- Sin diferencia fiscal respecto a manual
+**Corregido 2026-07-05 tras caso real (agp2025):** la afirmación anterior de este documento ("cada operación del trader copiado genera una operación tuya, con Trade ID") **era incorrecta**. La evidencia real muestra lo contrario:
 
-**Validación:** Verificar que cantidad de trades coincide con historial de BingX, no con el trader copiado.
+- BingX organiza el capital en **sub-cuentas** (Fund, Standard Futures, Perpetual Futures, Copy Trading, …).
+- **CoinTracking (vía API o CSV) NO trae el historial de la sub-cuenta de Copy Trading.** No genera filas de tipo "Trade" ni Trade IDs — simplemente no aparece.
+- El dinero transferido internamente desde Fund hacia Copy Trading es indistinguible, en las exportaciones disponibles, de una transferencia a Futuros normal.
+
+**Cómo se detecta (indirectamente, por diferencia de saldos):**
+```
+Fund Account → transfirió X USDT a sub-cuentas de trading
+Standard Futures + Perpetual Futures (exportados) → solo reciben Y USDT (Y < X)
+Diferencia (X − Y) → atrapada en Copy Trading (no exportado), asumiendo
+                      que no hay retiradas externas sin explicar
+```
+
+Esta diferencia **no es una operación individual**: es un ajuste de reconciliación de saldo agregado, registrado como una única fila `Type: Lost` con el importe neto perdido (no un CSV nativo de BingX).
+
+**Caso real verificado (agp2025, cierre 2026-07-03):** ~694,67 USDT perdidos en la sub-cuenta de Copy Trading a lo largo de 2024. Confirmado por triangulación de saldos (Fund → Futuros exportados no cuadraba) y descartadas retiradas externas (ninguna fila "Withdraw" en ningún sheet de BingX). Es "casi seguro" Copy Trading por descarte, no una confirmación directa de BingX (que no expone esa sub-cuenta).
+
+**Tratamiento fiscal:** Al no existir justificante documental de BingX para esa sub-cuenta, la pérdida se registra como `Lost` **no deducible**, no como pérdida de derivados. Solo se reclasificaría si el usuario obtiene de BingX un export específico de Copy Trading, o su asesor fiscal decide otra cosa. El agente no produce cifras fiscales vinculantes (ADR-006).
+
+**Validación:** Si el saldo reconstruido de las sub-cuentas exportadas (Standard + Perpetual Futures) no cuadra contra lo que el Fund Account transfirió, sospecha de Copy Trading no exportado antes de asumir error de importación.
 
 ### 4. Liquidación de Posición
 
