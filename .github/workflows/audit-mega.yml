@@ -12,11 +12,15 @@ jobs:
     name: Validar documentos (0 errores críticos)
 
     steps:
+      # Versiones de acciones actualizadas 2026-07-05: con checkout@v3 /
+      # upload-artifact@v3 (deprecadas y deshabilitadas por GitHub) el job
+      # moría en "Set up job" sin ejecutar nada — este workflow nunca había
+      # llegado a correr de verdad hasta esta corrección.
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
@@ -31,8 +35,16 @@ jobs:
 
       - name: Verificar errores críticos
         run: |
+          # Guard anti-vacío (añadido 2026-07-05): antes del fix de rutas del
+          # validador, este workflow podía "pasar" sin procesar ningún
+          # documento. Exigir un conteo > 0 hace imposible ese falso verde.
+          processed=$(grep -oP '\[OK\] \K[0-9]+(?= archivos procesados)' audit_output.txt || echo 0)
+          if [ "$processed" -eq 0 ]; then
+            echo "❌ Auditoría MEGA no procesó ningún documento — pase en vacío, se rechaza"
+            exit 1
+          fi
           if grep -q "Errores críticos: 0" audit_output.txt; then
-            echo "✅ Auditoría MEGA pasó: 0 errores críticos"
+            echo "✅ Auditoría MEGA pasó: 0 errores críticos ($processed documentos procesados)"
             exit 0
           else
             echo "❌ Auditoría MEGA falló: hay errores críticos"
@@ -42,14 +54,14 @@ jobs:
 
       - name: Guardar reporte (si falló)
         if: failure()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: audit-report
           path: audit_output.txt
 
       - name: Comentar en PR (si falló)
         if: failure() && github.event_name == 'pull_request'
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
           script: |
             const fs = require('fs');
