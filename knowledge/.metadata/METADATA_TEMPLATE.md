@@ -1,3 +1,23 @@
+---
+id: KB-B1-XXX
+title: "Plantilla de Metadatos YAML para Documentos de Conocimiento"
+level: B
+domain: cointracking
+source: "Internal documentation"
+authority: verified
+last_verified: 2026-07-05
+valid_from: 2024-01-01
+valid_until: 2027-12-31
+confidence: medium
+version: 1.0
+
+tags:
+  - todo
+  - needs-review
+
+notes: "Metadatos agregados automáticamente. Verificar y actualizar conforme ADR-032."
+---
+
 # Plantilla de Metadatos YAML para Documentos de Conocimiento
 
 ## Uso

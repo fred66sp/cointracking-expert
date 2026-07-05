@@ -1,3 +1,23 @@
+---
+id: KB-B1-XXX
+title: "Salida de Binance de la UE por MiCA (2026-07) — impacto en reconciliación"
+level: B
+domain: cointracking
+source: "Internal documentation"
+authority: verified
+last_verified: 2026-07-05
+valid_from: 2024-01-01
+valid_until: 2027-12-31
+confidence: medium
+version: 1.0
+
+tags:
+  - todo
+  - needs-review
+
+notes: "Metadatos agregados automáticamente. Verificar y actualizar conforme ADR-032."
+---
+
 # Salida de Binance de la UE por MiCA (2026-07) — impacto en reconciliación
 
 **Tipo:** Contexto regulatorio (fuentes de prensa/noticias, no oficiales de CoinTracking ni de la AEAT)

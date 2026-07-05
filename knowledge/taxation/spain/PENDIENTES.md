@@ -1,3 +1,23 @@
+---
+id: KB-B1-XXX
+title: "Pendientes de fundamentar / verificar"
+level: B
+domain: cointracking
+source: "Internal documentation"
+authority: verified
+last_verified: 2026-07-05
+valid_from: 2024-01-01
+valid_until: 2027-12-31
+confidence: medium
+version: 1.0
+
+tags:
+  - todo
+  - needs-review
+
+notes: "Metadatos agregados automáticamente. Verificar y actualizar conforme ADR-032."
+---
+
 # Pendientes de fundamentar / verificar
 
 Backlog único de cuestiones abiertas que afectan a la fiabilidad fiscal (ADR-008/009). El agente **no debe afirmar** estos puntos sin cerrarlos contra fuente oficial. Ordenados por impacto.

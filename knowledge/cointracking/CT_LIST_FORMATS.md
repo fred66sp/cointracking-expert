@@ -1,3 +1,23 @@
+---
+id: KB-B1-XXX
+title: "Formatos CT-List — visualización compacta de listas en la conversación"
+level: B
+domain: cointracking
+source: "Internal documentation"
+authority: verified
+last_verified: 2026-07-05
+valid_from: 2024-01-01
+valid_until: 2027-12-31
+confidence: medium
+version: 1.0
+
+tags:
+  - todo
+  - needs-review
+
+notes: "Metadatos agregados automáticamente. Verificar y actualizar conforme ADR-032."
+---
+
 # Formatos CT-List — visualización compacta de listas en la conversación
 
 **Ámbito (importante):** estos formatos son para **la conversación interactiva con el usuario** (chat), cuando hay que mostrarle listas de operaciones, hallazgos, balances o el recorrido de fondos. **No sustituyen** los informes formales de `reports/output/<proyecto>/` (plantilla `templates/AUDIT_REPORT.md`), que siguen necesitando tablas Markdown y el formato evidencia → causa → impacto → recomendación por trazabilidad ante el asesor (ADR-009/ADR-011). Son dos audiencias distintas: el usuario en el chat (necesita lectura rápida) y el asesor en el informe (necesita trazabilidad completa).

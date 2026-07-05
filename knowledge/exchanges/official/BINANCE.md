@@ -1,3 +1,23 @@
+---
+id: KB-B1-XXX
+title: "Binance — particularidades de importación en CoinTracking"
+level: B
+domain: cointracking
+source: "Internal documentation"
+authority: verified
+last_verified: 2026-07-05
+valid_from: 2024-01-01
+valid_until: 2027-12-31
+confidence: medium
+version: 1.0
+
+tags:
+  - todo
+  - needs-review
+
+notes: "Metadatos agregados automáticamente. Verificar y actualizar conforme ADR-032."
+---
+
 # Binance — particularidades de importación en CoinTracking
 
 **Fuente:** centro de ayuda oficial de CoinTracking — [Binance FAQ](https://cointracking.freshdesk.com/en/support/solutions/articles/29000049344-binance-faq) y [Binance Import Restrictions](https://cointracking.freshdesk.com/en/support/solutions/articles/29000039887-binance-import-restrictions).

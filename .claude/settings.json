@@ -19,7 +19,12 @@
       "Bash(git commit -m 'feat\\(knowledge\\): Fase 3.5-3.6 — Crear checklists \\(D1\\) y árboles de decisión \\(D2\\) *)",
       "Bash(git commit -m 'feat\\(scripts\\): Fase 3.7-3.8 — Scripts de validación y alertas de vigencia *)",
       "Bash(python h:\\\\cointracking-expert\\\\scripts\\\\validate_knowledge_metadata.py)",
-      "PowerShell(cd h:\\\\cointracking-expert; python scripts\\\\validate_knowledge_metadata.py > \"$env:TEMP\\\\validation_output.txt\" 2>&1; Get-Content \"$env:TEMP\\\\validation_output.txt\")"
+      "PowerShell(cd h:\\\\cointracking-expert; python scripts\\\\validate_knowledge_metadata.py > \"$env:TEMP\\\\validation_output.txt\" 2>&1; Get-Content \"$env:TEMP\\\\validation_output.txt\")",
+      "Bash(python tools/ct_audit.py \"USER_INPUT/demo/CoinTracking_Trade_Table.csv\" --check all)",
+      "Bash(ls -la \"h:\\\\cointracking-expert\\\\\" | head -30)",
+      "Read(//h//**)",
+      "Bash(python tools/add_yaml_to_docs.py --dry-run)",
+      "Bash(python tools/add_yaml_to_docs.py --apply)"
     ],
     "additionalDirectories": [
       "H:\\cointracking-expert\\cointracking-mcp\\cmd"
