@@ -10,6 +10,8 @@
 
 La propuesta original (v1, 2026-07-02) planteaba esto como una mejora "nice to have" a implementar cuando hubiera un segundo caso. El usuario corrigió el enfoque el 2026-07-03: **no es opcional ni futuro** — todo trabajo del agente sobre CoinTracking (auditar, declarar, lo que sea) debe ocurrir **siempre** dentro de un **proyecto activo**, porque eso es lo que aísla qué CSV y qué datos se usan. Sin esto, el agente puede mezclar sin querer datos de casos distintos.
 
+## Decision
+
 **Decisión (fase 1 — sin tocar el MCP):**
 
 1. **Estructura por proyecto**, dentro del repo (gitignored, salvo los `README.md`):
@@ -28,10 +30,6 @@ La propuesta original (v1, 2026-07-02) planteaba esto como una mejora "nice to h
 El servidor MCP (`cointracking-mcp/`) solo admite el proyecto como **flag de arranque del proceso** (`--project`, ver `cointracking-mcp/SPEC/06-configuration.md`); ninguna tool acepta hoy un parámetro `project_name` en tiempo de ejecución. Cambiar de proyecto en el MCP implicaría reiniciar el servidor (y por tanto Claude Code). El usuario decidió explícitamente **posponer esto**: por ahora el proyecto de datos de usuario (CSV) y el `--project` del MCP **no están enlazados** — el MCP sigue usando el valor fijo de `.mcp.json` (`agp`) con independencia del proyecto de datos activo en la conversación. Si en el futuro se trabaja con un segundo proyecto real, resolver esto (opción más probable: añadir `project_name` como parámetro a las tools existentes del servidor Go) antes de confiar en el MCP para ese segundo proyecto.
 
 **✅ Resuelta 2026-07-03 — ver ADR-016.** El MCP ya expone `cointracking_switch_project` para cambiar de proyecto activo en caliente, sin reiniciar el servidor.
-
-## Decision
-
-[Decision not found]
 
 ## Consequences
 

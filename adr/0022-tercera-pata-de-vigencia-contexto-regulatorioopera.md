@@ -10,13 +10,11 @@ ADR-008 definía la vigencia del conocimiento en dos patas: normativa fiscal esp
 
 MiCA en sí no cambia la fiscalidad española (sigue rigiendo `CAPITAL_GAINS.md`), pero genera eventos operativos reales (migraciones forzosas, posibles conversiones) que si no se revisan pueden dejar huecos de reconciliación sin detectar.
 
+## Decision
+
 **Decisión:**
 
 Añadir una **tercera pata explícita de vigencia** (ADR-008 pasa a tener 3 patas, no 2): antes de preparar una declaración, además de revisar normativa fiscal y formato CoinTracking, **hacer una búsqueda web breve sobre el contexto regulatorio/operativo de los exchanges relevantes del ejercicio** (licencias, cierres, migraciones forzosas, restricciones de producto) y avisar si aparece algo material. Añadido en `.claude/skills/spanish-tax-return/SKILL.md` (nota de vigencia al principio del documento). No se exige si el usuario confirma que no ha habido cambio de exchange en el ejercicio (evita búsquedas innecesarias, ADR-010).
-
-## Decision
-
-[Decision not found]
 
 ## Consequences
 

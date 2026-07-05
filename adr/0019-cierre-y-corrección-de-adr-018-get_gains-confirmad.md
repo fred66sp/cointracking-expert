@@ -8,6 +8,8 @@
 
 ADR-018 dejó la brecha BTC/USDC/OM como hipótesis `[VERIFICAR]` ("asimetría de valoración en permutas"), pendiente de contrastar contra el Tax Report oficial de CoinTracking. El usuario descargó los Tax Reports oficiales (España, FIFO) de **2024 y 2025** en Excel y se hizo el contraste real: las 39 operaciones de BTC (y todas las de OM) resultaron ser del ejercicio **2024**, no 2025 — el primer intento de mirar solo el informe de 2025 no encontraba nada porque era el año equivocado, no porque la cifra fuera cero.
 
+## Decision
+
 **Decisión — la corrección se basa en el contraste real:**
 
 | Activo | Tax Report oficial (2024+2025) | `get_gains(price:"oldest")` | Reconstrucción FIFO manual |
@@ -19,10 +21,6 @@ ADR-018 dejó la brecha BTC/USDC/OM como hipótesis `[VERIFICAR]` ("asimetría d
 El Tax Report oficial coincide casi al céntimo con `get_gains`; la reconstrucción manual estaba mal en los tres activos. **Se corrige la conclusión de ADR-018:** la hipótesis de "asimetría de valoración por lado de permuta" queda **descartada como causa raíz** (coincidía en magnitud por casualidad). La causa más probable real: la reconstrucción manual, operación por operación, no arrastraba bien la base de coste a través de cadenas de permutas cripto-cripto; `get_gains` sí lo hace.
 
 Se actualiza `knowledge/cointracking/COST_BASIS_AND_VALIDATION.md` §4.4 (de "hipótesis abierta" a "resuelto"), el sub-paso de la fase 6 de `audit-cointracking/SKILL.md`, `reports/output/agp2025/REGISTRO-CAMBIOS.md` y la memoria de proyecto (`audit_state`).
-
-## Decision
-
-[Decision not found]
 
 ## Consequences
 

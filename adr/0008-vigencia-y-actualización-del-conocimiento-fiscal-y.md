@@ -13,6 +13,8 @@ El conocimiento del agente tiene **dos patas** y **ambas caducan**:
 
 Un conocimiento fijado en una fecha puede quedar **obsoleto** y hacer que el agente dé cifras o supuestos incorrectos.
 
+## Decision
+
 **Decisión:**
 
 1. **Metadatos de vigencia.** Todo documento de conocimiento sensible al tiempo declara en su cabecera: **Última verificación** (fecha) y **Vigencia** (ejercicios/versión a los que aplica).
@@ -22,10 +24,6 @@ Un conocimiento fijado en una fecha puede quedar **obsoleto** y hacer que el age
    - CoinTracking → centro de ayuda oficial (URLs en `knowledge/cointracking/reference/CATALOG.md`) y **los datos reales del usuario** (el CSV/MCP son la verdad sobre el formato actual).
    Nunca presenta como vigente un dato sin confirmar que aplica.
 4. **Checklist de revisión** en los índices de cada pata (`knowledge/taxation/spain/INDEX.md` y `knowledge/cointracking/INDEX.md`) con lo que cambia y con qué periodicidad.
-
-## Decision
-
-[Decision not found]
 
 ## Consequences
 

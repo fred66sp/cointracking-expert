@@ -12,7 +12,12 @@ La cuenta de referencia usada para validar el formato tiene configurada la zona 
 
 ## Decision
 
-[Decision not found]
+*(Restaurada 2026-07-05 desde `DECISIONS.md` §ADR-005 — la migración automática a MADR, ADR-025, dejó esta sección vacía.)*
+
+- La capa de importación interpreta cada marca temporal como **hora local en la zona IANA declarada** y la convierte a **UTC** para almacenamiento y cálculo interno.
+- La **zona de origen es un parámetro obligatorio de importación** (no se asume silenciosamente). Para la cuenta de referencia el valor es `Europe/Madrid`.
+- Todos los timestamps internos, comparaciones, ordenación de libro mayor y fronteras de año fiscal operan en **UTC**.
+- Se usa una librería con base de datos de zonas horarias (`zoneinfo` de la biblioteca estándar de Python 3.9+) para gestionar el DST automáticamente; **nunca** un offset fijo.
 
 ## Consequences
 

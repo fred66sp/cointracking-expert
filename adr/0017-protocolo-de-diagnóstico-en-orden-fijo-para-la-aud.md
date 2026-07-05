@@ -8,6 +8,8 @@
 
 Petición de Copilot (explotación, ADR-012) en `AGENT_CHANGE_REQUESTS.md` (2026-07-03): el playbook de reconciliación (`Paso 1` de `audit-cointracking/SKILL.md`) listaba los ocho chequeos sin un orden vinculante, lo que abre la puerta a falsos positivos — p. ej. marcar "duplicados" o "huérfanas" cuando la causa real es cobertura incompleta de exchanges, o recomendar un borrado antes de haber verificado el `Trade ID`. La propuesta se apoyó en prospección del centro de ayuda oficial de CoinTracking (`READ FIRST: General account imbalances`, `Duplicate Transactions`, `Missing Transactions Report`, `Validate Transactions`, `Roll Forward / Audit Report`, avisos de "purchase pool agotado", `Binance Import Restrictions`), cuyo contenido relevante ya estaba destilado en `knowledge/cointracking/COST_BASIS_AND_VALIDATION.md` y `CSV_FORMAT.md` — no hizo falta destilar conocimiento nuevo, solo **reordenar y explicitar** el playbook existente.
 
+## Decision
+
 **Decisión:**
 
 Reescribir el Paso 1 de `.claude/skills/audit-cointracking/SKILL.md` con un **orden fijo de 6 fases** (cada una reduce falsos positivos de la siguiente):
@@ -22,10 +24,6 @@ Reescribir el Paso 1 de `.claude/skills/audit-cointracking/SKILL.md` con un **or
 Se añade además una regla explícita, generalizando ADR-014: **nunca recomendar un borrado masivo sin evidencia por fila y confirmación explícita del usuario**, aplicable a cualquier hallazgo (no solo duplicados).
 
 No se ha tocado `spanish-tax-return/SKILL.md` porque ya delega la reconciliación en `audit-cointracking` (Paso 1 de esa skill) sin duplicar el playbook. El subagente `.claude/agents/cointracking-auditor.md` (usado para análisis profundo dentro de la misma skill) se alinea con el mismo orden de 6 fases y con la regla de no borrado sin confirmación, para que no diverja del playbook cuando se delega en él.
-
-## Decision
-
-[Decision not found]
 
 ## Consequences
 

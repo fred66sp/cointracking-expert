@@ -8,6 +8,8 @@
 
 Tras ADR-006 (el producto es un agente de IA en Claude Code, no un SDK de motores deterministas), el repositorio seguía conteniendo el andamiaje de la visión anterior: paquetes Python vacíos, especificaciones de motores, dependencias y CI de Python, y documentos de la visión de framework. Ese material ya no describe lo que se construye y genera ruido.
 
+## Decision
+
 **Decisión:**
 
 Se eliminan los artefactos que solo servían al SDK descartado:
@@ -21,10 +23,6 @@ Se eliminan los artefactos que solo servían al SDK descartado:
 - `COPILOT.md` → sustituido por `CLAUDE.md` (lo carga Claude Code)
 
 Se conservan y adaptan: `.claude/` (agente + skill), `.mcp.json`, `knowledge/`, `DECISIONS.md`, `FOUNDATION.md`, `templates/`, `docs/GLOSSARY.md`, `LICENSE`, `CHANGELOG.md`, y `README.md` (reescrito para el agente).
-
-## Decision
-
-[Decision not found]
 
 ## Consequences
 

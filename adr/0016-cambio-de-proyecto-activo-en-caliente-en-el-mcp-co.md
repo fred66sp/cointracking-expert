@@ -8,6 +8,8 @@
 
 ADR-013 dejó abierta la cuestión de que el MCP (`cointracking-mcp/`) solo admite el proyecto como flag de arranque del proceso (`--project` en `.mcp.json`) y ninguna tool aceptaba `project_name` en tiempo de ejecución — cambiar de proyecto exigía reiniciar el servidor. El usuario propuso primero escribir un `.env` que el agente reescribiera al cambiar de proyecto; al evaluarlo, se identificaron dos problemas: (1) el binario Go no lee ningún fichero hoy, habría que implementar parseo de `.env`, y (2) el servidor MCP se arranca una vez por sesión, así que reescribir un fichero de config no evita el reinicio — solo lo hace más seguro de tocar que `.mcp.json`. Se optó por una alternativa que resuelve el problema de raíz: un tool MCP nuevo.
 
+## Decision
+
 **Decisión:**
 
 Añadir el tool `cointracking_switch_project(project_name)` a `cointracking-mcp/internal/tools/switch_project.go`, hermano de `cointracking_close_project` ya existente:
@@ -18,10 +20,6 @@ Añadir el tool `cointracking_switch_project(project_name)` a `cointracking-mcp/
 4. Credenciales, `--tier` y el limitador de tasa son del proceso (una cuenta de CoinTracking), no del proyecto: no cambian.
 
 `App` (en `app.go`) pasa a guardar `cfg`/`cache`/`store` bajo un `sync.RWMutex`, con accesores (`Project()`, `CacheManager()`, `Store()`, `CacheDir()`) que los demás tools usan en vez de leer los campos directamente — así una llamada a `switch_project` no puede dejar a otra tool leyendo un puntero a medio reemplazar.
-
-## Decision
-
-[Decision not found]
 
 ## Consequences
 

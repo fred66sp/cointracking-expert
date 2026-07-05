@@ -10,6 +10,8 @@ El 2026-07-03, al auditar CoinTracking, se detectaron como "duplicados exactos" 
 
 **Raíz:** ct_audit.py no disponía de trade_id para distinguir operaciones; el CSV de CoinTracking tampoco lo incluye en todas las filas. La lógica de "duplicado = campos 100% idénticos" falló en presencia de transacciones legítimas separadas pero aparentemente idénticas.
 
+## Decision
+
 **Decisión:**
 
 1. **Usar trade_id como identificador único cuando esté disponible (fortaleza):**
@@ -30,10 +32,6 @@ El 2026-07-03, al auditar CoinTracking, se detectaron como "duplicados exactos" 
    - Si el MCP de CoinTracking está conectado, consulta el número de operaciones de ese tipo con trade_ids distintos.
    - Si son más de 1, son legítimas; no eliminar.
    - Si es solo 1, es un duplicado real; OK eliminar.
-
-## Decision
-
-[Decision not found]
 
 ## Consequences
 

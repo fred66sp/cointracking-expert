@@ -10,15 +10,13 @@ Petición de Copilot (explotación, ADR-012) durante la preparación de la renta
 
 Se revisó el código del servidor MCP propio (`cointracking-mcp/internal/tools/historical_summary.go` y `cached.go`): reenvía `start`/`end` sin modificar a la API de CoinTracking, y la clave de caché incluye ambos parámetros — se descarta que sea un bug de nuestro servidor o de la caché. Lo más probable es que sea la propia API de CoinTracking la que añade un punto "actual" adicional a la serie histórica, pero **no se ha podido confirmar contra documentación oficial** (no hay artículo público que documente la semántica exacta de `start`/`end` para este método).
 
+## Decision
+
 **Decisión:**
 
 Documentar el hallazgo como advertencia empírica (no como bug confirmado) en `knowledge/cointracking/MCP_API.md`, con la mitigación práctica: **cualquier consumo que dependa de un corte exacto de fecha (Modelo 721, valoración a 31/12) debe filtrar la serie devuelta por fecha él mismo**, sin confiar en que `end` corte de forma estricta. Se añade la misma advertencia al Paso 5 de `.claude/skills/spanish-tax-return/SKILL.md`.
 
 No se modifica el servidor Go (`cointracking-mcp`) para filtrar server-side: haría falta confirmar primero si el comportamiento es realmente de la API de CoinTracking (no de nuestro código) y si es deseable filtrar ahí o dejarlo explícito para el consumidor — se prefiere la mitigación simple (filtrar en el playbook) antes que tocar código del servidor sobre una causa no confirmada.
-
-## Decision
-
-[Decision not found]
 
 ## Consequences
 

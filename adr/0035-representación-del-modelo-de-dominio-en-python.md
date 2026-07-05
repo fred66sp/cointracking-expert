@@ -8,6 +8,8 @@
 
 El `DOMAIN_MODEL.md` originalmente usaba pseudocódigo Kotlin. Ya fue traducido a pseudocódigo Python. Queda decidir la tecnología concreta con la que se materializará el modelo cuando comience la implementación (Fase 4).
 
+## Decision
+
 **Decisión:**
 
 El modelo de dominio se implementará con **Pydantic v2**, en coherencia con ADR-002:
@@ -18,10 +20,6 @@ El modelo de dominio se implementará con **Pydantic v2**, en coherencia con ADR
 - Cantidades, precios y comisiones tipados como `Decimal`
 - Identificadores como tipos dedicados (p. ej. `TransactionId`) para seguridad de tipos
 - Nomenclatura de atributos en `snake_case` (PEP 8), según ADR-001
-
-## Decision
-
-[Decision not found]
 
 ## Consequences
 

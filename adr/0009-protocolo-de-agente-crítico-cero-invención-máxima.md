@@ -8,6 +8,8 @@
 
 Este agente trata **cifras de inversión en cripto** y produce informes (auditoría y resumen fiscal) que se envían a un **asesor fiscal** para presentar la declaración. Es un **agente crítico**: cualquier error se paga caro ante Hacienda. La corrección prevalece sobre la utilidad, la rapidez o la exhaustividad.
 
+## Decision
+
 **Decisión — reglas de obligado cumplimiento:**
 
 1. **Cero invención, cero improvisación.** Toda afirmación (dato fiscal, comportamiento de CoinTracking, cifra, clasificación) debe apoyarse en una de tres bases: (a) los **datos reales** del usuario, (b) la **base de conocimiento fundamentada** del repo, o (c) una **fuente oficial verificada** en la sesión. Sin respaldo, no se afirma.
@@ -23,10 +25,6 @@ Este agente trata **cifras de inversión en cripto** y produce informes (auditor
    **Alcance:** solo acciones consecuentes. En acciones triviales o de solo lectura **no** se aplica (evitar la fatiga de confirmación, que lleva a aprobar sin leer).
 
 Este protocolo consolida y prevalece sobre el resto de principios (FOUNDATION, ADR-006 determinismo, ADR-008 vigencia) y gobierna todas las skills y el subagente.
-
-## Decision
-
-[Decision not found]
 
 ## Consequences
 

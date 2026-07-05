@@ -6,6 +6,19 @@ Todos los cambios notables en el proyecto CoinTracking Expert se documentan en e
 
 ## [No lanzado]
 
+### 2026-07-05: Saldada la deuda de formato MADR — los 39 ADRs declaran su decisión en sección propia
+
+**Contexto:** la revisión independiente detectó 25 ADRs con `## Decision` vacía (`[Decision not found]`), artefacto de la migración automática de `DECISIONS.md` a archivos MADR individuales (ADR-025). Quedó anotado como deuda; esta entrada la salda por completo.
+
+**Dos grupos, dos tratamientos:**
+
+- **Grupo A (21 ADRs, 0006-0025 y 0035):** la decisión existía pero incrustada en `## Context` bajo un marcador `**Decisión...**`. Script de migración (`scratchpad/fix_adr_decisions.py`, un solo uso) que **mueve** el bloque a `## Decision` con verificación integrada de no-pérdida: el multiconjunto de líneas de cada archivo tras la transformación debe ser idéntico al original menos la línea placeholder — si no, el archivo no se toca. 21/21 procesados sin pérdidas.
+- **Grupo B (4 ADRs, 0001/0004/0005/0034):** el texto de la decisión **no estaba** en el archivo migrado (pérdida real de la migración). Restaurado **literalmente** desde `DECISIONS.md` (el monolito original, aún presente en el repo — cero invención, ADR-009), con nota de procedencia en cada uno. En 0034 la nota aclara además su naturaleza histórica (decisión "ADR-002: Stack Python" del framework descartado, conservada por trazabilidad).
+
+**No tocados a propósito:** ADR-036 a 039 usan cabeceras en español (`## Problema` / `## Decisión`) con contenido sustancial — formato propio válido, no el bug.
+
+**Verificado:** 0 placeholders restantes; los 39 ADRs tienen sección de decisión con contenido real; `audit_mega_complete.py` → 0 errores, 0 warnings; `validate_yaml_metadata.py` → 0 errores críticos.
+
 ### 2026-07-05: Segunda opinión independiente (modelo Fable) — 6 hallazgos verificados y corregidos
 
 Tras la revisión de robustez propia, se lanzó un subagente con otro modelo (Fable), sin ver el análisis previo, para una auditoría genuinamente independiente. Cada hallazgo se verificó con evidencia reproducible antes de aceptarlo o corregirlo — no se corrigió nada solo porque el informe lo señalara.

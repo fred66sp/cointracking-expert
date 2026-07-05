@@ -10,7 +10,18 @@ El proyecto tiene como objetivo servir principalmente a usuarios hispanohablante
 
 ## Decision
 
-[Decision not found]
+*(Restaurada 2026-07-05 desde `DECISIONS.md` §ADR-001 — la migración automática a MADR, ADR-025, dejó esta sección vacía.)*
+
+Se adopta el modelo **híbrido**:
+
+- **En español (contenido para humanos):**
+  - Contenido de toda la documentación (`.md`)
+  - Docstrings
+  - Comentarios de código
+  - Mensajes de error y de log dirigidos al usuario
+- **En inglés (identificadores técnicos):**
+  - Nombres de archivos y carpetas (`README.md`, `src/`, `engines/`)
+  - Nombres de clases, funciones, métodos y variables (PEP 8)
 
 ## Consequences
 

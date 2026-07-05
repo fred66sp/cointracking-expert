@@ -8,6 +8,8 @@
 
 Petición de Copilot (explotación, ADR-012) tras preparar la renta 2025 de `agp2025`: pudo cerrar la clasificación de eventos, rendimientos y derivados sin el Tax Report oficial del ejercicio, pero llegó al final del informe sin ese artefacto y sin una regla explícita que le impidiera marcar el documento como "listo para presentar" pese a faltar la cifra anual exacta de la base del ahorro. El playbook dejaba el cierre "bloqueado" implícitamente (por falta de datos), pero no exigía comprobar la presencia del artefacto antes de declarar el informe cerrado.
 
+## Decision
+
 **Decisión:**
 
 Añadir un gate explícito en `.claude/skills/spanish-tax-return/SKILL.md`:
@@ -16,10 +18,6 @@ Añadir un gate explícito en `.claude/skills/spanish-tax-return/SKILL.md`:
 2. **Paso 6:** recordatorio explícito de que el informe solo se marca "listo para presentar" si ese gate está satisfecho.
 
 No se añade un chequeo de código (`tools/ct_audit.py` no interviene aquí, es un gate de proceso/redacción, no un chequeo mecánico sobre datos).
-
-## Decision
-
-[Decision not found]
 
 ## Consequences
 

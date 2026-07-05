@@ -17,7 +17,23 @@ Al mismo tiempo, hay partes del dominio que **sí** están definidas por fuentes
 
 ## Decision
 
-[Decision not found]
+*(Restaurada 2026-07-05 desde `DECISIONS.md` §ADR-004 — la migración automática a MADR, ADR-025, dejó esta sección vacía.)*
+
+Se adopta el **híbrido pragmático**:
+
+- **Documentación primero** para el dominio estable y de fuente externa:
+  - Reglas de tributación (definidas por normativa; no se "descubren" programando)
+  - Principios, arquitectura y contratos entre motores
+  - Metodología de auditoría
+- **Validación con datos reales antes de cerrar la spec** para el dominio de datos desordenados:
+  - Formato CSV de CoinTracking, importación y normalización
+  - Detección de duplicados, emparejamiento de transferencias, reconstrucción de libro mayor
+  - Peculiaridades por exchange
+  - → Estas specs se redactan en borrador, se contrastan contra **exportaciones reales de CoinTracking** y solo entonces se dan por cerradas.
+- **Especificar cada motor justo antes de implementarlo**, no los nueve por adelantado, para evitar el agotamiento de especificación.
+- **Las specs son documentos vivos**: se refinan si la implementación o los datos reales revelan supuestos incorrectos.
+
+`ARCHITECTURE_REVIEW.md` queda como una revisión asesora (una instantánea de opinión), no como estrategia vinculante.
 
 ## Consequences
 
