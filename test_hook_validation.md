@@ -1,13 +1,13 @@
 ---
 id: TEST-001
 title: "Test de validacion de hooks"
-level: B
+level: INVALID_LEVEL_XYZ
 domain: test
 source: "Test"
 authority: unverified
 last_verified: 2026-07-05
-valid_until: null
-confidence: low
+valid_until: 2026-12-31
+confidence: unknown_confidence
 version: 1.0
 ---
 
