@@ -6,6 +6,32 @@ Todos los cambios notables en el proyecto CoinTracking Expert se documentan en e
 
 ## [No lanzado]
 
+### 2026-07-05: FIX CRÍTICO — El versionado automático de caché (Fase 4) no invalidaba nada
+
+**Hallazgo (revisión de robustez a petición del usuario, "quiero quedarme tranquilo de que el agente es robusto y sin grietas"):** la Fase 4 (versionado automático), documentada como "completada y funcional" desde su implementación, tenía un bug que la hacía completamente inoperante para los datos con TTL "permanente" (`get_trades`, `get_gains` — justo los que más se benefician de caché).
+
+**Bugs encontrados, con test reproducible antes/después:**
+
+1. **`cache_manager.py` — `get_or_fetch_with_version_check` leía el manifest mal:** intentaba `self.manifest.get('entries', {}).get(cache_key)`, pero el manifest nunca tuvo una clave `'entries'` (es un dict plano `{cache_key: {...}}`). Esto significaba que `cached_data` siempre era `None`, y la comparación de versión **nunca se ejecutaba**.
+2. **`cache_ttl_manager.py` — `get_or_fetch_dynamic` nunca llamaba a verificación de versión en el camino de cache HIT:** solo comprobaba TTL. Para `get_trades`/`get_gains` (TTL = 999999 horas, "permanente"), el camino de MISS que sí verificaba versión casi nunca se alcanzaba.
+3. **`version_tracker.py` — crasheaba en Windows con `UnicodeEncodeError`** al imprimir el carácter `→` en `explain_invalidation()` (cp1252 no lo soporta), justo en el momento en que SÍ detectaba un cambio de versión real — mismo tipo de bug ya corregido antes en `cache_metrics.py`/`cache_cli.py`, pero no aplicado aquí.
+4. **Limitación de diseño no documentada:** `VersionTracker` solo extrae `version:` de frontmatter YAML (`---...---`). Los ADRs de `adr/` usan formato MADR plano sin frontmatter, así que `get_current_versions()` devuelve **0 claves `adr_*`** en este repo. Cambiar un ADR nunca invalidó ni invalidará caché con el formato actual — solo cambios en `knowledge/` (que sí tiene frontmatter) lo hacen. La documentación (`docs/CACHE_PHASES_4_5_USAGE.md`) afirmaba repetidamente lo contrario con ejemplos de `adr_0039`/`adr_0037`; corregidos con ejemplos reales de `knowledge/`.
+
+**Verificación:** script de reproducción que simula un cambio de versión de un documento de `knowledge/` con un caché de TTL permanente ya guardado — antes del fix seguía sirviendo el dato viejo indefinidamente; después del fix, invalida y refetcha correctamente, y el caso normal (sin cambios) sigue sirviendo el hit sin regresión. `tools/test_cache_savings.py` y `tools/benchmark_skills.py` siguen reproduciendo las mismas cifras (47-75% ahorro) tras el fix.
+
+**Archivos corregidos:** `tools/cache_manager.py`, `tools/cache_ttl_manager.py`, `tools/version_tracker.py`, `docs/CACHE_PHASES_4_5_USAGE.md`.
+
+**Por qué importa:** sin este fix, si se corregía una regla en `knowledge/` (p. ej. un umbral fiscal o una regla de clasificación), una auditoría con caché de `get_trades`/`get_gains` ya guardado seguiría usando conclusiones calculadas con la regla vieja indefinidamente, sin ningún aviso.
+
+### 2026-07-05: GOBERNANZA — 6 ADRs adicionales pasan de Proposed a Accepted, 1 referencia rota corregida
+
+Revisión completa de estados de ADRs (36 documentos) encontró 3 más en `Proposed` pese a estar en uso activo, y 1 con formato de status no estándar:
+
+- **ADR-026** (Límites de decisión A/B/C): Accepted. Ya aplicado de facto (protocolo de consentimiento en CLAUDE.md, confirmación explícita antes de borrar duplicados).
+- **ADR-027** (Integración de nuevos exchanges, 4 fases): Accepted. Aplicado en la reconstrucción real de BingX (agp2025, 2026-07-03).
+- **ADR-028** (Límite auditor/asesor fiscal): Accepted. Ya respetado por las skills (nunca cifras fiscales vinculantes). Corregida referencia rota: citaba "ADR-030 (futuro)" para fiscalidad por tipo de operación, pero ADR-030 real terminó tratando otro tema (validación de ADRs); esa fiscalidad vive en `knowledge/taxation/spain/`.
+- **ADR-013**: normalizado el status (decía "MCP pospuesto" en el título/status aunque el cuerpo del documento ya confirmaba que ADR-016 lo resolvió el 2026-07-03).
+
 ### 2026-07-05: Nivel C — enlazadas mecánicas de exchange ya existentes (sin crear duplicados)
 
 **Contexto:** el resumen de pendientes de este mismo día mencionaba "huecos" en Nivel C (Bybit/OKX Futures, Kraken staking, airdrops, bridges/wrapped tokens) como próximas adiciones. Antes de crear nada, se verificó el repo: **los 5 ya existían**, creados en una sesión anterior (fase de "Cobertura de Exchanges y Wallets"):

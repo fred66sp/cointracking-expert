@@ -6,20 +6,23 @@
 
 ## Fase 4: Versionado Automático
 
+⚠️ **Limitación real (corregida 2026-07-05 tras revisión de robustez):** el versionado automático solo funciona para documentos de `knowledge/` (que tienen frontmatter YAML con `version:`). Los ADRs de `adr/` usan formato MADR plano (`**Status:** Accepted`, sin YAML) y **no generan ninguna clave de versión rastreable hoy** — cambiar un ADR no invalida ningún caché. Los ejemplos de este documento que mencionaban `adr_0039`/`adr_0037` estaban describiendo un comportamiento que nunca ocurría en la práctica; se corrigen abajo usando ejemplos reales de `knowledge/`.
+
 ### Problema que Resuelve
 
 ```
-Escenario: Usuario ejecuta auditoría, luego ADR-039 cambia versión
+Escenario: Usuario ejecuta auditoría, luego un documento de knowledge/
+(p. ej. CAPITAL_GAINS.md) sube de versión
 
 Sin versionado:
-  - Caché sigue usando datos con ADR-039 v1.0
-  - Conclusiones basadas en reglas v1.0
-  - Posible inconsistencia si v1.1 cambió lógica
+  - Caché sigue usando datos calculados con la regla vieja
+  - Conclusiones basadas en conocimiento desactualizado
+  - Posible inconsistencia si la nueva versión cambió un criterio
 
 Con versionado (Fase 4):
-  - Se detecta: ADR-039 v1.0 → v1.1
-  - Caché se invalida automáticamente
-  - Se refetcha con v1.1 (conclusiones correctas)
+  - Se detecta: kb_capital_gains 2.1 → 2.2
+  - Caché se invalida automáticamente (incluso si el TTL es "permanente")
+  - Se refetcha y recalcula con el conocimiento actualizado
 ```
 
 ### Cómo Usar
@@ -39,9 +42,9 @@ trades = mgr.get_or_fetch_with_version_check(
     max_age_hours=24
 )
 
-# Si ADR-039 cambió versión:
+# Si un documento de knowledge/ cambió versión:
 #   [CACHE INVALIDATED] Cambios detectados:
-#   - adr_0039: 1.0 → 1.1
+#   - kb_capital_gains: 2.1 -> 2.2
 # (automáticamente refetcha)
 ```
 
@@ -50,8 +53,8 @@ trades = mgr.get_or_fetch_with_version_check(
 ```python
 mgr = CacheManager('agp2025')
 
-# Versiones cuando se guardó el caché
-cached_versions = {'adr_0039': '1.0', 'kb_capital_gains': '2.1'}
+# Versiones cuando se guardó el caché (solo knowledge/ es rastreable hoy)
+cached_versions = {'kb_capital_gains': '2.1'}
 
 # Versiones actuales
 current_versions = mgr.current_versions
@@ -68,13 +71,13 @@ if not valid:
 
 ### Qué Versiones Se Rastrean
 
-La clase `VersionTracker` automáticamente extrae `version:` de:
+La clase `VersionTracker` automáticamente extrae `version:` de cualquier archivo `.md` con frontmatter YAML:
 
-1. **ADRs:** `adr/*.md` → `adr_0039`, `adr_0037`, etc.
-2. **Knowledge Base:** `knowledge/**/*.md` → `kb_capital_gains`, `kb_cost_basis`, etc.
-3. **MCP:** `.mcp.json` → `mcp` (si existe)
+1. **Knowledge Base:** `knowledge/**/*.md` → `kb_capital_gains`, `kb_cost_basis`, etc. — **funcional**
+2. **ADRs:** `adr/*.md` — **no funcional hoy**: los ADRs usan formato MADR plano sin frontmatter YAML, así que no producen ninguna clave `adr_*`. Si en el futuro se quiere que cambios de ADR también invaliden caché, hay que añadirles un bloque de frontmatter YAML con `version:`.
+3. **MCP:** `.mcp.json` → `mcp` (si el archivo declara un campo `"version"`)
 
-**Fronmatter YAML requerido:**
+**Frontmatter YAML requerido (formato que ya usa `knowledge/`):**
 ```yaml
 ---
 version: 1.0
@@ -182,14 +185,14 @@ class AuditSkill:
     def reconcile(self):
         """Auditoría con caché inteligente."""
 
-        # Trades: permanente (user_import) + versionado (ADRs)
+        # Trades: permanente (user_import) + versionado (knowledge/)
         trades = self.cache.get_or_fetch_dynamic(
             'get_trades',
             {},
             mcp_call_fn=...
         )
         # Si usuario reimportó → invalida
-        # Si ADR-037 cambió → invalida
+        # Si un documento de knowledge/ subió de versión → invalida
         # Si TTL pasó → usa caché (permanente)
 
         # Balance: 15 min + versionado
@@ -209,7 +212,7 @@ class AuditSkill:
             mcp_call_fn=...
         )
         # Si trades invalidos → invalida también
-        # Si ADR-039 cambió → invalida
+        # Si un documento de knowledge/ subió de versión → invalida
 
         return {
             'trades': trades,
@@ -227,7 +230,7 @@ class AuditSkill:
 ```
 1. Usuario: "Audita mi cuenta"
    → Se cachean datos (trades, gains, balance)
-   → Se guardan versiones (adr_0039: 1.0, kb_capital_gains: 2.1)
+   → Se guardan versiones (kb_capital_gains: 2.1, kb_cost_basis: 1.3, ...)
 
 2. Usuario: "Crea una transferencia manual en CoinTracking"
    → Datos de CoinTracking cambian

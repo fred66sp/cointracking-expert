@@ -1,8 +1,9 @@
 # ADR-028: Límite auditor/asesor fiscal — dónde termina la auditoría y empieza la asesoría
 
-**Status:** Proposed
+**Status:** Accepted
 
 **Date:** 2026-07-04
+**Accepted:** 2026-07-05 — la línea auditor/asesor ya se respeta en la práctica: las skills nunca emiten cifras fiscales vinculantes (ver límite de determinismo, ADR-006), y `spanish-tax-return` cierra siempre con recomendación de validación profesional.
 
 ## Context
 
@@ -187,7 +188,7 @@ La distinción fiscal (qué tramo aplica, qué sección del IRPF) la resuelve tu
 - **ADR-006:** Límite de determinismo — el agente no es determinista en decisiones fiscales
 - **ADR-009:** Protocolo crítico — "cero invención" aplica especialmente a interpretaciones fiscales
 - **ADR-026:** Límites de decisión A/B/C — la asesoría fiscal es Categoría C (delegada obligatoriamente a humano)
-- **ADR-030 (futuro):** Fiscalidad de cada tipo de operación — documenta lo que se sabe, marca lo incierto
+- **Nota de corrección (2026-07-05):** esta sección citaba "ADR-030 (futuro)" para la fiscalidad de cada tipo de operación. ADR-030 terminó tratando otro tema (validación de ADRs críticos). Esa fiscalidad por tipo de operación vive en `knowledge/taxation/spain/CAPITAL_GAINS.md` y `CAPITAL_INCOME.md` — los ADRs referencian, no repiten (regla de ADR-030 §Nivel 2 punto 7).
 
 ### Implementación en skills
 

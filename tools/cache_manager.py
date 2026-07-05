@@ -146,9 +146,19 @@ class CacheManager:
         Returns:
             (data, age_hours) o (None, 999) si no existe
         """
+        data, age_hours, _versions = self._load_cache_full(cache_key)
+        return data, age_hours
+
+    def _load_cache_full(self, cache_key: str) -> tuple[Optional[Any], float, Optional[Dict[str, str]]]:
+        """
+        Carga datos de caché incluyendo las versiones de ADR/KB con las que se guardó.
+
+        Returns:
+            (data, age_hours, versions) o (None, 999, None) si no existe
+        """
         cache_file = self._cache_file(cache_key)
         if not cache_file.exists():
-            return None, 999
+            return None, 999, None
 
         try:
             cached = json.loads(cache_file.read_text())
@@ -156,9 +166,9 @@ class CacheManager:
             age_seconds = time.time() - timestamp
             age_hours = age_seconds / 3600
 
-            return cached.get('data'), age_hours
+            return cached.get('data'), age_hours, cached.get('versions')
         except:
-            return None, 999
+            return None, 999, None
 
     def _save_cache(self, cache_key: str, call_name: str, params: Dict, data: Any) -> None:
         """Guarda datos en caché."""
@@ -252,21 +262,17 @@ class CacheManager:
         """
         cache_key = self._cache_key(call_name, params)
 
-        # Primero: Verificar versiones
-        cached_data = self.manifest.get('entries', {}).get(cache_key)
-        if cached_data and not force_refresh:
-            cached_versions = cached_data.get('versions')
-            if cached_versions:
-                if not self.is_cache_valid_by_version(cached_versions):
-                    # Versiones cambiaron → invalidar y refetch
-                    force_refresh = True
-
-        # Luego: Intentar cargar de caché (con TTL normal)
+        # Cargar el archivo de caché (si existe) junto con las versiones con las que se guardó
         if not force_refresh:
-            cached_result, age_hours = self._load_cache(cache_key)
+            cached_result, age_hours, cached_versions = self._load_cache_full(cache_key)
             if cached_result is not None and age_hours < max_age_hours:
-                print(f"[CACHE HIT] {call_name} ({age_hours:.1f}h old, versions OK)")
-                return cached_result
+                # Verificar versiones ANTES de servir el hit: un TTL "permanente"
+                # no debe blindar datos calculados con conocimiento ya desactualizado.
+                if cached_versions and not self.is_cache_valid_by_version(cached_versions):
+                    force_refresh = True
+                else:
+                    print(f"[CACHE HIT] {call_name} ({age_hours:.1f}h old, versions OK)")
+                    return cached_result
 
         # Caché no disponible/viejo/inválido → fetch y guardar con versiones
         print(f"[CACHE MISS] {call_name} - MCP call")

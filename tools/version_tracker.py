@@ -1,20 +1,31 @@
 #!/usr/bin/env python3
 """
-Rastreador de versiones de ADRs y Knowledge Base.
+Rastreador de versiones de Knowledge Base (y, si existiera, ADRs con frontmatter).
+
+⚠️ LIMITACIÓN REAL (descubierta 2026-07-05, revisión de robustez):
+  Este tracker solo detecta un campo `version: X.X` dentro de un bloque de
+  frontmatter YAML (delimitado por `---`). Los documentos de `knowledge/`
+  SÍ tienen ese frontmatter y por tanto SÍ son rastreables. Los ADRs de
+  `adr/` usan formato MADR plano (`**Status:** Accepted`, sin YAML), así
+  que get_current_versions() devuelve 0 claves `adr_*` en este repo tal
+  como está hoy. En la práctica: cambiar un ADR NO invalida ningún caché
+  automáticamente; cambiar un documento de `knowledge/` (subiendo su
+  `version:`) sí lo hace. No asumir lo contrario sin añadir frontmatter
+  YAML a los ADRs primero.
 
 Implementa detección automática de cambios en:
-  - ADRs (Architecture Decision Records)
-  - Knowledge Base (YAML frontmatter)
-  - MCP (versión del servidor)
+  - Knowledge Base (YAML frontmatter) — funcional
+  - ADRs (Architecture Decision Records) — no funcional con el formato MADR actual
+  - MCP (versión del servidor, desde .mcp.json si declara "version")
 
 Uso:
   tracker = VersionTracker()
   current = tracker.get_current_versions()
-  # → {'adr_039': '1.0', 'kb_capital_gains': '2.1', ...}
+  # -> {'kb_capital_gains': '2.1', ...}  (no incluye adr_* con el formato actual)
 
   # Verificar si caché es válida
   valid = tracker.is_cache_valid(cached_versions, current)
-  # → True/False
+  # -> True/False
 """
 
 import json
@@ -155,7 +166,7 @@ class VersionTracker:
 
         if diff['changed']:
             for key, change in diff['changed'].items():
-                reasons.append(f"  - {key}: {change['was']} → {change['now']}")
+                reasons.append(f"  - {key}: {change['was']} -> {change['now']}")
 
         if diff['new']:
             for key in diff['new'].keys():

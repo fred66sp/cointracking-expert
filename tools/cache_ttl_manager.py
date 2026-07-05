@@ -133,14 +133,23 @@ class CacheTTLManager(CacheManager):
 
         # Verificar si está en caché (antes de llamar)
         if not force_refresh:
-            cached_data, age_hours = self._load_cache(cache_key)
+            cached_data, age_hours, cached_versions = self._load_cache_full(cache_key)
             if cached_data is not None and age_hours < ttl_hours:
-                # CACHE HIT - registrar en métricas
-                if track_metrics:
-                    tokens_saved = self._estimate_tokens_for_call(call_name)
-                    self.metrics.record_cache_hit(call_name, tokens_saved=tokens_saved, age_hours=age_hours)
+                # Un TTL "permanente" (get_trades, get_gains) nunca expira por tiempo,
+                # así que la única forma de detectar conocimiento desactualizado es
+                # comparar versiones aquí, antes de servir el hit — no solo en el
+                # camino de miss (bug corregido 2026-07-05: antes esto nunca se
+                # comprobaba en un hit, y un TTL permanente blindaba datos calculados
+                # con ADRs/KB ya obsoletos indefinidamente).
+                if cached_versions and not self.is_cache_valid_by_version(cached_versions):
+                    pass  # cae al bloque de MISS de abajo
+                else:
+                    # CACHE HIT - registrar en métricas
+                    if track_metrics:
+                        tokens_saved = self._estimate_tokens_for_call(call_name)
+                        self.metrics.record_cache_hit(call_name, tokens_saved=tokens_saved, age_hours=age_hours)
 
-                return cached_data
+                    return cached_data
 
         # CACHE MISS - será una llamada MCP
         result = self.get_or_fetch_with_version_check(
