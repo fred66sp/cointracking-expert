@@ -119,6 +119,28 @@ func (a *App) Store() *cache.Store {
 	return a.store
 }
 
+// ErrProjectActive is returned by WithProjectLockedIfNotActive when name is
+// the currently active project.
+var ErrProjectActive = fmt.Errorf("project is currently active")
+
+// WithProjectLockedIfNotActive runs fn while holding the same lock
+// SwitchProject uses, after checking name isn't the active project — closing
+// the TOCTOU window a bare "check app.Project(), then act" would have (found
+// 2026-07-05, independent robustness review): without this, a concurrent
+// SwitchProject(name) landing between the check and, say, a delete could
+// activate name right before its on-disk cache gets removed out from under
+// the just-opened SQLite handle. Held for the duration of fn, so fn should
+// be reasonably quick (e.g. removeAllWithRetry's backoff tops out in the
+// hundreds of ms) — it blocks other project-switching tools meanwhile.
+func (a *App) WithProjectLockedIfNotActive(name string, fn func() error) error {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	if name == a.cfg.Project {
+		return ErrProjectActive
+	}
+	return fn()
+}
+
 // SwitchProjectResult reports what SwitchProject did, for the MCP tool's
 // response.
 type SwitchProjectResult struct {

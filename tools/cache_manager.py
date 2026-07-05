@@ -10,19 +10,26 @@ FILOSOFÍA:
   - Procesar localmente (Python), no en contexto LLM
   - Pasar al LLM solo hallazgos resumidos, nunca JSON crudo
 
-EJEMPLO DE USO EN SKILL:
+ATENCIÓN: usa CacheTTLManager, no llames a get_or_fetch() directamente (hallazgo
+2026-07-05, ver CHANGELOG): get_or_fetch() guarda las entradas SIN
+versiones de knowledge/, así que is_cache_valid_by_version() las salta en
+silencio y, con un TTL manual largo, sirven datos calculados con
+conocimiento ya desactualizado indefinidamente. get_or_fetch_dynamic()
+(en tools/cache_ttl_manager.py) sí guarda versiones y aplica TTL correcto
+por tipo — es la única vía que ambas skills usan en producción.
 
-    from tools.cache_manager import CacheManager
+EJEMPLO DE USO EN SKILL (recomendado):
+
+    from tools.cache_ttl_manager import CacheTTLManager
 
     # Inicializar para proyecto activo
-    mgr = CacheManager('agp2025')
+    mgr = CacheTTLManager('agp2025')
 
-    # Get trades (primera vez = MCP call, después = caché)
-    trades = mgr.get_or_fetch(
+    # Get trades (primera vez = MCP call, después = caché con versionado)
+    trades = mgr.get_or_fetch_dynamic(
         'get_trades',
         {'limit': None, 'start': unix_ts, 'end': unix_ts},
         mcp_call_fn=lambda call, params: mcp.cointracking_get_trades(**params),
-        max_age_hours=24
     )
 
     # Procesar localmente (no en contexto LLM)
@@ -130,8 +137,8 @@ class CacheManager:
                 print(f"[CACHE HIT] {call_name} ({age_hours:.1f}h old)")
                 return cached_data
 
-        # Caché no disponible o demasiado viejo → fetch
-        print(f"[CACHE MISS] {call_name} → MCP call")
+        # Caché no disponible o demasiado viejo -> fetch
+        print(f"[CACHE MISS] {call_name} -> MCP call")
         data = mcp_call_fn(call_name, params)
 
         # Guardar en caché
@@ -268,13 +275,18 @@ class CacheManager:
             if cached_result is not None and age_hours < max_age_hours:
                 # Verificar versiones ANTES de servir el hit: un TTL "permanente"
                 # no debe blindar datos calculados con conocimiento ya desactualizado.
-                if cached_versions and not self.is_cache_valid_by_version(cached_versions):
+                # Entrada sin 'versions' (guardada por el get_or_fetch básico) con
+                # TTL largo (>=24h) se trata como sospechosa, no como válida por
+                # omisión — mismo fix "fail-closed" que get_or_fetch_dynamic, ver
+                # CHANGELOG 2026-07-05 (revisión independiente).
+                versions_missing_but_suspicious = not cached_versions and max_age_hours >= 24
+                if versions_missing_but_suspicious or (cached_versions and not self.is_cache_valid_by_version(cached_versions)):
                     force_refresh = True
                 else:
                     print(f"[CACHE HIT] {call_name} ({age_hours:.1f}h old, versions OK)")
                     return cached_result
 
-        # Caché no disponible/viejo/inválido → fetch y guardar con versiones
+        # Caché no disponible/viejo/inválido -> fetch y guardar con versiones
         print(f"[CACHE MISS] {call_name} - MCP call")
         data = mcp_call_fn(call_name, params)
         self._save_cache_with_versions(cache_key, call_name, params, data)

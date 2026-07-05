@@ -141,7 +141,17 @@ class CacheTTLManager(CacheManager):
                 # camino de miss (bug corregido 2026-07-05: antes esto nunca se
                 # comprobaba en un hit, y un TTL permanente blindaba datos calculados
                 # con ADRs/KB ya obsoletos indefinidamente).
-                if cached_versions and not self.is_cache_valid_by_version(cached_versions):
+                #
+                # Segundo bug relacionado (encontrado en revisión independiente,
+                # 2026-07-05): si la entrada se guardó sin 'versions' (p. ej. por
+                # el método básico get_or_fetch, que no las incluye), la condición
+                # "if cached_versions and ..." era falsy y se servía el hit SIN
+                # verificar nada — falla abierto (inseguro) en vez de cerrado. Para
+                # TTLs largos (>= 24h, incluido "permanente"), la ausencia de
+                # versiones ahora se trata como sospechosa y fuerza refresh, no
+                # como "válido por omisión".
+                versions_missing_but_suspicious = not cached_versions and ttl_hours >= 24
+                if versions_missing_but_suspicious or (cached_versions and not self.is_cache_valid_by_version(cached_versions)):
                     pass  # cae al bloque de MISS de abajo
                 else:
                     # CACHE HIT - registrar en métricas

@@ -6,6 +6,27 @@ Todos los cambios notables en el proyecto CoinTracking Expert se documentan en e
 
 ## [No lanzado]
 
+### 2026-07-05: Segunda opinión independiente (modelo Fable) — 6 hallazgos verificados y corregidos
+
+Tras la revisión de robustez propia, se lanzó un subagente con otro modelo (Fable), sin ver el análisis previo, para una auditoría genuinamente independiente. Cada hallazgo se verificó con evidencia reproducible antes de aceptarlo o corregirlo — no se corrigió nada solo porque el informe lo señalara.
+
+**Crítico — confirmado y corregido:**
+- **El fix de versionado del commit anterior tenía un agujero:** `get_or_fetch()` (el método básico) guarda entradas SIN campo `versions`. El chequeo `if cached_versions and not is_cache_valid_by_version(...)` es falsy cuando `cached_versions` es `None`, así que esas entradas se servían **sin verificar nunca**, indefinidamente, con TTL permanente — el problema que el commit anterior creía haber cerrado seguía abierto para cualquier entrada guardada por esa vía. Reproducido con test manual (guardar con `get_or_fetch`, cambiar versión de conocimiento, leer con `get_or_fetch_dynamic` → servía el dato viejo sin llamada MCP). **Corregido con "fail-closed":** en `cache_manager.py` (`get_or_fetch_with_version_check`) y `cache_ttl_manager.py` (`get_or_fetch_dynamic`), una entrada sin versiones con TTL largo (≥24h) ahora se trata como sospechosa y fuerza refresh, en vez de servirse por omisión. Verificado sin regresión en el caso normal (entrada con versiones sigue sirviendo el hit).
+- Efecto colateral encontrado al reproducir lo anterior: **`cache_manager.py` crashea en Windows con `UnicodeEncodeError`** en el primer cache miss (`print` con `→` sin reconfigurar stdout a UTF-8, mismo tipo de bug ya corregido en otros archivos de caché pero no aquí). Corregido.
+
+**Medio — confirmado y corregido:**
+- **`adr/INDEX.md`** (documento distinto de `adr/README.md`, no revisado en la ronda anterior) llevaba desactualizado desde la creación de ADR-033: decía "33 ADRs", listaba ADR-023 como pendiente (ya existe y está Accepted desde hace días), y tenía una sección "Pendientes (Fase 3+)" que asignaba temas de conciliación a los números 034-040 — todos ya ocupados por decisiones reales no relacionadas (034/035 son históricos del framework Python descartado con títulos internos "ADR-002"/"ADR-003"; 036-039 son gobernanza/caché). Corregido: conteo actualizado a 39, añadidas las entradas 026-039 en la clasificación por nivel, y tabla que mapea cada tema "pendiente" a dónde se resolvió realmente (todos en documentos de Nivel C — patrones y procedimientos —, no como ADRs nuevos).
+- **TOCTOU en `cointracking_delete_project`** (Go): el check "¿es el proyecto activo?" y el borrado del directorio eran dos pasos separados sin lock compartido — un `switch_project` concurrente podía activar ese proyecto justo en medio, borrando su SQLite en uso. Corregido con `App.WithProjectLockedIfNotActive(name, fn)`, que ejecuta el check y el borrado bajo el mismo mutex que usa `SwitchProject`. Nuevo test de concurrencia real (`TestWithProjectLockedIfNotActiveClosesTheDeleteRaceWindow`) que demuestra que un `SwitchProject` concurrente se bloquea mientras la operación está en curso, en vez de colarse en la ventana.
+- **25 de 39 ADRs con la sección `## Decision` vacía** (`[Decision not found]`, artefacto de la migración automática de `DECISIONS.md` a MADR, ADR-025). Verificado que **no es pérdida de contenido**: la decisión real está embebida en `## Context` en cada caso revisado (ej. ADR-009), solo mal ubicada estructuralmente. Queda como deuda de formato documentada, no corregida en esta sesión por su volumen — candidata a una sesión dedicada.
+
+**Menor, aclaración de diseño (no bug):**
+- Un "proyecto" en el sistema multi-proyecto no aísla cuentas de CoinTracking distintas, solo carpetas de caché/datos de la misma cuenta (ADR-016 ya lo dice explícitamente: "credenciales, tier y rate limiter son del proceso, no del proyecto"). Esa aclaración no se repite en todos los lugares que hablan de "cambiar de proyecto" (comentario de `app.go`, `CLAUDE.md`), lo que podría inducir a un malentendido si alguien intentara usarlo para dos cuentas distintas. No corregido en esta sesión (es documentación, no código; el diseño en sí es correcto para su caso de uso previsto).
+- `go test ./... -race` no se pudo ejecutar en esta máquina (requiere CGO, no disponible) — limitación del entorno, no del código; recomendable correrlo en CI si existe.
+
+**Lo que Fable confirmó como sólido, sin cambios:** MCP en Go (build/vet/tests limpios, LRU/HMAC/nonce bien implementados), `ct_audit.py` (ambos fixtures de oro exactos), rutas de las skills (todas resuelven), y la base de conocimiento (sin IDs duplicados reales, sin contradicciones fiscales — los tramos del ahorro y el umbral 721 viven en un solo documento cada uno).
+
+**Verificado:** `go build`, `go vet`, `go test ./...` (26 tests, incluido el nuevo) + `ct_audit.py` contra ambos fixtures de oro + `validate_yaml_metadata.py`.
+
 ### 2026-07-05: Revisión de robustez — servidor MCP (Go) y `ct_audit.py`
 
 **Servidor MCP en Go:** 24 tests existentes pasan limpio (`go build`, `go vet`, `go test ./...`); código de calidad alta en general (LRU thread-safe con mutex, persistencia SQLite con `SetMaxOpenConns(1)` y upsert correcto, HMAC-SHA512 + nonce monotónico bien implementados, validación de nombre de proyecto contra path traversal). Un hallazgo real:

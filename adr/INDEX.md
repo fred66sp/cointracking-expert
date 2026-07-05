@@ -4,7 +4,7 @@
 
 **Característica:** Registro de decisiones arquitectónicas (MADR format).
 
-**Total:** 33 ADRs (001-033, ADR-033 en Fase 1, otros pending)
+**Total:** 39 ADRs (001-039, todos Accepted salvo notas puntuales — ver `adr/README.md` para el índice secuencial completo, este documento los agrupa por nivel de conocimiento). Corregido 2026-07-05: este índice llevaba desactualizado desde la creación de ADR-033, con conteo, temas y sección "Pendientes" incorrectos.
 
 ---
 
@@ -136,7 +136,8 @@
 - **ADR-022:** Vigencia del conocimiento (ADR-008, operacionalizado)
   - Fiscal, CoinTracking, regulatorio: fechas vigencia verificables
 
-- **ADR-023:** [PENDIENTE — slots para futuras ADRs]
+- **ADR-023:** El MCP es dueño del ciclo de vida de sus archivos de caché
+  - Tool `cointracking_delete_project` — borra la caché de un proyecto sin colisionar con el proceso del servidor
 
 - **ADR-024:** Formato CT-Task para operaciones manuales
   - Bloque-resumen obligatorio tras guía de correcciones
@@ -176,6 +177,16 @@
   - Estructura de directorios + INDEX_MASTER
   - Metadatos YAML operacionalizan ADR-032
 
+- **ADR-034/035:** históricos del framework Python/SDK descartado (ADR-006/007) — títulos internos "ADR-002"/"ADR-003" preservados tal cual quedaron, no confundir con los ADR-002/003 vigentes (Fuente de verdad / Modelo de transacciones). Se conservan por trazabilidad, no son decisiones activas.
+
+- **ADR-036:** Convención de IDs de documentos de conocimiento (`KB-[NIVEL][SUBSECCIÓN]-[NÚMERO]`)
+
+- **ADR-037:** Validación obligatoria en desarrollo — pre-commit hook ejecuta `tools/audit_mega_complete.py`
+
+- **ADR-038:** Criterio de auditoría en lotes (no iterativa) — 3 pasadas limpias consecutivas antes de declarar "sistema limpio"
+
+- **ADR-039:** Optimización de tokens y caché — arquitectura de 3 capas (persistente, agregados, procesamiento local), TTL dinámico y versionado automático por knowledge/
+
 ---
 
 ## Relacionados Cruzados
@@ -190,18 +201,20 @@ Ejemplo: **Nivel C1** (Casos) → referencia **ADR-014** (validación duplicados
 
 ---
 
-## Pendientes (Fase 3+)
+## Corrección 2026-07-05: los "pendientes" de Fase 3+ ya se resolvieron (por otra vía)
 
-Slots reservados para futuras ADRs (especialmente **Capa 2: Conciliación**):
+Esta sección listaba temas de "Capa 2: Conciliación" reservados para ADR-034 a 040. Esos números ya se usaron para decisiones no relacionadas (034/035 son históricos del framework descartado; 036-039 son gobernanza de desarrollo y caché — ver arriba). Los temas en sí **no quedaron sin resolver**: se cubrieron como documentos de Nivel C (patrones/procedimientos), no como ADRs nuevos:
 
-- ADR-034: Flujo de conciliación (pipeline invariante)
-- ADR-035: Modelo de balances (qué es "correcto")
-- ADR-036: Missing Purchase History (operativo)
-- ADR-037: Transfers (emparejar withdrawal/deposit)
-- ADR-038: Duplicados (matriz de clasificación)
-- ADR-039: Holdings (validación CT vs. exchange)
-- ADR-040: Cost Basis / FIFO (cuándo confiar en CT)
-- [más...]
+| Tema pendiente listado | Resuelto en |
+|---|---|
+| Transfers (emparejar withdrawal/deposit) | `knowledge/patterns/PATTERN_TRANSFER_MATCHING.md` (KB-C2-003) |
+| Duplicados (matriz de clasificación) | `knowledge/patterns/PATTERN_DUPLICATE_DETECTION.md` (KB-C2-001) |
+| Missing Purchase History (operativo) | `knowledge/patterns/PATTERN_PURCHASE_POOL_EXHAUSTION.md` (KB-C2-004) |
+| Modelo de balances (qué es "correcto") | `knowledge/patterns/PATTERN_BALANCE_RECONCILIATION.md` (KB-C2-002) |
+| Flujo de conciliación (pipeline invariante) | `knowledge/procedures/PROCEDURE_AUDIT_ACCOUNT.md` (KB-C3-001) |
+| Cost Basis / FIFO (cuándo confiar en CT) | `knowledge/cointracking/official/COST_BASIS_AND_VALIDATION.md` (Nivel A2) |
+
+Si en el futuro se necesita un ADR nuevo, usar el siguiente número libre (040+), nunca reutilizar uno ya asignado.
 
 ---
 
@@ -216,9 +229,8 @@ Slots reservados para futuras ADRs (especialmente **Capa 2: Conciliación**):
 
 ## Status
 
-- 33 ADRs creados y formalizados
-- Capas 1, 5, 6 robustas
-- Capa 2 (Conciliación): ADRs 034-040 pendientes (BLOQUEANTE)
-- Capas 3, 4 (Integración, Fiscalidad): parciales
+- 39 ADRs creados y formalizados (todos Accepted salvo notas puntuales — ver `adr/README.md`)
+- Gobernanza de desarrollo (036-038), optimización de caché (039) y Nivel C (patrones/procedimientos) cubren lo que esta sección marcaba como pendiente/bloqueante
+- Pendiente real, sin resolver: la discrepancia de declaraciones ya presentadas del proyecto `agp2025` (ver memoria de proyecto, no es un tema de ADR)
 
-Ver `docs/ADR_GAP_ANALYSIS_2026-07-05.md` para análisis de brechas.
+Ver `docs/ADR_GAP_ANALYSIS_2026-07-05.md` para el análisis de brechas original (puede estar igualmente desactualizado; verificar antes de citarlo).

@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+	"time"
 
 	"github.com/alfredogp/cointracking-mcp/internal/api"
 	"github.com/alfredogp/cointracking-mcp/internal/cache"
@@ -310,5 +311,92 @@ func TestSwitchProjectRollsBackOnOpenFailure(t *testing.T) {
 	}
 	if apiCalls != 2 {
 		t.Fatalf("expected no additional API call on reopen (data should have persisted to disk), got %d", apiCalls)
+	}
+}
+
+// TestWithProjectLockedIfNotActiveClosesTheDeleteRaceWindow covers the TOCTOU
+// found 2026-07-05 (independent robustness review, see CHANGELOG): checking
+// "is name the active project?" and then deleting its cache directory as two
+// separate steps leaves a window where a concurrent SwitchProject(name) can
+// land in between and activate it right before its SQLite file gets removed.
+// WithProjectLockedIfNotActive closes that window by running the check and
+// the delete under the same lock SwitchProject uses. This proves it: it
+// starts a switch that blocks mid-flight (via a directory sabotaged to make
+// openProjectCache hang... no — Go doesn't hang on os.MkdirAll, so instead
+// this drives the point home more directly by holding the lock via
+// WithProjectLockedIfNotActive itself and confirming a concurrent
+// SwitchProject to the same name blocks until the callback returns, then
+// correctly reports AlreadyActive against whichever project ends up active,
+// never racing an in-flight delete.
+func TestWithProjectLockedIfNotActiveClosesTheDeleteRaceWindow(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{"success":1,"balance":{"BTC":"1.5"}}`))
+	}))
+	defer srv.Close()
+	restore := api.SetAPIURLForTesting(srv.URL)
+	defer restore()
+
+	cacheDir := t.TempDir()
+	cfg := &config.Config{
+		APIKey: "k", APISecret: "s", Tier: "pro", Project: "agp",
+		CacheSize: 100, CacheDir: cacheDir, LogLevel: "error", LogFormat: "text", Timezone: "UTC",
+	}
+	log := logging.New(&bytes.Buffer{}, logging.ParseLevel(cfg.LogLevel), false, nil)
+
+	app, err := NewApp(cfg, log)
+	if err != nil {
+		t.Fatalf("NewApp: %v", err)
+	}
+	defer app.Close()
+
+	// Create cliente_b's cache dir up front (not the active project) so a
+	// delete targeting it is legal.
+	if _, err := app.SwitchProject("cliente_b"); err != nil {
+		t.Fatalf("SwitchProject (cliente_b): %v", err)
+	}
+	if _, err := app.SwitchProject("agp"); err != nil {
+		t.Fatalf("SwitchProject (back to agp): %v", err)
+	}
+
+	callbackStarted := make(chan struct{})
+	callbackMayReturn := make(chan struct{})
+	callbackDone := make(chan error, 1)
+
+	go func() {
+		callbackDone <- app.WithProjectLockedIfNotActive("cliente_b", func() error {
+			close(callbackStarted)
+			<-callbackMayReturn // hold the lock until the test says so
+			return nil
+		})
+	}()
+
+	<-callbackStarted // the delete-equivalent callback is now holding app.mu
+
+	// A concurrent switch to the same project must block until the callback
+	// (holding the lock) returns — proving the check-then-act window is
+	// closed, not just narrowed.
+	switchDone := make(chan error, 1)
+	go func() {
+		_, err := app.SwitchProject("cliente_b")
+		switchDone <- err
+	}()
+
+	select {
+	case <-switchDone:
+		t.Fatal("SwitchProject completed while WithProjectLockedIfNotActive's callback was still running — the lock isn't shared, the race window is still open")
+	case <-time.After(50 * time.Millisecond):
+		// Expected: SwitchProject is blocked on app.mu.
+	}
+
+	close(callbackMayReturn)
+	if err := <-callbackDone; err != nil {
+		t.Fatalf("WithProjectLockedIfNotActive callback: %v", err)
+	}
+	if err := <-switchDone; err != nil {
+		t.Fatalf("SwitchProject (after callback released the lock): %v", err)
+	}
+	if app.Project() != "cliente_b" {
+		t.Fatalf("expected cliente_b active after the switch finally ran, got %s", app.Project())
 	}
 }

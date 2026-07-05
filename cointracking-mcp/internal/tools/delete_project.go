@@ -42,18 +42,24 @@ func deleteProjectHandler(app *App) func(context.Context, *mcp.CallToolRequest, 
 		if err := config.ValidateProjectName(in.ProjectName); err != nil {
 			return errResult(err)
 		}
-		if in.ProjectName == app.Project() {
-			return errResult(validationError(
-				"%q es el proyecto activo; cambia a otro con cointracking_switch_project antes de borrarlo",
-				in.ProjectName))
-		}
-
 		projectDir := filepath.Join(app.CacheDir(), in.ProjectName)
 		if _, err := os.Stat(projectDir); os.IsNotExist(err) {
 			return errResult(validationError("no existe caché para el proyecto %q en %s", in.ProjectName, projectDir))
 		}
 
-		if err := removeAllWithRetry(projectDir); err != nil {
+		// The active-project check and the delete happen under the same lock
+		// SwitchProject uses (WithProjectLockedIfNotActive), so a concurrent
+		// switch to in.ProjectName can't land in between and get its cache
+		// pulled out from under it (TOCTOU fixed 2026-07-05).
+		err := app.WithProjectLockedIfNotActive(in.ProjectName, func() error {
+			return removeAllWithRetry(projectDir)
+		})
+		if err == ErrProjectActive {
+			return errResult(validationError(
+				"%q es el proyecto activo; cambia a otro con cointracking_switch_project antes de borrarlo",
+				in.ProjectName))
+		}
+		if err != nil {
 			return errResult(fmt.Errorf("borrando caché de %q: %w", in.ProjectName, err))
 		}
 
