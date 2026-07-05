@@ -284,7 +284,7 @@ notes: "Status: patrón observado 3+ veces, pendiente ADR"
 
 ```yaml
 ---
-id: KB-A1-001
+id: KB-A-NNN
 title: "Tramos de la base del ahorro (IRPF 2026)"
 level: A
 domain: taxation
@@ -319,7 +319,7 @@ notes: "Cambio anual. Requiere reverificación cada enero."
 
 ```yaml
 ---
-id: KB-B1-002
+id: KB-B-NNN
 title: "FIFO: Cómo evoluciona el purchase pool en CoinTracking"
 level: B
 domain: cointracking
@@ -359,7 +359,7 @@ notes: "CoinTracking puede cambiar; reverificar si output varía."
 
 ```yaml
 ---
-id: KB-C1-002
+id: KB-C-NNN
 title: "CT-002: FLOKI — 29 transacciones idénticas no son duplicadas"
 level: C
 domain: cointracking
@@ -396,7 +396,7 @@ notes: "Caso de referencia para ADR-014. Trade IDs validados."
 
 ```yaml
 ---
-id: KB-D1-001
+id: KB-D-NNN
 title: "Checklist: Detección de duplicados"
 level: D
 domain: cointracking

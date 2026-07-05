@@ -339,7 +339,7 @@ refactor(knowledge): migrar casos y crear índices (Fase 2)
 ```
 knowledge/cases/CT-002-floki-batching.md
 ---
-id: KB-C1-002
+id: KB-C-NNN
 title: "CT-002: FLOKI — 29 transacciones idénticas no son duplicadas"
 level: C
 ...
