@@ -34,3 +34,5 @@ Para cada exchange, la documentación cubre:
 ## Contexto regulatorio relevante
 
 - [`reference/context/BINANCE_EU_MICA_EXIT.md`](../reference/context/BINANCE_EU_MICA_EXIT.md) — salida de Binance de la UE por MiCA (2026-07): qué buscar en la reconciliación cuando el usuario migra de exchange por este motivo (transferencias vs. posibles conversiones forzosas imponibles).
+
+- [`reference/context/EXCHANGE_REGULATORY_UPDATES_2026.md`](../reference/context/EXCHANGE_REGULATORY_UPDATES_2026.md) — cambios regulatorios y operativos de 2026 (Binance MiCA, USDT→USDC Q1 2025, Coinbase expansión EU, BingX derivados): impacto en auditoría de CoinTracking y checklist para próximas auditorías.
