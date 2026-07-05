@@ -1,3 +1,23 @@
+---
+id: KB-F1-004
+title: "Índice Maestro de la Base de Conocimiento"
+level: F
+domain: cointracking
+source: "Documentación interna"
+authority: reference
+last_verified: 2026-07-05
+valid_from: 2024-01-01
+valid_until: 2027-12-31
+confidence: medium
+version: 1.0
+
+tags:
+  - navigation
+  - reference
+
+notes: "Documento de navegación/referencia de la base de conocimiento"
+---
+
 # Sistema de Conocimiento — Mapa Maestro
 
 **Documento:** Descripción general de la arquitectura jerárquica de conocimiento del agente  

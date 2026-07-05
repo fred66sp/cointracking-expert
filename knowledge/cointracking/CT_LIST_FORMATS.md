@@ -1,4 +1,22 @@
 ---
+id: KB-B1-020
+title: "Formatos CT-List para Listas en Conversación (ADR-025)"
+level: B
+domain: cointracking
+source: "Documentación interna"
+authority: reference
+last_verified: 2026-07-05
+valid_from: 2024-01-01
+valid_until: 2027-12-31
+confidence: medium
+version: 1.0
+
+tags:
+  - navigation
+  - reference
+
+notes: "Documento de navegación/referencia de la base de conocimiento"
+---
 
 ## CT-Timeline — revisar un historial o seguir el orden cronológico
 

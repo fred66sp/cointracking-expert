@@ -18,7 +18,7 @@ related_adr:
 
 related_docs:
   - INFORMATIVE_OBLIGATIONS.md
-  - CAPITAL_INCOME.md
+  - knowledge/taxation/spain/CAPITAL_INCOME.md
 
 tags:
   - taxation
@@ -57,7 +57,7 @@ Según la AEAT, generan **ganancia o pérdida patrimonial** (que se imputa en el
 
 > 🔑 **Implicación para la clasificación de eventos:** solo las **transmisiones** (venta, permuta, pago) son eventos fiscales de ganancia/pérdida. Las transferencias internas ya emparejadas en la auditoría (`tools/ct_audit.py`, `knowledge/cointracking/CSV_FORMAT.md` §7) **no** son hechos imponibles — deben excluirse del cálculo de ganancias, aunque sí trasladan el valor de adquisición (coste) entre cuentas.
 
-> ⚠️ Otras rentas (staking, lending, intereses, airdrops, minería) **no** son ganancias patrimoniales por transmisión, sino que se califican como rendimientos u otras rentas. Su tratamiento está en **[CAPITAL_INCOME.md](CAPITAL_INCOME.md)**. Regla clave (CAPITAL_INCOME §7): el valor por el que tributan al percibirse pasa a ser su **coste de adquisición** aquí.
+> ⚠️ Otras rentas (staking, lending, intereses, airdrops, minería) **no** son ganancias patrimoniales por transmisión, sino que se califican como rendimientos u otras rentas. Su tratamiento está en **[CAPITAL_INCOME.md](knowledge/taxation/spain/CAPITAL_INCOME.md)**. Regla clave (CAPITAL_INCOME §7): el valor por el que tributan al percibirse pasa a ser su **coste de adquisición** aquí.
 
 ---
 
@@ -177,4 +177,4 @@ Las pérdidas patrimoniales de la base del ahorro se compensan, por este orden (
 5. Sumar ganancias/pérdidas del ejercicio e integrarlas en la **base del ahorro** con los **tramos del año correspondiente**.
 6. Producir detalle trazable por operación (evidencia) en el informe de la skill, no la declaración.
 
-**Cuestiones abiertas:** ámbito del FIFO (global vs por cuenta) §4 — comprobar entretanto la opción "Depot/Lot separation" de CoinTracking; fuente de precios históricos EUR §5; reglas exactas de compensación de pérdidas §7. El tratamiento de staking/lending/airdrops/minería ya está fundamentado en **[CAPITAL_INCOME.md](CAPITAL_INCOME.md)** (con sus propios `[VERIFICAR]`).
+**Cuestiones abiertas:** ámbito del FIFO (global vs por cuenta) §4 — comprobar entretanto la opción "Depot/Lot separation" de CoinTracking; fuente de precios históricos EUR §5; reglas exactas de compensación de pérdidas §7. El tratamiento de staking/lending/airdrops/minería ya está fundamentado en **[CAPITAL_INCOME.md](knowledge/taxation/spain/CAPITAL_INCOME.md)** (con sus propios `[VERIFICAR]`).

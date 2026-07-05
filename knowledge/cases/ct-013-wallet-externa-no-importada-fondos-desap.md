@@ -1,4 +1,24 @@
 ---
+id: KB-C1-013
+title: "Caso: Wallet Externa No Importada — Fondos Desaparecen"
+level: C
+domain: cointracking
+source: "Documentación interna"
+authority: reference
+last_verified: 2026-07-05
+valid_from: 2024-01-01
+valid_until: 2027-12-31
+confidence: medium
+version: 1.0
+
+tags:
+  - navigation
+  - reference
+
+notes: "Documento de navegación/referencia de la base de conocimiento"
+---
+
+---
 id: "KB-C1-013"
 title: "Caso CT-013: Wallet externa no importada (fondos "desaparecidos")"
 level: "C"

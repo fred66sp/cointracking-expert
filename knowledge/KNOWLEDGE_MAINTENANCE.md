@@ -1,4 +1,22 @@
 ---
+id: KB-F1-005
+title: "Mantenimiento de la Base de Conocimiento"
+level: F
+domain: cointracking
+source: "Documentación interna"
+authority: reference
+last_verified: 2026-07-05
+valid_from: 2024-01-01
+valid_until: 2027-12-31
+confidence: medium
+version: 1.0
+
+tags:
+  - navigation
+  - reference
+
+notes: "Documento de navegación/referencia de la base de conocimiento"
+---
 
 ## 🎯 Propósito
 
@@ -205,7 +223,7 @@ Crea un archivo nuevo: `knowledge/.metadata/DEPRECATIONS.md`
 
 - **EXCHANGE_FEES_CALCULATION.md** (KB-B2-010)
   - Razón: Fusionado con FEE_HANDLING.md
-  - Reemplazado por: [FEE_HANDLING.md](../cointracking/behavioral/FEE_HANDLING.md)
+  - Reemplazado por: [FEE_HANDLING.md](cointracking/behavioral/FEE_HANDLING.md)
   - Acción: Buscar referencias y actualizar
 ```
 
@@ -217,7 +235,7 @@ grep -r "EXCHANGE_FEES_CALCULATION" knowledge/
 
 # Actualiza los enlaces
 # Antes: [EXCHANGE_FEES_CALCULATION.md](...)
-# Después: [FEE_HANDLING.md](...)
+# Después: [FEE_HANDLING.md](cointracking/behavioral/FEE_HANDLING.md)
 ```
 
 ### Paso 3: Mover o Eliminar

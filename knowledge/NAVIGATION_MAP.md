@@ -1,4 +1,22 @@
 ---
+id: KB-F1-002
+title: "Mapa de Navegación por Función"
+level: F
+domain: cointracking
+source: "Documentación interna"
+authority: reference
+last_verified: 2026-07-05
+valid_from: 2024-01-01
+valid_until: 2027-12-31
+confidence: medium
+version: 1.0
+
+tags:
+  - navigation
+  - reference
+
+notes: "Documento de navegación/referencia de la base de conocimiento"
+---
 
 ## 🔍 Por Tipo de Necesidad
 
