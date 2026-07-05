@@ -127,8 +127,18 @@ class VersionTracker:
 
             current_version = current_versions.get(key)
             if current_version != cached_version:
-                # Versión cambió → caché inválida
+                # Versión cambió -> caché inválida
                 return False
+
+        # Un documento de knowledge/ AÑADIDO después de cachear también invalida
+        # (fix 2026-07-05, hallazgo M2 de la revisión independiente: antes solo
+        # se comparaban las claves ya guardadas, así que un doc fiscal nuevo que
+        # cambiara el tratamiento de algo nunca refrescaba un caché "permanente").
+        # Fail-closed: el coste es un re-fetch puntual; el riesgo evitado es
+        # servir conclusiones calculadas sin el conocimiento nuevo.
+        new_keys = set(current_versions) - set(cached_versions) - set(exclude_keys)
+        if new_keys:
+            return False
 
         return True
 

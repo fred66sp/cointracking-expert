@@ -6,6 +6,10 @@ Todos los cambios notables en el proyecto CoinTracking Expert se documentan en e
 
 ## [No lanzado]
 
+### 2026-07-05: Cerrado M2 — un documento de knowledge/ nuevo ahora invalida la caché
+
+Último hallazgo abierto de la revisión independiente: `VersionTracker.is_cache_valid()` solo comparaba las claves ya guardadas en la entrada de caché, así que un documento de `knowledge/` **añadido después** de cachear (p. ej. un doc fiscal nuevo que cambia el tratamiento de algo) nunca invalidaba un caché "permanente". Reproducido (`is_cache_valid({'kb_a':'1.0'}, {'kb_a':'1.0','kb_nuevo':'1.0'})` devolvía `True`) y corregido con criterio fail-closed: claves nuevas en `current_versions` (fuera de `exclude_keys`) invalidan. Verificado en 5 casos límite (doc nuevo, sin cambios, cambio de versión, doc eliminado, exclude respetado) + suite de benchmarks sin regresión (47%/75% intactos). Con esto, **los 7 hallazgos de la segunda opinión quedan cerrados o documentados** — ninguno abierto.
+
 ### 2026-07-05: Saldada la deuda de formato MADR — los 39 ADRs declaran su decisión en sección propia
 
 **Contexto:** la revisión independiente detectó 25 ADRs con `## Decision` vacía (`[Decision not found]`), artefacto de la migración automática de `DECISIONS.md` a archivos MADR individuales (ADR-025). Quedó anotado como deuda; esta entrada la salda por completo.
