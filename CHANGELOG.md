@@ -6,6 +6,20 @@ Todos los cambios notables en el proyecto CoinTracking Expert se documentan en e
 
 ## [No lanzado]
 
+### 2026-07-05: Referencias rotas — bug en el propio validador + 8 links reales corregidos
+
+**Hallazgo:** `tools/audit_mega_complete.py` (el validador que ejecuta el pre-commit hook) reportaba ~100 warnings "BROKEN LINK" en documentos de navegación (`NAVIGATION_MAP.md`, `INDEX_MASTER.md`, `CHEAT_SHEET.md`, `KNOWLEDGE_MAINTENANCE.md`, etc.). Al investigar, la causa raíz **no eran los documentos — era un bug en el propio validador**: resolvía todos los links markdown relativos contra la raíz del repo en vez de contra el directorio del archivo que contiene el link (semántica estándar de links relativos en Markdown, que el validador no respetaba).
+
+**Fix del validador:** `tools/audit_mega_complete.py` — la resolución de `[texto](path)` ahora usa `Path(frel).parent / path`, no `Path('h:/cointracking-expert') / path`. También ignora anchors (`#seccion`) al resolver.
+
+**Resultado:** de ~100 warnings, ~92 eran falsos positivos del bug. Los ~8 reales corregidos:
+- `.claude/skills/spanish-tax-return/SKILL.md`, `.claude/agents/cointracking-auditor.md`: rutas a `CSV_FORMAT.md`/`COST_BASIS_AND_VALIDATION.md` (faltaba `/official/`) y `BINANCE_EU_MICA_EXIT.md` (movido a `knowledge/reference/context/`)
+- `knowledge/NAVIGATION_MAP.md`, `CHEAT_SHEET.md`, `QUICK_START.md`: nombres de archivo truncados/incorrectos de casos (`ct-002`, `ct-020`), un `../` de más en rutas a `taxation/spain/`, y `FLOW_COMPLETE_AUDIT.md` → nombre real `FLOW_AUDIT.md`
+- `knowledge/KNOWLEDGE_MAINTENANCE.md`: `GOVERNANCE_WORKFLOW.md`/`DEPLOYMENT_GUIDE.md` están en la raíz del repo, no en `knowledge/` — faltaba `../`
+- `knowledge/taxation/spain/CAPITAL_GAINS.md`: auto-referenciaba `CAPITAL_INCOME.md` con la ruta completa desde `knowledge/` en vez de relativa a su propio directorio
+
+**Verificado:** `python tools/audit_mega_complete.py` → **0 errores críticos, 0 warnings** (primera vez en la sesión que da limpio de verdad, no solo "0 críticos con warnings ignorados").
+
 ### 2026-07-05: FIX CRÍTICO — El versionado automático de caché (Fase 4) no invalidaba nada
 
 **Hallazgo (revisión de robustez a petición del usuario, "quiero quedarme tranquilo de que el agente es robusto y sin grietas"):** la Fase 4 (versionado automático), documentada como "completada y funcional" desde su implementación, tenía un bug que la hacía completamente inoperante para los datos con TTL "permanente" (`get_trades`, `get_gains` — justo los que más se benefician de caché).

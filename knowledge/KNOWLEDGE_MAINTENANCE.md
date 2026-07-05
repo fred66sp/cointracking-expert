@@ -514,5 +514,5 @@ Cuando hayas terminado un documento o lote:
 
 ## 🚪 Siguiente
 
-- [GOVERNANCE_WORKFLOW.md](GOVERNANCE_WORKFLOW.md) — Cómo registrar decisiones importantes (ADRs)
-- [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) — Cómo compilar y arrancar el servidor MCP
+- [GOVERNANCE_WORKFLOW.md](../GOVERNANCE_WORKFLOW.md) — Cómo registrar decisiones importantes (ADRs)
+- [DEPLOYMENT_GUIDE.md](../DEPLOYMENT_GUIDE.md) — Cómo compilar y arrancar el servidor MCP

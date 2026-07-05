@@ -145,8 +145,15 @@ class MegaAudit:
             for text, path in doc_links:
                 if path.startswith('http') or path.startswith('#'):
                     continue  # URLs externas y anchors son OK
-                # Verificar que el archivo existe
-                full_path = Path('h:/cointracking-expert') / path
+                path_no_anchor = path.split('#', 1)[0]
+                if not path_no_anchor:
+                    continue  # link tipo "#seccion" en el mismo archivo
+                # Los links relativos en Markdown se resuelven contra el
+                # directorio del archivo que contiene el link, no contra la
+                # raíz del repo (bug encontrado 2026-07-05: generaba ~100
+                # falsos positivos "BROKEN LINK" en docs de navegación).
+                doc_dir = Path('h:/cointracking-expert') / Path(frel).parent
+                full_path = (doc_dir / path_no_anchor).resolve()
                 if not full_path.exists():
                     self.warnings[frel].append(f"BROKEN LINK: {path}")
 

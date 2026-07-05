@@ -25,9 +25,9 @@ notes: "Documento de navegación/referencia de la base de conocimiento"
 | Necesito | Documento | Tiempo |
 |----------|-----------|--------|
 | Entender los pasos | [PROCEDURE_AUDIT_ACCOUNT.md](procedures/PROCEDURE_AUDIT_ACCOUNT.md) | 20 min |
-| Diagrama de flujo | [FLOW_COMPLETE_AUDIT.md](decision-trees/FLOW_COMPLETE_AUDIT.md) | 5 min |
+| Diagrama de flujo | [FLOW_COMPLETE_AUDIT.md](decision-trees/FLOW_AUDIT.md) | 5 min |
 | Checklists (paso a paso) | [CHECKLIST_AUDIT_COMPLETE.md](checklists/CHECKLIST_AUDIT_COMPLETE.md) | 10 min |
-| Ver un caso real | [CT-001](cases/ct-001-transferencia-entre-exchanges-importada-.md) a [CT-020](cases/ct-020-advertencia-tecnica-no-es-error-fiscal.md) | 30 min |
+| Ver un caso real | [CT-001](cases/ct-001-transferencia-entre-exchanges-importada-.md) a [CT-020](cases/ct-020-advertencia-tecnica-interpretada-como-er.md) | 30 min |
 
 ---
 
@@ -47,7 +47,7 @@ notes: "Documento de navegación/referencia de la base de conocimiento"
 |----------|-----------------|
 | **Saldo negativo** | [FLOW_NEGATIVE_BALANCE.md](decision-trees/FLOW_NEGATIVE_BALANCE.md) |
 | **Duplicados** | [CHECKLIST_DUPLICATES.md](checklists/CHECKLIST_DUPLICATES.md) + [DUPLICATE_DETECTION_HEURISTICS.md](cointracking/behavioral/DUPLICATE_DETECTION_HEURISTICS.md) |
-| **Falta cost basis** | [CT-002](cases/ct-002-venta-sin-historial-de-compra-previo.md) + [MISSING_PURCHASE_HISTORY_CAUSES.md](cointracking/behavioral/MISSING_PURCHASE_HISTORY_CAUSES.md) |
+| **Falta cost basis** | [CT-002](cases/ct-002-venta-sin-historial-de-compra-previo-mis.md) + [MISSING_PURCHASE_HISTORY_CAUSES.md](cointracking/behavioral/MISSING_PURCHASE_HISTORY_CAUSES.md) |
 | **Balance no cuadra** | [BALANCE_CALCULATION_ALGORITHM.md](cointracking/behavioral/BALANCE_CALCULATION_ALGORITHM.md) |
 | **API y CSV overlap** | [API_VS_CSV_OVERLAP.md](cointracking/behavioral/API_VS_CSV_OVERLAP.md) |
 | **Transferencia perdida** | [PROCEDURE_RECONCILE_TRANSFERS.md](procedures/PROCEDURE_RECONCILE_TRANSFERS.md) |
@@ -58,8 +58,8 @@ notes: "Documento de navegación/referencia de la base de conocimiento"
 
 | Necesito | Documento | Orden |
 |----------|-----------|-------|
-| 1. Entender el flujo fiscal | [CAPITAL_GAINS.md](../taxation/spain/CAPITAL_GAINS.md) | Primero |
-| 2. Saber qué es el Modelo 721 | [INFORMATIVE_OBLIGATIONS.md](../taxation/spain/INFORMATIVE_OBLIGATIONS.md) | Segundo |
+| 1. Entender el flujo fiscal | [CAPITAL_GAINS.md](taxation/spain/CAPITAL_GAINS.md) | Primero |
+| 2. Saber qué es el Modelo 721 | [INFORMATIVE_OBLIGATIONS.md](taxation/spain/INFORMATIVE_OBLIGATIONS.md) | Segundo |
 | 3. Validar mi cost basis | [PURCHASE_POOL_MECHANICS.md](cointracking/behavioral/PURCHASE_POOL_MECHANICS.md) | Tercero |
 | 4. Resolver incoherencias | [PROCEDURE_FIX_MISSING_PURCHASE_HISTORY.md](procedures/PROCEDURE_FIX_MISSING_PURCHASE_HISTORY.md) | Cuarto |
 | 5. Preparar el informe | `/spanish-tax-return` (skill) | Quinto |
@@ -101,7 +101,7 @@ notes: "Documento de navegación/referencia de la base de conocimiento"
 
 **Niveles de Detalle:**
 
-- **Nivel A (Oficial):** [cointracking/official/](cointracking/official/) + [../taxation/spain/](../taxation/spain/)
+- **Nivel A (Oficial):** [cointracking/official/](cointracking/official/) + [../taxation/spain/](taxation/spain/)
 - **Nivel B (Operativo):** [cointracking/behavioral/](cointracking/behavioral/) + [exchanges/behavioral/](exchanges/behavioral/) + [blockchains/](blockchains/)
 - **Nivel C (Verificado):** [cases/](cases/) + [patterns/](patterns/) + [procedures/](procedures/)
 - **Nivel D (Auxiliar):** [checklists/](checklists/) + [decision-trees/](decision-trees/)
@@ -118,8 +118,8 @@ notes: "Documento de navegación/referencia de la base de conocimiento"
 3. [CSV_FORMAT.md](cointracking/official/CSV_FORMAT.md) (10 min)
 4. [PURCHASE_POOL_MECHANICS.md](cointracking/behavioral/PURCHASE_POOL_MECHANICS.md) (15 min)
 5. [PROCEDURE_AUDIT_ACCOUNT.md](procedures/PROCEDURE_AUDIT_ACCOUNT.md) (20 min)
-6. [CAPITAL_GAINS.md](../taxation/spain/CAPITAL_GAINS.md) (15 min)
-7. Un caso real ([CT-001](cases/ct-001-transferencia-entre-exchanges-importada-.md) a [CT-020](cases/ct-020-advertencia-tecnica-no-es-error-fiscal.md)) (15 min)
+6. [CAPITAL_GAINS.md](taxation/spain/CAPITAL_GAINS.md) (15 min)
+7. Un caso real ([CT-001](cases/ct-001-transferencia-entre-exchanges-importada-.md) a [CT-020](cases/ct-020-advertencia-tecnica-interpretada-como-er.md)) (15 min)
 
 ---
 

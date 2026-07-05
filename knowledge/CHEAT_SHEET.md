@@ -276,7 +276,7 @@ Fiscal: +25k en Ingresos del Capital (Modelo 721)
 | Necesito | Voy a |
 |----------|-------|
 | Entender un tipo de operación | [Tabla anterior en este doc] |
-| Ver un caso real | [CT-001](cases/ct-001-transferencia-entre-exchanges-importada-.md) a [CT-020](cases/ct-020-advertencia-tecnica-no-es-error-fiscal.md) |
+| Ver un caso real | [CT-001](cases/ct-001-transferencia-entre-exchanges-importada-.md) a [CT-020](cases/ct-020-advertencia-tecnica-interpretada-como-er.md) |
 | Saber qué hacer | [TROUBLESHOOTING_INDEX.md](TROUBLESHOOTING_INDEX.md) |
 | Navegar el sistema | [NAVIGATION_MAP.md](NAVIGATION_MAP.md) |
 | Definición de términos | [GLOSSARY.md](reference/GLOSSARY.md) |

@@ -78,7 +78,7 @@ Busca el síntoma (ej: "saldo negativo", "duplicados", "missing cost basis") y s
 |----------|----------|-----------|
 | "Tengo duplicados" | Nivel D | [CHECKLIST_DUPLICATES.md](checklists/CHECKLIST_DUPLICATES.md) |
 | "Mi balance es negativo" | Nivel D | [FLOW_NEGATIVE_BALANCE.md](decision-trees/FLOW_NEGATIVE_BALANCE.md) |
-| "Falta el origen de una compra" | Nivel C | [CT-002](cases/ct-002-venta-sin-historial-de-compra-previo.md) |
+| "Falta el origen de una compra" | Nivel C | [CT-002](cases/ct-002-venta-sin-historial-de-compra-previo-mis.md) |
 | "API y CSV importados juntos" | Nivel B | [API_VS_CSV_OVERLAP.md](cointracking/behavioral/API_VS_CSV_OVERLAP.md) |
 | "¿Cómo funciona el FIFO?" | Nivel B | [PURCHASE_POOL_MECHANICS.md](cointracking/behavioral/PURCHASE_POOL_MECHANICS.md) |
 | "¿Qué es una ganancia patrimonial?" | Nivel E | [GLOSSARY.md](reference/GLOSSARY.md) |
@@ -99,7 +99,7 @@ Léelos en este orden si es tu primera auditoría:
 3. **[PROCEDURE_AUDIT_ACCOUNT.md](procedures/PROCEDURE_AUDIT_ACCOUNT.md)** (20 min)  
    → Pasos de auditoría paso a paso
 
-4. **[CAPITAL_GAINS.md](../taxation/spain/CAPITAL_GAINS.md)** (10 min)  
+4. **[CAPITAL_GAINS.md](taxation/spain/CAPITAL_GAINS.md)** (10 min)  
    → Cómo se declara fiscalmente
 
 ---

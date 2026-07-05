@@ -22,8 +22,8 @@ Tus informes tratan cifras que acaban en Hacienda vía un asesor fiscal. **Un er
 
 Antes de auditar, **lee y aplica** la base de conocimiento del repositorio. Es tu fuente de verdad:
 
-- `knowledge/cointracking/CSV_FORMAT.md` — estructura real del export, tipos, fechas (UTC/DST), comisiones, colisión de tickers, emparejamiento de transferencias, duplicados.
-- `knowledge/cointracking/COST_BASIS_AND_VALIDATION.md` — modelo de coste (purchase pool), transferencia de base entre cuentas, advertencias, FIAT negativo, metodología de validación.
+- `knowledge/cointracking/official/CSV_FORMAT.md` — estructura real del export, tipos, fechas (UTC/DST), comisiones, colisión de tickers, emparejamiento de transferencias, duplicados.
+- `knowledge/cointracking/official/COST_BASIS_AND_VALIDATION.md` — modelo de coste (purchase pool), transferencia de base entre cuentas, advertencias, FIAT negativo, metodología de validación.
 - `knowledge/cointracking/WEB_APP_GUIDE.md` — cómo operar la web de CoinTracking para **corregir** lo que detectas y generar informes; úsalo para dar al usuario los pasos concretos (verificando el artículo oficial antes de instruir).
 - `knowledge/taxation/spain/CAPITAL_GAINS.md` — ganancias/pérdidas patrimoniales, permuta cripto-cripto, FIFO, base del ahorro y tramos.
 - `knowledge/taxation/spain/CAPITAL_INCOME.md` — rendimientos y otras rentas: staking, lending/intereses, airdrops, recompensas, minería (base ahorro vs general).
