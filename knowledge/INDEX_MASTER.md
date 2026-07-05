@@ -180,7 +180,7 @@ Este documento es un **índice navegable** de todos los niveles de conocimiento 
 
 **Ubicación:** `knowledge/cointracking/behavioral/`
 
-**Estado actual (9/10 documentos) ✅ 90%**
+**Estado actual (12/12 documentos) ✅ 100%**
 - ✅ `cointracking/behavioral/BINANCE_SPOT_MECHANICS.md` (KB-B2-001) — Compras/ventas normales, API, importación
 - ✅ `cointracking/behavioral/BINANCE_MARGIN_MECHANICS.md` (KB-B2-002) — Trading apalancado, borrow, repay, riesgos fiscales
 - ✅ `cointracking/behavioral/BINANCE_FUTURES_MECHANICS.md` (KB-B2-003) — Perpetuos, PnL, funding fees, ⚠️ fiscalidad crítica
@@ -189,11 +189,14 @@ Este documento es un **índice navegable** de todos los niveles de conocimiento 
 - ✅ `cointracking/behavioral/KRAKEN_STAKING_MECHANICS.md` (KB-B2-006) — On-chain staking, rewards, kETH
 - ✅ `cointracking/behavioral/COINBASE_ADVANCED_TRADE.md` (KB-B2-007) — Advanced Trade, staking, stETH, stUSDC
 - ✅ `cointracking/behavioral/BINGX_MECHANICS.md` (KB-B2-010) — Spot, Margin, Perpetuos (usado en agp)
+- ✅ `cointracking/behavioral/BYBIT_MECHANICS.md` (KB-B2-011) — Spot, Margin, Perpetuals (Linear + Inverse)
+- ✅ `cointracking/behavioral/OKX_MECHANICS.md` (KB-B2-012) — Spot, Margin, Perpetuals, Web3 Wallet, Staking/Earn
 - ✅ `exchanges/BINANCE.md` (módulos, limitaciones) — *nota: parcialmente A3, parcialmente B2*
+- ✅ `exchanges/GENERIC_EXCHANGE.md` (patrón genérico para nuevos exchanges)
 
-**Próximo paso:** Bybit, OKX (exchanges adicionales)
+**Próximo paso (Fase 2+):** Crypto.com (B2-013), XT.com (B2-014), Kucoin (B2-015)
 
-**En este proyecto:** BingX completamente documentado
+**En este proyecto:** BingX, Ledger, MetaMask completamente documentados. Bybit/OKX documentados como referencia.
 
 ---
 
