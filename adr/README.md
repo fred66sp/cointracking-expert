@@ -5,8 +5,8 @@ Este directorio contiene las decisiones arquitectonicas del proyecto, documentad
 ## Indice
 
 - [ADR-001: Idioma del repositorio (contenido en español, identificadores en inglés)](./0001-idioma-del-repositorio-contenido-en-español,-identificadores-en-inglés.md)
-- [ADR-002: Stack de tecnología Python](./0002-stack-de-tecnología-python.md)
-- [ADR-003: Representación del modelo de dominio en Python](./0003-representación-del-modelo-de-dominio-en-python.md)
+- [ADR-002: Fuente de verdad — jerarquía de autoridades](./0002-fuente-de-verdad.md)
+- [ADR-003: Modelo de transacciones canónico](./0003-modelo-de-transacciones.md)
 - [ADR-004: Estrategia de desarrollo (híbrido pragmático)](./0004-estrategia-de-desarrollo-híbrido-pragmático.md)
 - [ADR-005: Zona horaria de importación y normalización a UTC](./0005-zona-horaria-de-importación-y-normalización-a-utc.md)
 - [ADR-006: El producto es un agente de IA auditor (Claude Code) sobre la base de conocimiento](./0006-el-producto-es-un-agente-de-ia-auditor-claude-code-sobre-la-base-de-conocimiento.md)
@@ -29,6 +29,16 @@ Este directorio contiene las decisiones arquitectonicas del proyecto, documentad
 - [ADR-023: El MCP es dueño del ciclo de vida de sus archivos de caché (`cointracking_delete_project`)](./0023-el-mcp-es-dueño-del-ciclo-de-vida-de-sus-archivos-de-caché-`cointracking_delete_project`.md)
 - [ADR-024: Formato "bloque-resumen" obligatorio al guiar altas/correcciones manuales en CoinTracking](./0024-formato-"bloque-resumen"-obligatorio-al-guiar-altas/correcciones-manuales-en-cointracking.md)
 - [ADR-025: Formatos "CT-List" para mostrar listas de operaciones/hallazgos en la conversación](./0025-formatos-"ct-list"-para-mostrar-listas-de-operaciones/hallazgos-en-la-conversación.md)
+- [ADR-026: Límites de decisión fiscal (matriz A/B/C)](./0026-limites-decision-fiscal-agente.md)
+- [ADR-027: Integración de nuevos exchanges (protocolo de 4 fases)](./0027-integracion-nuevos-exchanges.md)
+- [ADR-028: Límite auditor / asesor fiscal](./0028-limite-auditor-asesor-fiscal.md)
+- [ADR-029: Protocolo de no-hacer (10 prohibiciones explícitas)](./0029-protocolo-de-no-hacer.md)
+- [ADR-030: Validación y verificación de ADRs críticos](./0030-validacion-verificacion-adrs-criticos.md)
+- [ADR-031: Plazos y períodos de declaración (Hacienda)](./0031-plazos-periodos-declaracion-hacienda.md)
+- [ADR-032: Knowledge with Temporal Validity (metadatos YAML)](./0032-knowledge-temporal-validity.md)
+- [ADR-033: Sistema de conocimiento jerárquico (6 niveles A-F)](./0033-sistema-conocimiento-jerarquico.md)
+- [ADR-034: Stack de tecnología Python](./0034-stack-de-tecnología-python.md)
+- [ADR-035: Representación del modelo de dominio en Python](./0035-representación-del-modelo-de-dominio-en-python.md)
 
 ## Proceso de ADR
 
