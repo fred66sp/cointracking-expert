@@ -1,8 +1,10 @@
 # ADR-032: Knowledge with Temporal Validity — validación de vigencia de conocimiento
 
-**Status:** Proposed
+**Status:** Accepted
 
 **Date:** 2026-07-05
+
+**Accepted:** 2026-07-05
 
 ## Context
 

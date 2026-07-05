@@ -1,8 +1,10 @@
 # ADR-031: Validación temporal previa de obligaciones fiscales
 
-**Status:** Proposed
+**Status:** Accepted
 
 **Date:** 2026-07-05
+
+**Accepted:** 2026-07-05
 
 ## Context
 
