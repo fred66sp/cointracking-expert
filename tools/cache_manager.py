@@ -2,11 +2,54 @@
 """
 Gestor de caché persistente para MCP de CoinTracking.
 
-Implementa ADR-039: Optimización de tokens mediante caché local.
+Implementa ADR-039: Optimización de tokens mediante caché local y procesamiento
+en Python en lugar de contexto LLM.
 
-Uso:
-  mgr = CacheManager('agp')  # proyecto activo
-  balance = mgr.get_or_fetch('get_balance', {}, max_age_hours=24)
+FILOSOFÍA:
+  - Reutilizar datos MCP que no han cambiado (caché)
+  - Procesar localmente (Python), no en contexto LLM
+  - Pasar al LLM solo hallazgos resumidos, nunca JSON crudo
+
+EJEMPLO DE USO EN SKILL:
+
+    from tools.cache_manager import CacheManager
+
+    # Inicializar para proyecto activo
+    mgr = CacheManager('agp2025')
+
+    # Get trades (primera vez = MCP call, después = caché)
+    trades = mgr.get_or_fetch(
+        'get_trades',
+        {'limit': None, 'start': unix_ts, 'end': unix_ts},
+        mcp_call_fn=lambda call, params: mcp.cointracking_get_trades(**params),
+        max_age_hours=24
+    )
+
+    # Procesar localmente (no en contexto LLM)
+    duplicates = detect_duplicates(trades)  # Python puro
+    orphans = detect_orphan_transfers(trades)
+    summary = f"Encontrado: {len(duplicates)} duplicados, {len(orphans)} huérfanas"
+
+    # Pasar al LLM solo el resumen (~200 tokens)
+    # NO pasar trades completo (~3000 tokens)
+
+INVALIDACIÓN:
+
+    # Si usuario cambió datos en CoinTracking
+    mgr.invalidate_all()  # Borrar TODO
+
+    # Si solo queremos refrescar trades
+    mgr.invalidate_pattern('get_trades')
+
+ESTADÍSTICAS:
+
+    stats = mgr.stats()
+    print(f"Caché: {stats['total_entries']} entradas, {stats['total_size_kb']} KB")
+
+REFERENCIA:
+  - ADR-039: adr/0039-optimizacion-tokens-y-cache.md
+  - Benchmark: docs/performance/TOKEN_BENCHMARKS.md
+  - Roadmap: implementation/CACHE_ROADMAP.md
 """
 
 import json
