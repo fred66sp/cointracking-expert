@@ -6,6 +6,22 @@ Todos los cambios notables en el proyecto CoinTracking Expert se documentan en e
 
 ## [No lanzado]
 
+### 2026-07-05: Nivel C — enlazadas mecánicas de exchange ya existentes (sin crear duplicados)
+
+**Contexto:** el resumen de pendientes de este mismo día mencionaba "huecos" en Nivel C (Bybit/OKX Futures, Kraken staking, airdrops, bridges/wrapped tokens) como próximas adiciones. Antes de crear nada, se verificó el repo: **los 5 ya existían**, creados en una sesión anterior (fase de "Cobertura de Exchanges y Wallets"):
+
+- `BYBIT_MECHANICS.md` (KB-B2-011)
+- `OKX_MECHANICS.md` (KB-B2-012)
+- `KRAKEN_STAKING_MECHANICS.md` (KB-B2-006)
+- `AIRDROPS_MECHANICS.md` (KB-B1-002)
+- `BRIDGES_AND_WRAPPING.md` (KB-B3-004)
+
+**Causa raíz del malentendido:** la lista de "próximas adiciones" citada venía de una versión anterior de `knowledge/cases/INDEX.md` que ya se había reemplazado en la corrección de esta misma sesión — el resumen dado al usuario no reflejaba ese cambio.
+
+**Acción:** en vez de recrear documentos (que habría repetido el error de IDs duplicados corregido antes), se enlazaron los 5 documentos existentes en la sección "Peculiaridades de Exchange Específicas" de `knowledge/cases/INDEX.md`. Cero documentos nuevos, cero riesgo de duplicación.
+
+**Verificado:** `tools/validate_yaml_metadata.py` → 0 errores críticos.
+
 ### 2026-07-05: GOBERNANZA — 4 ADRs pasan de Proposed a Accepted
 
 **Contexto:** ADR-030, 036, 037 y 038 llevaban entre 1 y 2 días en estado `Proposed` pese a estar ya en uso activo (pre-commit hooks funcionando, protocolo de validación aplicado hoy mismo en la corrección del Nivel C). Se formalizan como `Accepted`.

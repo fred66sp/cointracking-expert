@@ -63,6 +63,11 @@ Las mecánicas específicas de cada exchange (qué genera cada tipo de operació
 - [`BINANCE_SPOT_MECHANICS.md`](../cointracking/behavioral/BINANCE_SPOT_MECHANICS.md) (KB-B2-001) — incluye dust→BNB, Binance Convert, swaps DeFi, Binance Earn
 - [`BINGX_MECHANICS.md`](../cointracking/behavioral/BINGX_MECHANICS.md) (KB-B2-010) — incluye el caso verificado de Copy Trading no exportado (agp2025, ~694,67 USDT)
 - [`STAKING_MECHANICS.md`](../cointracking/behavioral/STAKING_MECHANICS.md) (KB-B1-001) — incluye tipos de staking (bloqueado, liquid/DeFi), clasificación fiscal RCM, regla de valor a fecha de recepción
+- [`BYBIT_MECHANICS.md`](../cointracking/behavioral/BYBIT_MECHANICS.md) (KB-B2-011) — Trading Spot y Derivados en Bybit
+- [`OKX_MECHANICS.md`](../cointracking/behavioral/OKX_MECHANICS.md) (KB-B2-012) — Trading completo + Web3 en OKX
+- [`KRAKEN_STAKING_MECHANICS.md`](../cointracking/behavioral/KRAKEN_STAKING_MECHANICS.md) (KB-B2-006) — Cómo CoinTracking maneja staking y rewards de Kraken
+- [`AIRDROPS_MECHANICS.md`](../cointracking/behavioral/AIRDROPS_MECHANICS.md) (KB-B1-002) — Cómo CoinTracking maneja airdrops (regalos de tokens)
+- [`BRIDGES_AND_WRAPPING.md`](../blockchains/BRIDGES_AND_WRAPPING.md) (KB-B3-004) — Bridges y wrapped tokens
 
 ---
 
@@ -103,4 +108,4 @@ Cada documento declara `last_verified`, `valid_until` y `source`. Antes de citar
 
 ---
 
-**Última actualización:** 2026-07-05 (corrección: eliminada colisión de IDs con documentos nuevos mal ubicados; hallazgos fusionados en Nivel B correspondiente)
+**Última actualización:** 2026-07-05 (verificado: Bybit, OKX, Kraken staking, Airdrops y Bridges/wrapped tokens ya estaban documentados en Nivel B desde una sesión anterior — no hacía falta crearlos de nuevo, solo enlazarlos aquí)
