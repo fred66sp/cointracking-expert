@@ -51,9 +51,9 @@ Narración del journey de desarrollo de CoinTracking Expert como agente de IA, d
 - [x] Artículo 2: "Lo que aprendí..." — completo
 - [x] Artículo 3: "Arquitectura..." — completo
 - [x] Artículo 4: "Optimización sin sacrificar confianza" — completo
-- [ ] Artículo 5: "Casos reales: BingX, Staking, Transferencias" — pendiente
+- [x] Artículo 5: "Casos reales: BingX, Staking, Transferencias" — completo
 - [x] Review + ajustes
-- [x] Listo para publicar (serie completa a partir de 2026-01-XX)
+- [x] **Serie completa lista para publicar (2026-01-XX en adelante)**
 
 ---
 
@@ -70,6 +70,9 @@ Tercero de la serie: la arquitectura detrás del agente. Cuando auditas criptos 
 
 ### Artículo 4
 Cuarto: optimización sin sacrificar confianza. El agente funcionaba, pero gastaba demasiados tokens, tardaba demasiado. La lección: optimizar a ciegas = desastre. Optimizar dentro de marcos documentados (ADRs) = eficiente + confiable. Números reales: 47-75% ahorro verificado. → [enlace]
+
+### Artículo 5
+Quinto y final: casos reales. Tres patrones que encontré auditando (BingX Copy Trading sin exportación, Staking mal clasificado fiscalmente, Transferencias huérfanas). Cada uno es una trampa potencial con impacto de €150-€5.000+ en impuestos. Guía operativa para resolver cada uno. → [enlace]
 
 ---
 
