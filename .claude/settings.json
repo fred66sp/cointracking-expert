@@ -43,7 +43,8 @@
       "Bash(python tools/benchmark_skills.py)",
       "Bash(git commit -m 'Test de produccion: Benchmark de skills con datos reales \\(agp2025\\) *)",
       "Bash(chmod +x .git/hooks/pre-commit)",
-      "Bash(git commit -m 'Documentar cambios de exchange y procedimientos de migracion \\(2026\\) *)"
+      "Bash(git commit -m 'Documentar cambios de exchange y procedimientos de migracion \\(2026\\) *)",
+      "Bash(git commit -m 'Actualizar CHANGELOG con resumen de sesion: Fase 3 + Documentacion de Exchanges *)"
     ],
     "additionalDirectories": [
       "H:\\cointracking-expert\\cointracking-mcp\\cmd"

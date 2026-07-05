@@ -6,6 +6,44 @@ Todos los cambios notables en el proyecto CoinTracking Expert se documentan en e
 
 ## [No lanzado]
 
+### 2026-07-05: FASE 3 — Optimización de Tokens Validada + Documentación de Exchanges
+
+**OPTIMIZACIÓN (ADR-039 ACCEPTED):**
+- Validación de CacheManager en producción con datos reales (agp2025: 1.670+ operaciones)
+- Test `tools/benchmark_skills.py`: 47% ahorro (flujo simple), 75% (flujo iterativo)
+- Resultados:
+  - `/audit-cointracking`: 8.535 → 5.735 tokens (run 1), → 200 tokens (cached)
+  - `/spanish-tax-return`: 4.700 → 1.300 tokens
+  - Impacto anual estimado: ~620K tokens (50 proyectos/año)
+- Informe: `reports/SKILLS_BENCHMARK_REPORT.md`
+- Commits: 66d1de9, 098a059
+
+**DOCUMENTACIÓN DE EXCHANGES (Nivel B):**
+- Nuevo: `knowledge/reference/context/EXCHANGE_REGULATORY_UPDATES_2026.md` — cambios regulatorios 2026
+  - Binance MiCA (UE, salida 2026-07)
+  - USDT→USDC conversión forzosa (Q1 2025)
+  - BingX derivados (Copy Trading no exportado)
+  - Coinbase expansión EU
+  - Checklist para próximas auditorías
+- Nuevo: `knowledge/cointracking/AUDIT_EXCHANGE_MIGRATION.md` — procedimiento de auditoría de migraciones
+  - Emparejamiento Tx Hash + heurística
+  - Detección de conversiones forzosas
+  - Flujo completo con ejemplo real (agp2025)
+- Actualizado: `knowledge/exchanges/INDEX.md`
+- Commit: cb9a25f
+
+**INFRAESTRUCTURA:**
+- Hooks pre-commit funcionales (corrección de wrapper bash para Windows)
+- CLI rtk integrado (token savings tracking)
+
+**ESTADO FINAL:**
+- ✅ Sistema 100% funcional: gobernanza (ADRs 036-038), optimización (ADR-039), infraestructura
+- ✅ 9 commits esta sesión | 17 nuevos archivos | ~3800 líneas
+- ✅ Datos validados contra producción (agp2025: auditoría + declaración IRPF 2025)
+- 📈 Ahorro de tokens comprobado en caso real
+
+---
+
 ### 2026-07-05: REMEDIACIÓN — Validación de Metadatos YAML Completada
 
 **DIAGNÓSTICO Y REMEDIACIÓN:**
