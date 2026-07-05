@@ -6,6 +6,25 @@ Todos los cambios notables en el proyecto CoinTracking Expert se documentan en e
 
 ## [No lanzado]
 
+### 2026-07-05: REMEDIACIÓN — Validación de Metadatos YAML Completada
+
+**DIAGNÓSTICO Y REMEDIACIÓN:**
+- Auditoría exhaustiva reportó potencial DUAL-YAML (100 archivos) → FALSO POSITIVO tras verificación
+- Validación de metadatos YAML identificó 24 errores críticos:
+  - `valid_until: null` en 24 documentos Nivel B (violaba ADR-032) → FIJADO a 2027-07-03
+  - 2 IDs duplicados (KB-B1-011, KB-B1-012) → REASIGNADOS a KB-B1-010 y KB-B1-013
+  - 4 IDs genéricos (KB-B1-XXX) → FIJADOS a KB-B1-014..017
+- Creados scripts de validación y remediación automática
+- Commit: a7b75cf (92 archivos modificados)
+
+**RESULTADO:**
+- ✅ 0 errores críticos (de 24)
+- ✅ Metadatos YAML completamente válidos y únicos
+- ✅ Sistema LISTO PARA PRODUCCIÓN sin bloqueantes críticos
+- 📄 Informe de remediación: reports/output/REMEDIATION_STATUS_2026-07-05.md
+
+---
+
 ### 2026-07-05: P0-P3 — Sistema de Auditoría Completado
 
 **VALIDACIÓN (P0):**
