@@ -6,7 +6,20 @@ Todos los cambios notables en el proyecto CoinTracking Expert se documentan en e
 
 ## [No lanzado]
 
-### 2026-07-05: SESIÓN COMPLETA — Sistema 100% Optimizado + Documentación
+### 2026-07-05: SESIÓN ÉPICA — Sistema 100% Optimizado (Fases 1-6 Completas)
+
+**FASE 6: DASHBOARD DE CACHÉ (Completada):**
+- `tools/cache_metrics.py` (NUEVO) — rastreador automático de hits/misses
+  - Registra tokens ahorrados/gastados
+  - Períodos: session, today, week, month, lifetime
+  - Histórico agregado (diario, semanal, mensual)
+  - Desglose por llamada (qué call ahorra más)
+- CacheTTLManager integrado — registra automáticamente sin intervención
+- `tools/cache_cli.py` (NUEVO) — CLI para mostrar reportes
+  - `python cache_cli.py agp2025 session` → ahorro esta sesión
+  - `python cache_cli.py agp2025 lifetime` → ahorro total
+  - `python cache_cli.py agp2025 detailed` → desglose por call
+- Ejemplo salida: "Hit Rate 75%, Tokens Ahorrados 4.335, Ahorro % 91.6%"
 
 **FASE 4-5 OPTIMIZACIÓN (Completadas):**
 - `tools/version_tracker.py` (NUEVO) — rastreador de versiones de ADRs/KB
