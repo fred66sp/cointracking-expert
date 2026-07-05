@@ -6,6 +6,12 @@ Todos los cambios notables en el proyecto CoinTracking Expert se documentan en e
 
 ## [No lanzado]
 
+### 2026-07-05: Cerrados los 2 flecos del informe de ahorro de tokens
+
+**1. Limpieza automática de la caché Python (crecía sin límite).** Nuevo `CacheManager.cleanup()`, invocado en cada apertura: poda entradas con más de 90 días (por mtime) y, si el directorio supera 50 MB, las más antiguas hasta bajar del límite. Solo toca ficheros listados en el manifest — `metrics.json` y cualquier otro artefacto quedan intactos. Trade-off documentado: una entrada muy leída pero no reescrita en 90 días también se poda (coste: un refetch puntual). El lado Go no lo necesitaba (TTLs de 10 min–2 h + purga al arrancar). Verificado: poda por edad, poda por tamaño, protección de `metrics.json`, reapertura con manifest saneado, y suite completa de benchmarks sin regresión (47%/75%).
+
+**2. Las métricas en vivo ahora se muestran solas.** Ambas skills cierran su informe mencionando el ahorro de la sesión en una línea (`python tools/cache_cli.py <proyecto> session`) — así el contador de la Fase 6 (conectado hoy) produce visibilidad desde la primera auditoría real, sin que el usuario tenga que acordarse del CLI. Si aún no hay métricas, se omite sin ruido.
+
 ### 2026-07-05: Resueltas las 3 limitaciones documentadas de la revisión de robustez
 
 **1. Los ADRs ahora son rastreables por versión (invalidan caché al cambiar).** Los 39 ADRs ganan frontmatter YAML mínimo (`version: 1.0` + comentario de uso, sin `id:` para no colisionar con la convención KB-* de ADR-036, que aplica a `knowledge/`). `VersionTracker` ya escaneaba `adr/` — solo le faltaba el formato; ahora rastrea 39 claves `adr_*`. Verificado: un caché guardado antes del cambio queda invalidado una vez (por las claves nuevas, fix M2), y subir la `version` de un ADR invalidará los cachés calculados con la versión anterior. Los validadores no se ven afectados (solo escanean `knowledge/`).

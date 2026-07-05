@@ -68,6 +68,8 @@ Usa la plantilla `templates/AUDIT_REPORT.md`. Ordena los hallazgos por severidad
 
 **Guárdalo** en `reports/output/<proyecto>/AAAA-MM-DD_auditoria_<cuenta>.md` (no lo dejes solo en el chat). Actualiza la memoria del proyecto (`audit_state`) con lo hecho/pendiente, indicando a qué proyecto corresponde.
 
+**Cierra mencionando el ahorro de la sesión en una línea** (las métricas se registran solas al usar `get_or_fetch_dynamic`, Fase 6): ejecuta `python tools/cache_cli.py <proyecto> session` y resume p. ej. "esta sesión: N llamadas servidas de caché, ~X tokens ahorrados". Si no hay métricas aún (primera sesión), omítelo sin comentar nada.
+
 ## Paso 3 — Remediación guiada (ofrécela)
 
 Tras el informe, **ofrece ayudar a corregir** los hallazgos en la web de CoinTracking. Para cada problema con solución, guía al usuario **paso a paso y en lenguaje llano** usando `knowledge/cointracking/WEB_APP_GUIDE.md` (mapa de remediación: hallazgo → acción → artículo oficial).

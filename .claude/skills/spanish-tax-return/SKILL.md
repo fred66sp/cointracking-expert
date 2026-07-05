@@ -113,6 +113,8 @@ Usa `templates/TAX_SUMMARY_ES.md`. Incluye: ejercicio y perfil; estado de reconc
 
 **Guárdalo** en `reports/output/<proyecto>/AAAA-MM-DD_declaracion_<ejercicio>.md` (ADR-011); no lo dejes solo en el chat. Registra en `reports/output/<proyecto>/REGISTRO-CAMBIOS.md` cualquier cambio aplicado y actualiza la memoria (`audit_state`).
 
+**Cierra mencionando el ahorro de la sesión en una línea** (las métricas se registran solas al usar `get_or_fetch_dynamic`, Fase 6): ejecuta `python tools/cache_cli.py <proyecto> session` y resume p. ej. "esta sesión: N llamadas servidas de caché, ~X tokens ahorrados". Si no hay métricas aún (primera sesión), omítelo sin comentar nada.
+
 ## Recordatorio de límite de determinismo (ADR-006)
 
 Encuentra, prepara y explica. **No** produzcas la cifra vinculante de la declaración. La calculadora determinista es el Informe de Impuestos de CoinTracking (FIFO/España) o el asesor.

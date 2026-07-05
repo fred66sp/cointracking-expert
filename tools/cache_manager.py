@@ -72,6 +72,13 @@ sys.path.insert(0, str(Path(__file__).parent))
 from version_tracker import VersionTracker
 
 class CacheManager:
+    # Límites de limpieza automática (fleco cerrado 2026-07-05: la caché
+    # crecía sin límite — las entradas con TTL "permanente" nunca se
+    # borraban del disco). El lado Go no lo necesita: sus TTLs son de
+    # 10 min - 2 h y purga expirados al arrancar.
+    CLEANUP_MAX_TOTAL_MB = 50
+    CLEANUP_MAX_AGE_DAYS = 90
+
     def __init__(self, project_name: str, cache_dir: str = '.cache/cointracking'):
         """Inicializa gestor de caché para un proyecto."""
         self.project_name = project_name
@@ -83,6 +90,66 @@ class CacheManager:
         # Version tracking (Fase 4)
         self.version_tracker = VersionTracker()
         self.current_versions = self.version_tracker.get_current_versions()
+
+        # Limpieza automática al abrir (barata: solo stat de los ficheros
+        # del manifest; nunca toca metrics.json ni nada fuera del manifest)
+        self.cleanup()
+
+    def cleanup(self, max_total_mb: float = None, max_age_days: int = None) -> Dict:
+        """Poda la caché del proyecto: entradas más viejas que max_age_days
+        (por mtime = última escritura) y, si el total sigue por encima de
+        max_total_mb, las más antiguas hasta bajar del límite.
+
+        Solo borra ficheros listados en el manifest — metrics.json y
+        cualquier otro artefacto del directorio quedan intactos.
+
+        Trade-off asumido: mtime no se actualiza en lecturas, así que una
+        entrada muy consultada pero nunca reescrita en 90 días también se
+        poda — el coste es un refetch puntual; el beneficio, que el
+        directorio no crezca sin límite durante meses de uso.
+        """
+        if max_total_mb is None:
+            max_total_mb = self.CLEANUP_MAX_TOTAL_MB
+        if max_age_days is None:
+            max_age_days = self.CLEANUP_MAX_AGE_DAYS
+
+        now = time.time()
+        max_age_secs = max_age_days * 86400
+        entries = []  # (mtime, size_bytes, key, path)
+        removed_old, removed_size = 0, 0
+
+        for key in list(self.manifest.keys()):
+            f = self._cache_file(key)
+            if not f.exists():
+                del self.manifest[key]  # huérfano en manifest, sanea
+                continue
+            st = f.stat()
+            if now - st.st_mtime > max_age_secs:
+                f.unlink()
+                del self.manifest[key]
+                removed_old += 1
+            else:
+                entries.append((st.st_mtime, st.st_size, key, f))
+
+        total_bytes = sum(e[1] for e in entries)
+        limit_bytes = max_total_mb * 1024 * 1024
+        if total_bytes > limit_bytes:
+            entries.sort()  # más antiguos primero
+            for _mtime, size, key, f in entries:
+                if total_bytes <= limit_bytes:
+                    break
+                f.unlink()
+                del self.manifest[key]
+                total_bytes -= size
+                removed_size += 1
+
+        if removed_old or removed_size:
+            self._save_manifest()
+            print(f"[CACHE CLEANUP] {self.project_name}: {removed_old} por antigüedad (>{max_age_days}d), "
+                  f"{removed_size} por tamaño (>{max_total_mb}MB)")
+
+        return {'removed_by_age': removed_old, 'removed_by_size': removed_size,
+                'remaining_entries': len(self.manifest)}
 
     def _load_manifest(self) -> Dict:
         """Carga manifest de caché (metadata de archivos)."""
