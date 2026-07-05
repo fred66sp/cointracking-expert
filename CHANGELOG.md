@@ -6,6 +6,35 @@ Todos los cambios notables en el proyecto CoinTracking Expert se documentan en e
 
 ## [No lanzado]
 
+### 2026-07-05: NIVEL C COMPLETADO — Patrones Específicos Documentados (Semilla 1.0)
+
+**NIVEL C: CASOS ESPECÍFICOS Y PATRONES (Semilla 1.0):**
+- `knowledge/cases/C1_BINANCE_SPOT_MECHANICS.md` (KB-C1-001) — Binance Spot peculiaridades
+  - Dust→BNB, Binance Convert, Swaps, Binance Earn
+  - Auditoría completa, checklist
+  - Caso verificado: agp2025 (1.000+ ops, limpio)
+- `knowledge/cases/C1_BINGX_COPY_TRADING_LOSSES.md` (KB-C1-002) — Copy Trading losses
+  - Problema: no se exporta en CSV
+  - Detección y tratamiento fiscal (TBD, requiere asesor)
+  - Caso verificado: agp2025 (-694,67 USDT)
+- `knowledge/cases/C2_STAKING_AND_REWARDS.md` (KB-C2-001) — Staking y Rewards
+  - Clasificación: RCM (Rendimiento de Capital)
+  - Tipos: simple, bloqueado, DeFi, liquid staking
+  - Valoración EUR a fecha recepción (crítico)
+  - Auditoría paso a paso
+- `knowledge/cases/C3_ORPHAN_TRANSFERS_RESOLUTION.md` (KB-C3-001) — Transferencias huérfanas
+  - 4 causas raíz (delay, parcial, no acreditado, migración)
+  - Nivel 1 (Tx Hash) y Nivel 2 (Heurística)
+  - Emparejamiento manual
+  - Caso verificado: MiCA Migration (Binance → Coinbase)
+- `knowledge/cases/INDEX.md` (NUEVO) — Índice y arquitectura del Nivel C
+  - Organización C1/C2/C3 (bloques temáticos)
+  - Estadísticas: 4 documentos, semilla 1.0
+  - Próximas adiciones (Futures, Airdrops, Bridges, etc.)
+  - Política de vigencia (ADR-008/ADR-022)
+
+**TOTAL NIVEL C:** 4 documentos verificados + 1 índice = 5 archivos nuevos, ~3500 líneas
+
 ### 2026-07-05: SESIÓN ÉPICA — Sistema 100% Optimizado (Fases 1-6 Completas)
 
 **FASE 6: DASHBOARD DE CACHÉ (Completada):**
