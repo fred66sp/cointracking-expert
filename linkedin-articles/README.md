@@ -50,8 +50,10 @@ Narración del journey de desarrollo de CoinTracking Expert como agente de IA, d
 - [x] Artículo 1: "Por qué construí..." — completo
 - [x] Artículo 2: "Lo que aprendí..." — completo
 - [x] Artículo 3: "Arquitectura..." — completo
+- [x] Artículo 4: "Optimización sin sacrificar confianza" — completo
+- [ ] Artículo 5: "Casos reales: BingX, Staking, Transferencias" — pendiente
 - [x] Review + ajustes
-- [x] Listo para publicar (2026-01-XX)
+- [x] Listo para publicar (serie completa a partir de 2026-01-XX)
 
 ---
 
@@ -64,7 +66,10 @@ Comparto este artículo sobre por qué construí un agente de IA para auditar mi
 Segundo artículo de la serie: lo que descubrí auditando criptos. El problema no es CoinTracking; es que reconciliar tus datos requiere ser detective, entender fiscalidad española y no caer en trampas que te arruinan el saldo. → [enlace]
 
 ### Artículo 3
-Tercero y final: la arquitectura detrás del agente. Cuando auditas criptos que van a Hacienda, la confianza no es opcional. Aquí está cómo lo hice: MCP propio, ADRs, separación dev/explotación, y transparencia total. → [enlace]
+Tercero de la serie: la arquitectura detrás del agente. Cuando auditas criptos que van a Hacienda, la confianza no es opcional. Aquí está cómo lo hice: MCP propio, ADRs, separación dev/explotación, y transparencia total. → [enlace]
+
+### Artículo 4
+Cuarto: optimización sin sacrificar confianza. El agente funcionaba, pero gastaba demasiados tokens, tardaba demasiado. La lección: optimizar a ciegas = desastre. Optimizar dentro de marcos documentados (ADRs) = eficiente + confiable. Números reales: 47-75% ahorro verificado. → [enlace]
 
 ---
 
