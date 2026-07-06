@@ -9,6 +9,8 @@ version: 1.0
 
 **Status:** Accepted
 
+**Deciders:** Alfredo González P. (propietario, aprueba) · Claude Code (agente, propone)
+
 **Nota (2026-07-05):** el título dice "MCP pospuesto" porque en la fase 1 (2026-07-02) el aislamiento del MCP por proyecto quedaba fuera de alcance. Esa cuestión **se resolvió el 2026-07-03 por ADR-016** (`cointracking_switch_project`) — ver sección "Cuestión abierta" más abajo, ya marcada como resuelta en el propio cuerpo del documento. El nombre del archivo no se cambia para no romper referencias existentes; el estado real es: ambas fases completas.
 
 **Date:** 2026-07-02 (propuesta inicial) — **revisado y redecidido 2026-07-03** tras corrección del usuario sobre el alcance real.

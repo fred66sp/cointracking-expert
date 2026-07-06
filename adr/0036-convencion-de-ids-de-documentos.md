@@ -8,6 +8,7 @@ version: 1.0
 # ADR-036: Convención de IDs de Documentos de Conocimiento
 
 **Status:** Accepted  
+**Deciders:** Alfredo González P. (propietario, aprueba) · Claude Code (agente, propone)  
 **Proposed:** 2026-07-05  
 **Accepted:** 2026-07-05  
 **Last Updated:** 2026-07-05

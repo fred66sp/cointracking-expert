@@ -6,6 +6,12 @@ Todos los cambios notables en el proyecto CoinTracking Expert se documentan en e
 
 ## [No lanzado]
 
+### 2026-07-05: Campo MADR `Deciders` añadido a los 42 ADRs (warning de ADR Explorer)
+
+La extensión **ADR Explorer** del usuario marcó los 42 ADRs como "decisions without deciders": ningún ADR llevaba el campo MADR estándar de decisores. Corregido con script idempotente que inserta `**Deciders:** Alfredo González P. (propietario, aprueba) · Claude Code (agente, propone)` tras la línea `**Status:**` de cada ADR, respetando los dos estilos de formato presentes (bloques con saltos duros y estilo espaciado) — la atribución refleja la división real de ADR-012/026: el agente propone, el usuario decide.
+
+Para que los ADRs futuros nazcan con el campo: checklist universal de **ADR-030** actualizada (`version` 1.0 → 1.1 — primera subida de versión real desde que los ADRs son rastreables, verificado que `VersionTracker` la detecta) y plantilla de `GOVERNANCE_WORKFLOW.md` corregida — que además mostraba un frontmatter que los ADRs reales nunca usaron; ahora refleja la convención verdadera (frontmatter `version:` + Status/Deciders/Date en el cuerpo, ambos índices).
+
 ### 2026-07-05: ADR-042 — Proactividad en gobernanza: el agente sugiere el ADR, el usuario aprueba
 
 **Instrucción directa del usuario** tras el caso de ADR-041 (que él tuvo que pedir): detectar que algo merece ADR pasa a ser **responsabilidad del agente**. El ADR fija 5 disparadores (hallazgo operativo repetible con diagnóstico no obvio, decisión de diseño por chat, causa raíz que revela regla vinculante, corrección del usuario que redefine el trabajo, protocolo improvisado con éxito), el flujo (proponer en el momento → pedir permiso, Categoría B de ADR-026 → crear con visto bueno según checklist ADR-030) y un guardarraíl de proporcionalidad (fuera de esos disparadores no se propone; si un ADR existente lo cubre, se propone actualizarlo, no duplicar). Operacionalizado en `CLAUDE.md` §Convenciones (se carga en cada sesión) y en la memoria durable del agente. De paso, la convención de commits de `CLAUDE.md` deja de apuntar al deprecado `DECISIONS.md`.

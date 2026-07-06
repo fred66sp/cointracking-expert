@@ -9,6 +9,8 @@ version: 1.0
 
 **Status:** Accepted
 
+**Deciders:** Alfredo González P. (propietario, aprueba) · Claude Code (agente, propone)
+
 **Date:** 2026-07-04
 **Accepted:** 2026-07-05 — protocolo de 4 fases aplicado en la práctica (p. ej. reconstrucción completa de BingX en agp2025, 2026-07-03).
 

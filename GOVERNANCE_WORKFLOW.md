@@ -53,16 +53,19 @@ Usa la plantilla **MADR 2.0** (Markdown Architecture Decision Records):
 
 ```markdown
 ---
-id: ADR-NXX
-title: "Título descriptivo de la decisión"
-status: "Accepted"  # Proposed, Accepted, Deprecated, Superseded
-date: "2026-07-05"
-relates_to:
-  - ADR-033
-  - ADR-009
+# Versionado para invalidación de caché (VersionTracker / ADR-039).
+# Incrementar `version` al cambiar la decisión de forma material;
+# los cachés calculados con la versión anterior se invalidan solos.
+version: 1.0
 ---
 
 # ADR-NXX: (Título)
+
+**Status:** Accepted  <!-- Proposed | Accepted | Deprecated | Superseded -->
+
+**Deciders:** Alfredo González P. (propietario, aprueba) · Claude Code (agente, propone)
+
+**Date:** AAAA-MM-DD
 
 ## Context
 
@@ -377,9 +380,11 @@ Actualiza `adr/INDEX.md` cuando crees uno nuevo:
 - [ ] Sección **Consequences:** Beneficios + costos + cambios requeridos
 - [ ] Sección **Related:** Links a otros ADRs o documentos relevantes
 - [ ] Status correcto (`Proposed` o `Accepted`)
+- [ ] **Deciders** asignados (campo MADR; sin él, herramientas como ADR Explorer marcan la decisión como huérfana — detectado 2026-07-05)
 - [ ] Fecha correcta (YYYY-MM-DD)
+- [ ] Frontmatter YAML con `version:` (invalidación de caché, ADR-039)
 - [ ] Commit message claro
-- [ ] Actualizado `adr/INDEX.md`
+- [ ] Actualizados **ambos** índices: `adr/README.md` y `adr/INDEX.md`
 
 ---
 

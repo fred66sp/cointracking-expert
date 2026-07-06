@@ -9,6 +9,8 @@ version: 1.0
 
 **Status:** Accepted
 
+**Deciders:** Alfredo González P. (propietario, aprueba) · Claude Code (agente, propone)
+
 **Date:** 2026-07-04
 **Accepted:** 2026-07-05 — la matriz A/B/C ya está en uso de facto (protocolo de consentimiento informado en CLAUDE.md, reglas de confirmación explícita antes de borrar duplicados en la skill `audit-cointracking`). Los 6 pendientes de refinamiento (criterios automáticos A vs B, protocolo uniforme de confirmación, etc.) quedan como trabajo futuro, no bloquean la aceptación.
 

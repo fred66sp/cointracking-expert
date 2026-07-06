@@ -8,6 +8,7 @@ version: 1.0
 # ADR-037: Validación Obligatoria en Desarrollo
 
 **Status:** Accepted  
+**Deciders:** Alfredo González P. (propietario, aprueba) · Claude Code (agente, propone)  
 **Proposed:** 2026-07-05  
 **Accepted:** 2026-07-05  
 **Last Updated:** 2026-07-05

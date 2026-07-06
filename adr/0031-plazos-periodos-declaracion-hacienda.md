@@ -9,6 +9,8 @@ version: 1.0
 
 **Status:** Accepted
 
+**Deciders:** Alfredo González P. (propietario, aprueba) · Claude Code (agente, propone)
+
 **Date:** 2026-07-05
 
 **Accepted:** 2026-07-05

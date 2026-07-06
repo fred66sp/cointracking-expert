@@ -2,12 +2,17 @@
 # Versionado para invalidación de caché (VersionTracker / ADR-039).
 # Incrementar `version` al cambiar la decisión de forma material;
 # los cachés calculados con la versión anterior se invalidan solos.
-version: 1.0
+version: 1.1
 ---
+
+<!-- v1.1 (2026-07-05): añadido "Deciders" al checklist universal de pre-commit
+     (campo MADR que faltaba en los 42 ADRs, detectado por ADR Explorer). -->
 
 # ADR-030: Validación y verificación de ADRs críticos antes de commit
 
 **Status:** Accepted
+
+**Deciders:** Alfredo González P. (propietario, aprueba) · Claude Code (agente, propone)
 
 **Date:** 2026-07-04
 **Accepted:** 2026-07-05 — protocolo en uso activo (aplicado en la corrección de Nivel C del 2026-07-05); pendientes de implementación futura (sub-checklist fiscal, automatización de detección) no bloquean la aceptación del protocolo en sí.
@@ -140,7 +145,7 @@ Documentación, convenciones, organizativos:
 Antes de `git commit`, TODOS los ADRs cumplen:
 
 ```
-☐ Formato MADR correcto (Status, Date, Context, Decision, Consequences, Notes)
+☐ Formato MADR correcto (Status, Deciders, Date, Context, Decision, Consequences, Notes)
 ☐ Índice en adr/README.md actualizado
 ☐ CHANGELOG.md actualizado (si es importante)
 ☐ No hay typos o errores gramaticales obvios

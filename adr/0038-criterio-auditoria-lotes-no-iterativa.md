@@ -8,6 +8,7 @@ version: 1.0
 # ADR-038: Criterio de Auditoría (Lotes, No Iterativa)
 
 **Status:** Accepted  
+**Deciders:** Alfredo González P. (propietario, aprueba) · Claude Code (agente, propone)  
 **Proposed:** 2026-07-05  
 **Accepted:** 2026-07-05  
 **Last Updated:** 2026-07-05
