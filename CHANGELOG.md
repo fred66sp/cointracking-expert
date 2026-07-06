@@ -6,6 +6,10 @@ Todos los cambios notables en el proyecto CoinTracking Expert se documentan en e
 
 ## [No lanzado]
 
+### 2026-07-05: ADR-042 — Proactividad en gobernanza: el agente sugiere el ADR, el usuario aprueba
+
+**Instrucción directa del usuario** tras el caso de ADR-041 (que él tuvo que pedir): detectar que algo merece ADR pasa a ser **responsabilidad del agente**. El ADR fija 5 disparadores (hallazgo operativo repetible con diagnóstico no obvio, decisión de diseño por chat, causa raíz que revela regla vinculante, corrección del usuario que redefine el trabajo, protocolo improvisado con éxito), el flujo (proponer en el momento → pedir permiso, Categoría B de ADR-026 → crear con visto bueno según checklist ADR-030) y un guardarraíl de proporcionalidad (fuera de esos disparadores no se propone; si un ADR existente lo cubre, se propone actualizarlo, no duplicar). Operacionalizado en `CLAUDE.md` §Convenciones (se carga en cada sesión) y en la memoria durable del agente. De paso, la convención de commits de `CLAUDE.md` deja de apuntar al deprecado `DECISIONS.md`.
+
 ### 2026-07-05: ADR-041 — Procesos MCP huérfanos en Windows + limpieza del proyecto legado `agp`
 
 **Caso real que motivó el ADR:** al borrar la caché del proyecto legado `demo`, el borrado falló con "file busy" — la investigación reveló **7 servidores MCP corriendo a la vez** (6 huérfanos de sesiones de Claude Code cerradas; en Windows el hijo stdio no siempre muere con su padre). Uno de los huérfanos retenía el SQLite de `demo`. Resuelto con el protocolo que ADR-041 deja escrito: confirmar ventanas abiertas con el usuario, matar huérfanos de viejo a nuevo verificando tras cada baja que el MCP propio sigue vivo (`cache_stats`), y reintentar el borrado hasta que caiga el holder. Prevención automática (watchdog de PPID) evaluada y pospuesta a propósito — ver ADR.
