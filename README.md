@@ -19,6 +19,7 @@ El agente vive en Claude Code, se apoya en una base de conocimiento propia y aud
 - 📖 [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) — compilar/arrancar servidor MCP
 - 📖 [knowledge/KNOWLEDGE_MAINTENANCE.md](knowledge/KNOWLEDGE_MAINTENANCE.md) — crear/mantener documentos
 - 📖 [GOVERNANCE_WORKFLOW.md](GOVERNANCE_WORKFLOW.md) — registrar decisiones (ADRs)
+- 📖 [CONTRATO_FLUJO_GIT_VERSIONADO.md](CONTRATO_FLUJO_GIT_VERSIONADO.md) — flujo obligatorio de ramas, commits, CHANGELOG y versionado
 
 **Detalles técnicos:**
 - 🗺️ [knowledge/INDEX_MASTER.md](knowledge/INDEX_MASTER.md) — estructura de 6 niveles A-F

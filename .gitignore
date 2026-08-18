@@ -60,6 +60,10 @@ reports/output/
 *.sqlite
 *.sqlite3
 
+# Local agent/runtime state — never version
+.atl/
+.claude/
+
 # Datos reales de usuario (privacidad) — NUNCA subir exportaciones reales
 # Contienen historial financiero personal. Usar fixtures anonimizados en tests/.
 *.csv
