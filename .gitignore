@@ -63,6 +63,7 @@ reports/output/
 # Local agent/runtime state — never version
 .atl/
 .claude/
+*.code-workspace
 
 # Datos reales de usuario (privacidad) — NUNCA subir exportaciones reales
 # Contienen historial financiero personal. Usar fixtures anonimizados en tests/.
