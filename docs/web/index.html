@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="PROJECT-COINTRACKING-EXPERT — guía completa del auditor de criptomonedas: reconciliación contra datos reales, base de conocimiento, servidor MCP propio, auditor determinista, fiscalidad española y gobernanza por ADR.">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230f766e'/%3E%3Cpath d='M16 6.5 23.5 10v6.3c0 4.2-3.1 7-7.5 8.6-4.4-1.6-7.5-4.4-7.5-8.6V10L16 6.5z' fill='%23ffffff' opacity='.94'/%3E%3Cpath d='m12.4 16.2 2.5 2.5 4.8-5' fill='none' stroke='%230f766e' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<title>PROJECT-COINTRACKING-EXPERT — guía del auditor</title>
+<script>
+(function () {
+  try {
+    var p = JSON.parse(localStorage.getItem("project-cointracking-expert:prefs") || "{}");
+    var t = p.theme || (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    document.documentElement.setAttribute("data-theme", t);
+  } catch (e) { document.documentElement.setAttribute("data-theme", "light"); }
+})();
+</script>
+<style>
+  /* Identidad visual: verde de verificación (teal) con azul como segundo
+     acento. Donde el color lleva texto se usa la variante oscurecida, que
+     mantiene el contraste AA sobre el fondo claro. */
+  :root {
+    --bg: #f8fafc;
+    --bg-elev: #ffffff;
+    --bg-soft: #f1f5f9;
+    --text: #0f172a;
+    --muted: #5f6b80;
+    --border: #e2e8f0;
+    --border-strong: #cbd5e1;
+    --accent: #0f766e;
+    --accent-2: #2563eb;
+    --accent-3: #0891b2;
+    --accent-soft: rgba(15, 118, 110, .10);
+    --ok: #10b981;
+    --warn: #f59e0b;
+    --ok-text: #047857;
+    --warn-text: #b45309;
+    --error-text: #b91c1c;
+    --code-bg: #0a0f1c;
+    --code-text: #e5e7eb;
+    --code-border: #1f2937;
+    --shadow: 0 1px 2px rgba(15, 23, 42, .05), 0 8px 24px -12px rgba(15, 23, 42, .18);
+    --shadow-lg: 0 20px 60px -30px rgba(15, 23, 42, .35);
+    --radius: 16px;
+    --radius-sm: 10px;
+    /* No se descargan tipografías: si Inter o JetBrains Mono no están
+       instaladas, el navegador cae en la pila del sistema. */
+    --font: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, "SF Mono", "Fira Code", Menlo, Consolas, monospace;
+  }
+  :root[data-theme="dark"] {
+    --bg: #0a0f1c;
+    --bg-elev: #111827;
+    --bg-soft: #1f2937;
+    --text: #e5e7eb;
+    --muted: #94a3b8;
+    --border: #334155;
+    --border-strong: #475569;
+    --accent: #2dd4bf;
+    --accent-2: #60a5fa;
+    --accent-3: #22d3ee;
+    --accent-soft: rgba(45, 212, 191, .14);
+    --ok: #34d399;
+    --warn: #fbbf24;
+    --ok-text: #34d399;
+    --warn-text: #fbbf24;
+    --error-text: #f87171;
+    --code-bg: #070b16;
+    --code-text: #e5e7eb;
+    --code-border: #1f2937;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 12px 32px -18px rgba(0, 0, 0, .8);
+    --shadow-lg: 0 24px 70px -34px rgba(0, 0, 0, .9);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 88px; }
+  body {
+    margin: 0;
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; text-underline-offset: 3px; }
+  code, pre, kbd { font-family: var(--mono); }
+
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 12px clamp(16px, 4vw, 40px);
+    background: color-mix(in srgb, var(--bg) 82%, transparent);
+    -webkit-backdrop-filter: saturate(180%) blur(14px);
+    backdrop-filter: saturate(180%) blur(14px);
+    border-bottom: 1px solid var(--border);
+  }
+  .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
+  .brand:hover { text-decoration: none; }
+  .brand-mark {
+    display: block;
+    width: 34px; height: 34px;
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .brand-mark svg { width: 100%; height: 100%; display: block; }
+  .brand-name { font-weight: 700; letter-spacing: -.02em; font-size: 15px; }
+  .brand-name small { display: block; font-weight: 500; color: var(--muted); font-size: 11px; letter-spacing: .04em; text-transform: uppercase; }
+  .topbar-spacer { flex: 1; }
+
+  .icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    height: 36px;
+    padding: 0 12px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--bg-elev);
+    color: var(--text);
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color .15s, background .15s, transform .1s;
+  }
+  .icon-btn:hover { border-color: var(--border-strong); }
+  .icon-btn:active { transform: translateY(1px); }
+  .icon-btn svg { width: 16px; height: 16px; }
+  :root[data-theme="light"] .icon-sun { display: none; }
+  :root[data-theme="dark"] .icon-moon { display: none; }
+
+  .hero {
+    position: relative;
+    overflow: hidden;
+    padding: clamp(48px, 9vw, 104px) clamp(16px, 4vw, 40px) clamp(40px, 6vw, 72px);
+    border-bottom: 1px solid var(--border);
+  }
+  .hero::before {
+    content: "";
+    position: absolute;
+    inset: -40% -10% auto -10%;
+    height: 420px;
+    background:
+      radial-gradient(60% 60% at 22% 30%, color-mix(in srgb, var(--accent) 26%, transparent), transparent 70%),
+      radial-gradient(50% 50% at 70% 6%, color-mix(in srgb, var(--accent-2) 22%, transparent), transparent 70%),
+      radial-gradient(42% 42% at 92% 26%, color-mix(in srgb, var(--accent-3) 20%, transparent), transparent 70%);
+    filter: blur(6px);
+    pointer-events: none;
+  }
+  .hero-inner { position: relative; max-width: 1080px; margin: 0 auto; }
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 12px;
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+    background: var(--bg-elev);
+    color: var(--muted);
+    font-size: 12.5px;
+    font-weight: 600;
+    letter-spacing: .01em;
+  }
+  .pill .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ok) 22%, transparent); }
+  .hero h1 {
+    margin: 22px 0 0;
+    font-size: clamp(34px, 6vw, 62px);
+    line-height: 1.04;
+    letter-spacing: -.035em;
+    font-weight: 800;
+  }
+  .hero h1 .grad { color: var(--accent); }
+  .hero p.lead {
+    margin: 20px 0 0;
+    max-width: 660px;
+    font-size: clamp(16px, 2.2vw, 19px);
+    color: var(--muted);
+  }
+  .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 18px;
+    border-radius: var(--radius-sm);
+    font-weight: 650;
+    font-size: 14.5px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: transform .12s, box-shadow .2s, border-color .15s;
+  }
+  .btn:hover { text-decoration: none; transform: translateY(-1px); }
+  .btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; box-shadow: var(--shadow); }
+  .btn-ghost { background: var(--bg-elev); border-color: var(--border-strong); color: var(--text); }
+
+  .layout {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: clamp(32px, 5vw, 60px) clamp(16px, 4vw, 40px) 80px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+  @media (min-width: 1020px) {
+    .layout { grid-template-columns: 214px minmax(0, 1fr); gap: 56px; }
+  }
+  .toc { display: none; }
+  @media (min-width: 1020px) {
+    .toc { display: block; position: sticky; top: 84px; align-self: start; }
+    .toc h2 { font-size: 11px; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); margin: 0 0 12px; }
+    .toc a {
+      display: block;
+      padding: 7px 12px;
+      border-left: 2px solid var(--border);
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 550;
+    }
+    .toc a:hover { color: var(--text); text-decoration: none; }
+    .toc a.active { color: var(--accent); border-left-color: var(--accent); background: var(--accent-soft); border-radius: 0 8px 8px 0; }
+  }
+  main { min-width: 0; }
+  section { scroll-margin-top: 88px; }
+  section + section { margin-top: 64px; }
+  .section-head { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+  .section-num {
+    display: grid; place-items: center;
+    width: 30px; height: 30px;
+    border-radius: 9px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+  }
+  h2.title { margin: 0; font-size: clamp(22px, 3vw, 28px); letter-spacing: -.02em; }
+  .section > p.sub { margin: 6px 0 24px; color: var(--muted); max-width: 74ch; }
+  h3 { margin: 30px 0 10px; font-size: 17px; letter-spacing: -.01em; }
+
+  .grid { display: grid; gap: 16px; }
+  .grid + .grid, .grid + .note, .grid + h3 { margin-top: 24px; }
+  @media (min-width: 640px) { .grid.cols-2 { grid-template-columns: 1fr 1fr; } .grid.cols-3 { grid-template-columns: repeat(3, 1fr); } }
+  .card {
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: var(--shadow);
+  }
+  .card h3 { margin: 0 0 6px; font-size: 15px; }
+  .card p { margin: 0; color: var(--muted); font-size: 14px; }
+  .card p + p { margin-top: 8px; }
+  .card ul { margin: 8px 0 0; padding-left: 18px; color: var(--muted); font-size: 13.5px; }
+  .card li + li { margin-top: 4px; }
+  .card .card-ico {
+    display: grid; place-items: center;
+    width: 34px; height: 34px; margin-bottom: 12px;
+    border-radius: 9px;
+    background: var(--accent-soft); color: var(--accent);
+  }
+  .card .card-ico svg { width: 18px; height: 18px; }
+
+  .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-elev); box-shadow: var(--shadow); }
+  .table-wrap + .note, .table-wrap + p { margin-top: 16px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  thead th {
+    text-align: left;
+    padding: 12px 16px;
+    background: var(--bg-soft);
+    color: var(--muted);
+    font-size: 11.5px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  tbody td { padding: 11px 16px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tbody tr:last-child td { border-bottom: 0; }
+  tbody tr:hover { background: color-mix(in srgb, var(--accent) 3%, transparent); }
+  td code, th code { font-size: 12.8px; }
+  tbody td:first-child { white-space: nowrap; }
+  .table-wrap.wrap-cells td:first-child { white-space: normal; }
+  .table-wrap.wrap-cells td code { overflow-wrap: anywhere; }
+  /* En pantallas estrechas, la primera columna deja de ir en una sola línea:
+     con nowrap, los nombres de fase se parten palabra por palabra. */
+  @media (max-width: 640px) {
+    table { font-size: 13.5px; }
+    thead th, tbody td { padding: 9px 12px; }
+    tbody td:first-child { white-space: normal; }
+  }
+
+  .sev {
+    display: inline-block;
+    min-width: 60px;
+    text-align: center;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: .02em;
+    text-transform: uppercase;
+  }
+  .sev-error { background: color-mix(in srgb, #ef4444 16%, transparent); color: var(--error-text); }
+  .sev-warn { background: color-mix(in srgb, var(--warn) 20%, transparent); color: var(--warn-text); }
+  .sev-ok { background: color-mix(in srgb, var(--ok) 16%, transparent); color: var(--ok-text); }
+  .sev-info { background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--accent); }
+
+  .code { position: relative; margin: 14px 0; }
+  .code pre {
+    margin: 0;
+    padding: 16px 52px 16px 18px;
+    background: var(--code-bg);
+    color: var(--code-text);
+    border: 1px solid var(--code-border);
+    border-radius: var(--radius);
+    overflow-x: auto;
+    font-size: 13.2px;
+    line-height: 1.6;
+    box-shadow: var(--shadow);
+  }
+  .code pre code { background: none; padding: 0; color: inherit; font-size: inherit; }
+  .code .copy {
+    position: absolute;
+    top: 9px; right: 9px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    height: 30px;
+    padding: 0 9px;
+    border: 1px solid var(--code-border);
+    border-radius: 8px;
+    background: color-mix(in srgb, var(--code-bg) 60%, #ffffff 8%);
+    color: #c8d2e8;
+    font: inherit;
+    font-size: 11.5px;
+    font-weight: 600;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity .15s, border-color .15s;
+  }
+  .code:hover .copy, .code .copy:focus-visible { opacity: 1; }
+  .code .copy:hover { border-color: #3b4c72; }
+  @media (hover: none) { .code .copy { opacity: 1; } }
+  .code .copy.copied { color: var(--ok); border-color: var(--ok); }
+  .code .copy svg { width: 13px; height: 13px; }
+  p code, li code, td code {
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: .08em .42em;
+    font-size: .88em;
+  }
+  .note {
+    display: flex;
+    gap: 12px;
+    padding: 14px 16px;
+    border-left: 1px solid var(--accent);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    background: var(--accent-soft);
+    font-size: 14px;
+    margin: 16px 0;
+  }
+  .note strong { color: var(--text); }
+  .note p { margin: 0; }
+  .note p + p { margin-top: 8px; }
+
+  .status-strip {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    max-width: 720px;
+    margin-top: 28px;
+    padding: 14px 16px;
+    border: 1px solid color-mix(in srgb, var(--ok) 42%, var(--border));
+    border-radius: var(--radius-sm);
+    background: color-mix(in srgb, var(--ok) 8%, var(--bg-elev));
+  }
+  .status-mark {
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+    background: color-mix(in srgb, var(--ok) 18%, transparent);
+    color: var(--ok-text);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: .04em;
+  }
+  .status-strip strong { display: block; font-size: 14px; }
+  .status-strip span:not(.status-mark) { display: block; margin-top: 2px; color: var(--muted); font-size: 13px; }
+  .status-strip--prep { border-color: color-mix(in srgb, var(--warn) 42%, var(--border)); background: color-mix(in srgb, var(--warn) 8%, var(--bg-elev)); }
+  .status-strip--prep .status-mark { background: color-mix(in srgb, var(--warn) 20%, transparent); color: var(--warn-text); }
+
+  .flow { display: grid; grid-template-columns: 1fr; gap: 12px; }
+  @media (min-width: 640px) { .flow { grid-template-columns: repeat(2, 1fr); } }
+  .flow-step {
+    min-height: 142px;
+    padding: 16px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--bg-elev);
+  }
+  .flow-step code { color: var(--accent); font-weight: 700; }
+  .flow-step strong { display: block; margin-top: 10px; font-size: 15px; }
+  .flow-step p { margin: 5px 0 0; color: var(--muted); font-size: 13.5px; }
+
+  .role-grid { display: grid; grid-template-columns: 1fr; gap: 16px; margin-top: 24px; }
+  @media (min-width: 640px) { .role-grid { grid-template-columns: repeat(2, 1fr); } }
+  .role-block {
+    padding: 18px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--bg-elev);
+  }
+  .role-label {
+    display: block;
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+  }
+  .role-block h3 { margin: 10px 0 7px; font-size: 17px; }
+  .role-block p { margin: 0; color: var(--muted); font-size: 13.5px; }
+  .role-block ul { margin: 12px 0 0; padding-left: 18px; color: var(--muted); font-size: 13px; }
+  .role-block li + li { margin-top: 5px; }
+
+  a.card-link { display: block; text-decoration: none; color: inherit; transition: border-color .15s, transform .12s; }
+  a.card-link:hover { text-decoration: none; border-color: var(--accent); transform: translateY(-1px); }
+  a.card-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  a.card-link .go { display: inline-block; margin-top: 12px; color: var(--accent); font-weight: 650; font-size: 13.5px; }
+  a.card-link .card-ico { transition: background .15s; }
+
+  .footer {
+    border-top: 1px solid var(--border);
+    padding: 28px clamp(16px, 4vw, 40px);
+    color: var(--muted);
+    font-size: 13.5px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 20px;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1180px;
+    margin: 0 auto;
+  }
+  .footer code { background: var(--bg-soft); border: 1px solid var(--border); border-radius: 6px; padding: 1px 6px; }
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+  ::selection { background: color-mix(in srgb, var(--accent) 30%, transparent); }
+  @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; transition: none !important; } }
+
+  .qa { border-bottom: 1px solid var(--border); padding: 18px 0; }
+  .qa:last-child { border-bottom: 0; }
+  .qa h3 { margin: 0 0 6px; font-size: 15.5px; }
+  .qa p { margin: 0; color: var(--muted); font-size: 14px; }
+  .qa p + p { margin-top: 8px; }
+  ul.plain { margin: 10px 0 0; padding-left: 20px; color: var(--muted); font-size: 14.5px; }
+  ul.plain li + li { margin-top: 6px; }
+  .cmd { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .cmd .sig { color: var(--muted); font-weight: 500; font-size: 13.5px; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" href="#top">
+    <span class="brand-mark" aria-hidden="true">
+      <svg viewBox="0 0 32 32" role="presentation">
+        <defs>
+          <linearGradient id="brand-grad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#14b8a6"></stop>
+            <stop offset="1" stop-color="#2563eb"></stop>
+          </linearGradient>
+        </defs>
+        <rect width="32" height="32" fill="url(#brand-grad)"></rect>
+        <path d="M16 6.5 23.5 10v6.3c0 4.2-3.1 7-7.5 8.6-4.4-1.6-7.5-4.4-7.5-8.6V10L16 6.5z" fill="#ffffff" opacity=".94"></path>
+        <path d="m12.4 16.2 2.5 2.5 4.8-5" fill="none" stroke="#0f766e" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"></path>
+      </svg>
+    </span>
+    <span class="brand-name">CoinTracking Expert<small>auditor de criptomonedas</small></span>
+  </a>
+  <span class="topbar-spacer"></span>
+  <button class="icon-btn" id="theme-toggle" type="button" aria-label="Cambiar a tema oscuro">
+    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path></svg>
+    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg>
+    <span>Tema</span>
+  </button>
+</header>
+
+<section class="hero" id="top">
+  <div class="hero-inner">
+    <span class="pill"><span class="dot" aria-hidden="true"></span>un auditor · dos skills · una base de conocimiento con fecha de caducidad</span>
+    <h1>Entiende el auditor de CoinTracking <span class="grad">de punta a punta</span></h1>
+    <p class="lead">Este proyecto no es un asistente que responde dudas: es un auditor especializado en criptomonedas que reconcilia tus operaciones contra datos reales y solo después prepara la declaración. Esta página explica qué hay dentro, cómo se usa y dónde están sus límites.</p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="#que-es">Qué es el proyecto</a>
+      <a class="btn btn-ghost" href="#mapa">Ver el mapa del repositorio</a>
+      <a class="btn btn-ghost" href="#diagramas">Los diagramas</a>
+    </div>
+    <div class="status-strip" role="status">
+      <span class="status-mark" aria-hidden="true">OK</span>
+      <div><strong>Cada afirmación de esta página se puede comprobar</strong><span>Todo lo que se explica aquí sale de los archivos del repositorio: se citan las rutas, los ADR y los documentos de conocimiento que lo sostienen. No hay cifras inventadas ni datos personales de ninguna cuenta.</span></div>
+    </div>
+  </div>
+</section>
+
+<div class="layout">
+  <nav class="toc" aria-label="Índice de la página">
+    <h2>En esta página</h2>
+    <a href="#que-es">1. Qué es este proyecto</a>
+    <a href="#empezar">2. Empezar</a>
+    <a href="#mapa">3. El mapa del repositorio</a>
+    <a href="#skills">4. Las dos skills</a>
+    <a href="#mcp">5. El servidor MCP</a>
+    <a href="#conocimiento">6. La base de conocimiento</a>
+    <a href="#tool">7. El auditor determinista</a>
+    <a href="#casos">8. Casos, patrones y procedimientos</a>
+    <a href="#fiscalidad">9. Fiscalidad española</a>
+    <a href="#gobernanza">10. Gobernanza y decisiones</a>
+    <a href="#trazabilidad">11. Trazabilidad, caché y memoria</a>
+    <a href="#limites">12. Límites y principios</a>
+    <a href="#preguntas">13. Preguntas cortas</a>
+    <a href="#diagramas">14. Los diagramas</a>
+  </nav>
+
+  <main>
+    <section id="que-es" class="section">
+      <div class="section-head"><span class="section-num">1</span><h2 class="title">Qué es este proyecto</h2></div>
+      <p class="sub">Un auditor, no un auxiliar. Primero reconcilia; después declara. Ese orden es la decisión de diseño más importante de todo el repositorio.</p>
+      <p>El producto es un <strong>agente de IA auditor</strong> que vive en Claude Code (ADR-006) y se apoya en una base de conocimiento propia. Su trabajo es revisar los datos de una cuenta de CoinTracking —accediendo por la API a través de un servidor MCP propio o por el CSV export— para detectar y <em>explicar</em> problemas: transferencias huérfanas, ventas sin base de coste, duplicados, saldos imposibles, incoherencias fiscales. Después guía al usuario paso a paso para corregirlos en la web de CoinTracking y, solo cuando los datos cuadran, prepara la información fiscal.</p>
+      <p>No es un SDK ni una librería de motores deterministas: eso se descartó explícitamente (ADR-006). El «producto» es el agente más su conocimiento especializado en auditoría, y por eso la calidad se mide en reconciliaciones correctas, no en líneas de código.</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Pieza</th><th>Qué es</th></tr></thead>
+          <tbody>
+            <tr><td><code>knowledge/</code></td><td>El cerebro del agente y su fuente de verdad: formato CSV, modelo de coste, funcionamiento real de CoinTracking y de los exchanges, fiscalidad española y contexto regulatorio.</td></tr>
+            <tr><td><code>.claude/skills/</code></td><td>Las dos skills que el usuario invoca: <code>/audit-cointracking</code> (reconciliación) y <code>/spanish-tax-return</code> (declaración de un ejercicio).</td></tr>
+            <tr><td><code>cointracking-mcp/</code></td><td>Servidor MCP propio escrito en Go: puente entre la API de CoinTracking y el agente, con caché por proyecto y credenciales solo por entorno.</td></tr>
+            <tr><td><code>tools/ct_audit.py</code></td><td>Chequeos deterministas sobre el CSV (saldos, negativos, transferencias, duplicados, colisiones de ticker). El agente lo ejecuta en lugar de re-derivar la lógica.</td></tr>
+            <tr><td><code>adr/</code></td><td>42 decisiones arquitectónicas en formato MADR. Gobernanza vinculante: no son sugerencias.</td></tr>
+            <tr><td><code>USER_INPUT/&lt;proyecto&gt;/</code></td><td>Donde el usuario deja sus fuentes (CSV, Excel, capturas). Contenido real: nunca se versiona.</td></tr>
+            <tr><td><code>reports/output/&lt;proyecto&gt;/</code></td><td>Informes generados, también por proyecto y también fuera de git.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>El recorrido completo, en cuatro pasos</h3>
+      <div class="flow">
+        <div class="flow-step"><code>proyecto</code><strong>Aísla</strong><p>Ningún trabajo ocurre sin proyecto activo: separa los datos de cada cuenta para que dos auditorías no se mezclen nunca (ADR-013).</p></div>
+        <div class="flow-step"><code>datos</code><strong>Obtiene</strong><p>Dos vías: el MCP de la API (en vivo, solo lectura) o el CSV «Trade Table» exportado de CoinTracking.</p></div>
+        <div class="flow-step"><code>auditoría</code><strong>Reconcilia</strong><p>Coteja contra el exchange, la blockchain y el banco. Cada hallazgo se escribe como evidencia → causa → impacto → recomendación.</p></div>
+        <div class="flow-step"><code>fiscalidad</code><strong>Declara</strong><p>Solo con la reconciliación cerrada: FIFO para el coste, tramos del año correspondiente y Modelo 721 si procede.</p></div>
+      </div>
+
+      <div class="note">
+        <p><strong>La regla mental.</strong> Un informe fiscal es tan bueno como la auditoría que lo precede. Si los datos no cuadran, la cifra no se da: se explica qué falta y qué hay que corregir primero.</p>
+      </div>
+    </section>
+
+    <section id="empezar" class="section">
+      <div class="section-head"><span class="section-num">2</span><h2 class="title">Empezar</h2></div>
+      <p class="sub">Tres cosas antes de la primera pasada: un proyecto activo, una fuente de datos y el CSV en la carpeta correcta.</p>
+
+      <h3>1 · Fijar el proyecto activo</h3>
+      <p>Cada proyecto tiene su carpeta de entrada y su carpeta de informes. El agente pregunta siempre con cuál se trabaja —aunque solo exista uno— y no adelanta contenido antes de la confirmación: podría no ser el proyecto que se quiere retomar.</p>
+      <div class="code"><pre><code>USER_INPUT/
+  agp/            # fuentes de un proyecto (CSV, capturas, extractos)
+  otro-cliente/   # otro proyecto, aislado del anterior
+reports/output/
+  agp/            # informes generados para ese proyecto</code></pre></div>
+
+      <h3>2 · Elegir la vía de datos</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Vía</th><th>Cuándo usarla</th><th>Qué implica</th></tr></thead>
+          <tbody>
+            <tr><td>MCP (API)</td><td>Datos en vivo, consultas acotadas por fecha y agregados.</td><td>Servidor propio en Go compilado; credenciales por variables de entorno, nunca en el repositorio; solo lectura.</td></tr>
+            <tr><td>CSV «Trade Table»</td><td>Auditoría con el tool determinista, o cuando no hay API.</td><td>Un export por cuenta; el agente valida el formato antes de interpretarlo (hay columnas «Cur.» repetidas: se parsea por posición).</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>3 · Ejecutar los chequeos deterministas</h3>
+      <p>Antes de interpretar nada, la parte que puede calcularse se calcula con código, no con el modelo. Ese es el sentido del tool:</p>
+      <div class="code"><pre><code>python tools/ct_audit.py USER_INPUT/&lt;proyecto&gt;/trades.csv
+python tools/ct_audit.py USER_INPUT/&lt;proyecto&gt;/trades.csv --check negatives
+python tools/ct_audit.py USER_INPUT/&lt;proyecto&gt;/trades.csv --check transfers --window-min 1440
+python tools/ct_audit.py USER_INPUT/&lt;proyecto&gt;/trades.csv \
+  --expect-balances '{"Binance":{"BTC":"0.5"}}'</code></pre></div>
+      <p>La salida es un JSON con el formato detectado, el número de filas y el resultado de cada chequeo. Sobre esa base, el agente interpreta y explica; no al revés.</p>
+
+      <div class="status-strip status-strip--prep" role="status">
+        <span class="status-mark" aria-hidden="true">PREV</span>
+        <div><strong>Lo que necesitas antes de empezar</strong><span>El CSV de CoinTracking (o la clave de API), Python para el tool, y disciplina con la privacidad: los datos reales viven en <code>USER_INPUT/</code> y <code>reports/output/</code>, excluidos de git.</span></div>
+      </div>
+    </section>
+
+    <section id="mapa" class="section">
+      <div class="section-head"><span class="section-num">3</span><h2 class="title">El mapa del repositorio</h2></div>
+      <p class="sub">Dónde vive cada cosa. Si buscas algo, esta tabla te ahorra abrir el árbol entero.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Ruta</th><th>Para qué sirve</th></tr></thead>
+          <tbody>
+            <tr><td><code>CLAUDE.md</code></td><td>Instrucciones del agente: protocolo de auditor crítico, puerta de entrada del proyecto, guía paso a paso para el usuario, estilos de presentación.</td></tr>
+            <tr><td><code>README.md</code></td><td>Entrada del repositorio: qué es, cómo se usa, estructura, estado y quién mantiene qué.</td></tr>
+            <tr><td><code>FOUNDATION.md</code></td><td>Principios de ingeniería: basado en evidencia, explicabilidad, el silencio no es aceptable.</td></tr>
+            <tr><td><code>knowledge/</code></td><td>113 documentos organizados en seis niveles de autoridad.</td></tr>
+            <tr><td><code>adr/</code></td><td>42 ADR en formato MADR más dos índices (por nivel de conocimiento y secuencial).</td></tr>
+            <tr><td><code>templates/</code></td><td>Plantillas de informe: auditoría y declaración.</td></tr>
+            <tr><td><code>tests/fixtures/</code></td><td>Caso de prueba de oro sintético (<code>sample_trades.csv</code> + <code>EXPECTED.md</code>) para la regresión del tool.</td></tr>
+            <tr><td><code>docs/</code></td><td>Documentación de apoyo: glosario, fases de caché, rendimiento y esta misma página.</td></tr>
+            <tr><td><code>.github/</code></td><td>Instrucciones y prompts para la herramienta de explotación, y los dos flujos de CI.</td></tr>
+            <tr><td><code>AGENT_CHANGE_REQUESTS.md</code></td><td>Bandeja de peticiones de mejora que llegan desde el uso real y que el agente gestor procesa.</td></tr>
+            <tr><td><code>DECISIONS.md</code> · <code>CHANGELOG.md</code></td><td>Registro histórico de decisiones y registro de cambios por versión.</td></tr>
+            <tr><td><code>CONTRATO_FLUJO_GIT_VERSIONADO.md</code></td><td>Contrato obligatorio de ramas, commits, CHANGELOG y versionado semántico.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Dos herramientas, dos papeles (ADR-012)</h3>
+      <div class="role-grid">
+        <div class="role-block">
+          <span class="role-label">gestor</span>
+          <h3>Claude Code gestiona el agente</h3>
+          <p>Modifica código, conocimiento, reglas, ADR, skills, tool y plantillas, con gobernanza y commits revisables. Las instrucciones viven en <code>CLAUDE.md</code>.</p>
+          <ul>
+            <li>Cada cambio relevante deja rastro: ADR o CHANGELOG.</li>
+            <li>La validación del conocimiento se ejecuta antes de integrar.</li>
+            <li>Los datos del usuario nunca entran en el repositorio.</li>
+          </ul>
+        </div>
+        <div class="role-block">
+          <span class="role-label">explotación</span>
+          <h3>Copilot lo usa sin modificarlo</h3>
+          <p>Audita, declara y genera informes con las mismas reglas. Sus instrucciones están en <code>.github/copilot-instructions.md</code> y sus prompts en <code>.github/prompts/</code>.</p>
+          <ul>
+            <li>No edita el agente: pide cambios.</li>
+            <li>Las peticiones llegan por <code>AGENT_CHANGE_REQUESTS.md</code>.</li>
+            <li>Así el uso real alimenta el conocimiento sin degradarlo.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="skills" class="section">
+      <div class="section-head"><span class="section-num">4</span><h2 class="title">Las dos skills</h2></div>
+      <p class="sub">El usuario no invoca comandos técnicos: dice lo que quiere y el agente lo enruta. Solo hay dos puertas de entrada.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Skill</th><th>Se pide con</th><th>Qué hace</th></tr></thead>
+          <tbody>
+            <tr><td><code>/audit-cointracking</code></td><td>«audita mi cuenta», «revisa mis datos»</td><td>Reconciliación completa: cobertura de fuentes, duplicados, transferencias, tipos y base de coste, purchase pool, cierre documentado.</td></tr>
+            <tr><td><code>/spanish-tax-return</code></td><td>«la renta de 2025», «Modelo 721»</td><td>Prepara la declaración de un ejercicio. Reconciliación primero; lo fiscal, después.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Las seis fases de la auditoría</h3>
+      <p>El orden no es estético: cada fase depende de que la anterior esté cerrada. Auditando duplicados sobre transferencias sin origen se pierde el tiempo.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Fase</th><th>Qué se revisa</th><th>Peso orientativo</th></tr></thead>
+          <tbody>
+            <tr><td>1 · Cobertura de fuentes</td><td>Qué cuentas, exchanges y wallets están importados y cuáles faltan.</td><td>20 %</td></tr>
+            <tr><td>2 · Duplicados</td><td>Operaciones repetidas por doble importación (API + CSV) y falsos positivos por batching.</td><td>25 %</td></tr>
+            <tr><td>3 · Transferencias</td><td>Retiradas sin depósito de destino y depósitos sin origen: fondos huérfanos.</td><td>20 %</td></tr>
+            <tr><td>4 · Tipos y base de coste</td><td>Operaciones mal clasificadas (staking como compra, convert como venta) y ventas sin coste.</td><td>15 %</td></tr>
+            <tr><td>5 · Purchase pool</td><td>Compras agotadas o asignadas en un orden que rompe el FIFO.</td><td>10 %</td></tr>
+            <tr><td>6 · Cierre y documentación</td><td>Informe con evidencia, cambios registrados y pendientes declarados.</td><td>10 %</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Cómo es un hallazgo</h3>
+      <p>Todos los informes comparten la misma forma, y esa forma es lo que los hace auditables:</p>
+      <div class="code"><pre><code>Evidencia   →   Causa   →   Impacto   →   Recomendación
+Qué se ve       Por qué        Qué cuesta      Qué hacer, paso a paso
+(en datos)      (mecanismo)    (fiscal/econ.)  (en la web de CoinTracking)</code></pre></div>
+      <p>La recomendación se escribe para alguien que no domina CoinTracking: dónde hacer clic, qué campo rellenar y por qué. Cuando la corrección implica crear o editar una operación a mano, la explicación se cierra con un bloque-resumen copiable con los campos exactos (ADR-024).</p>
+
+      <div class="note">
+        <p><strong>Sin duplicar trabajo.</strong> Si en la misma conversación ya se auditó y después se pide la declaración, se reutiliza el resultado. Solo se re-audita si los datos cambiaron o cambió la fuente.</p>
+      </div>
+    </section>
+
+    <section id="mcp" class="section">
+      <div class="section-head"><span class="section-num">5</span><h2 class="title">El servidor MCP</h2></div>
+      <p class="sub">Un binario en Go entre el agente y la API de CoinTracking. Existe porque la API es lenta, tiene cuota y sus respuestas son enormes.</p>
+
+      <div class="code"><pre><code>Agente auditor (Claude Code)
+   │  stdio · JSON-RPC
+   ▼
+cointracking-mcp  (Go)
+   ├── Tool handlers   · 6 herramientas de lectura + 5 de control
+   ├── Caché           · LRU + TTL, invalidación manual, por proyecto
+   └── Cliente API     · HMAC-SHA512, nonce monotónico, control de rate limit
+   │  HTTPS
+   ▼
+CoinTracking API v1</code></pre></div>
+
+      <h3>Qué expone</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Herramienta</th><th>Qué devuelve</th></tr></thead>
+          <tbody>
+            <tr><td><code>cointracking_get_trades</code></td><td>Todas las operaciones —trades, depósitos, retiradas, staking, minería, airdrops, DeFi— con comisiones, tipo, exchange, grupo y <code>trade_id</code>. Acepta <code>limit</code>, orden y rango en segundos UNIX.</td></tr>
+            <tr><td><code>cointracking_get_balance</code></td><td>Balance actual por moneda con su valor en BTC y fiat.</td></tr>
+            <tr><td><code>cointracking_get_grouped_balance</code></td><td>Balances agrupados por exchange, tipo o moneda.</td></tr>
+            <tr><td><code>cointracking_get_gains</code></td><td>Ganancias realizadas y no realizadas con método de coste seleccionable (<code>best</code>, <code>worst</code>, <code>oldest</code>, <code>newest</code>).</td></tr>
+            <tr><td><code>cointracking_get_historical_summary</code></td><td>Resumen histórico de cartera por año o mes.</td></tr>
+            <tr><td><code>cointracking_get_historical_currency</code></td><td>Balance y valor histórico de una moneda concreta.</td></tr>
+            <tr><td><code>cointracking_switch_project</code></td><td>Cambia el proyecto activo en caliente, sin reiniciar el servidor ni tocar la configuración.</td></tr>
+            <tr><td><code>cointracking_invalidate_cache</code></td><td>Tira la caché: obligatorio después de que el usuario corrija algo en CoinTracking.</td></tr>
+            <tr><td><code>cointracking_cache_stats</code></td><td>Estado y métricas de la caché para saber qué se está reutilizando.</td></tr>
+            <tr><td><code>cointracking_close_project</code> · <code>cointracking_delete_project</code></td><td>Cierre y borrado del espacio de trabajo de un proyecto.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Caché y multi-proyecto</h3>
+      <ul class="plain">
+        <li><strong>Caché por proyecto</strong> con política LRU y tiempo de vida: dos cuentas distintas nunca comparten entradas (ADR-016).</li>
+        <li><strong>Credenciales fuera del repositorio</strong>: solo por variables de entorno o por fichero de entorno del proyecto. Existe un modo de credenciales por proyecto (<code>--project-env-dir</code>) para auditar dos cuentas diferentes sin contaminar la caché (ADR-040).</li>
+        <li><strong>Solo lectura</strong> contra CoinTracking: el servidor no crea, edita ni borra operaciones. Las correcciones las aplica el usuario en la web, guiado.</li>
+        <li><strong>Trazabilidad</strong>: cada llamada queda registrada con marca de tiempo y parámetros, lo que permite explicar de dónde sale cada cifra.</li>
+        <li><strong>Procesos huérfanos en Windows</strong>: hay un ADR específico (ADR-0041) porque el problema apareció y no era obvio.</li>
+      </ul>
+
+      <div class="note">
+        <p><strong>El detalle que más se olvida.</strong> Cuando el usuario corrige datos en CoinTracking, la caché queda obsoleta. Si no se invalida, las cifras nuevas se mezclan con las viejas: el error más caro posible en una auditoría.</p>
+      </div>
+    </section>
+
+    <section id="conocimiento" class="section">
+      <div class="section-head"><span class="section-num">6</span><h2 class="title">La base de conocimiento</h2></div>
+      <p class="sub">113 documentos con metadatos, nivel de autoridad y fecha de caducidad. Es lo que separa a un auditor de un generador de texto plausible.</p>
+
+      <h3>Seis niveles, de la fuente oficial al índice</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Nivel</th><th>Qué contiene</th><th>Ejemplos en el repositorio</th></tr></thead>
+          <tbody>
+            <tr><td>A · Fuentes oficiales</td><td>Lo que manda: AEAT, BOE y DGT; documentación de CoinTracking; documentación de exchanges.</td><td><code>taxation/spain/</code>, <code>cointracking/official/</code>, <code>exchanges/official/</code></td></tr>
+            <tr><td>B · Operativo</td><td>Cómo funciona de verdad la plataforma y cada exchange.</td><td><code>cointracking/behavioral/</code> (Binance Convert, Earn, Futuros, staking, DeFi, duplicados…)</td></tr>
+            <tr><td>C · Casos y patrones</td><td>Casos auditados, patrones recurrentes y procedimientos.</td><td><code>cases/</code> (20 casos), <code>patterns/</code>, <code>procedures/</code></td></tr>
+            <tr><td>D · Auxiliar</td><td>Checklists y árboles de decisión para no improvisar.</td><td><code>checklists/</code>, <code>decision-trees/</code></td></tr>
+            <tr><td>E · Referencia</td><td>Glosario, historia del proyecto y contexto regulatorio.</td><td><code>reference/GLOSSARY.md</code>, <code>reference/context/</code></td></tr>
+            <tr><td>F · Navegación</td><td>El mapa: por dónde entrar según lo que buscas.</td><td><code>INDEX_MASTER.md</code>, <code>QUICK_START.md</code>, <code>CHEAT_SHEET.md</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Cada documento se declara a sí mismo</h3>
+      <p>Todo documento lleva metadatos YAML obligatorios: identificador con convención <code>KB-[NIVEL][SUB]-NNN</code> (ADR-036), nivel, dominio, fuente, autoridad, confianza, versión y —lo importante— desde cuándo y hasta cuándo vale.</p>
+      <div class="code"><pre><code>---
+id: KB-F1-004
+title: "Índice Maestro de la Base de Conocimiento"
+level: F
+domain: cointracking
+source: "Documentación interna"
+authority: reference
+last_verified: 2026-07-05
+valid_from: 2024-01-01
+valid_until: 2027-12-31
+confidence: medium
+version: 1.0
+---</code></pre></div>
+
+      <h3>Tres patas de vigencia (ADR-008 y ADR-022)</h3>
+      <p>El conocimiento caduca, y caduca por tres motivos distintos que se revisan por separado:</p>
+      <div class="grid cols-3">
+        <div class="card">
+          <div class="card-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg></div>
+          <h3>Lo fiscal</h3>
+          <p>Tramos, umbrales, criterios de la DGT y plazos cambian cada año. Nada se aplica «de memoria»: se reverifica contra AEAT, BOE o DGT.</p>
+        </div>
+        <div class="card">
+          <div class="card-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="M2 10h20"></path></svg></div>
+          <h3>Lo de CoinTracking</h3>
+          <p>Formato CSV, tickers y herramientas cambian con la plataforma. La verdad del formato actual son los datos reales del usuario y el centro de ayuda oficial.</p>
+        </div>
+        <div class="card">
+          <div class="card-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg></div>
+          <h3>Lo regulatorio</h3>
+          <p>Licencias, cierres y migraciones forzosas de exchanges (por ejemplo MiCA) afectan a la operativa y se comprueban antes de preparar una declaración.</p>
+        </div>
+      </div>
+
+      <div class="note">
+        <p><strong>Ante un hueco, no se rellena.</strong> El orden es siempre el mismo: buscar en <code>knowledge/</code>, si no está ir a la fuente oficial, y si sigue sin resolverse preguntar al usuario. Nunca inventar una regla fiscal: se marca <code>[PENDIENTE DE FUNDAMENTAR]</code>.</p>
+      </div>
+    </section>
+
+    <section id="tool" class="section">
+      <div class="section-head"><span class="section-num">7</span><h2 class="title">El auditor determinista</h2></div>
+      <p class="sub">La parte que puede calcularse se calcula con código. El modelo interpreta y explica; no hace aritmética de saldos en la cabeza.</p>
+      <p><code>tools/ct_audit.py</code> es el código del repositorio que emite conclusiones sobre los datos del usuario, y por eso está vetado: sus chequeos son la referencia frente a la que se contrasta cualquier explicación. Se ejecuta sobre el CSV «Trade Table» y valida la cabecera antes de parsear, porque el export tiene columnas repetidas (<code>Cur.</code>) y solo la posición las distingue; si el formato no es una de las dos variantes verificadas (<code>es_trade_table</code>, <code>en_full_export</code>) falla en voz alta en lugar de adivinar.</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Chequeo</th><th>Qué detecta</th><th>Por qué importa</th></tr></thead>
+          <tbody>
+            <tr><td><code>balances</code></td><td>Reconstruye el saldo de cada activo por cuenta recorriendo todas las filas en orden.</td><td>Es la prueba base: si el saldo reconstruido no cuadra con el exchange, algo falta o sobra.</td></tr>
+            <tr><td><code>negatives</code></td><td>Saldos negativos imposibles en algún momento del histórico.</td><td>Casi siempre significa importación incompleta, operación duplicada o fecha invertida.</td></tr>
+            <tr><td><code>transfers</code></td><td>Retiradas sin depósito de destino y depósitos sin origen, con ventana configurable.</td><td>Fondos que desaparecen o aparecen: rompen el coste y, con él, toda la fiscalidad.</td></tr>
+            <tr><td><code>duplicates</code></td><td>Filas exactamente iguales en todos los campos relevantes.</td><td>El síntoma clásico de importar la API y el CSV a la vez.</td></tr>
+            <tr><td><code>collisions</code></td><td>Un mismo ticker usado para activos distintos.</td><td>Dos monedas mezcladas en una sola serie destruyen el FIFO sin dejar rastro visible.</td></tr>
+            <tr><td><code>--expect-balances</code></td><td>Compara la reconstrucción con los saldos que declara el exchange.</td><td>Convierte una sospecha en un descuadre concreto, activo por activo.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="code"><pre><code>{
+  "filas": 500,
+  "exchange": "(todas)",
+  "formato_detectado": "es_trade_table",
+  "saldos_negativos": [],
+  "transferencias": {
+    "depositos_huerfanos": [],
+    "retiradas_huerfanas": [
+      { "cuenta": "Binance", "activo": "BTC", "importe": "0.05", "fecha": "05.03.2025 10:22:31", "comentario": "" }
+    ],
+    "nota": "Los depósitos fiat huérfanos suelen ser ingresos externos legítimos (no error)."
+  },
+  "duplicados_exactos": [],
+  "colision_tickers": []
+}</code></pre></div>
+      <p>La salida está pensada para leerse en dos niveles: el agente interpreta los totales, y cuando hace falta el detalle se procesa con código en lugar de volcarlo en la conversación.</p>
+
+      <div class="note">
+        <p><strong>El límite, dicho sin rodeos.</strong> El tool calcula; el agente explica. Toda cantidad exacta es «estimación no vinculante» salvo que provenga de un cálculo determinista (ADR-006). Esta distinción no es un formalismo legal: es la razón por la que el proyecto puede ayudar sin prometer certezas que no puede dar.</p>
+      </div>
+    </section>
+
+    <section id="casos" class="section">
+      <div class="section-head"><span class="section-num">8</span><h2 class="title">Casos, patrones y procedimientos</h2></div>
+      <p class="sub">Veinte casos auditados, cuatro patrones, tres árboles de decisión y tres procedimientos. Así el agente no improvisa: reconoce.</p>
+
+      <h3>Casos reales (muestra de los 20 registrados)</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Caso</th><th>Síntoma</th><th>Causa</th></tr></thead>
+          <tbody>
+            <tr><td><code>ct-001</code></td><td>Transferencia entre exchanges importada como venta</td><td>El importador no la reconoce como movimiento interno entre cuentas propias.</td></tr>
+            <tr><td><code>ct-003</code></td><td>Operaciones duplicadas</td><td>API y CSV importados simultáneamente sobre la misma cuenta.</td></tr>
+            <tr><td><code>ct-004</code></td><td>Balance negativo</td><td>Orden cronológico invertido en la importación.</td></tr>
+            <tr><td><code>ct-006</code></td><td>Convert de Binance como venta y compra</td><td>Mecánica propia del producto: una operación acaba en dos filas.</td></tr>
+            <tr><td><code>ct-008</code></td><td>Duplicados aparentes</td><td>Ejecución parcial por lotes: varias operaciones legítimas en el mismo segundo.</td></tr>
+            <tr><td><code>ct-010</code></td><td>Airdrop con coste asignado</td><td>Se registra como compra cuando no hubo desembolso.</td></tr>
+            <tr><td><code>ct-017</code></td><td>Coste cero en una venta</td><td>La compra original pertenecía a un ejercicio que no se importó.</td></tr>
+            <tr><td><code>ct-019</code></td><td>Balance negativo tras una corrección</td><td>Se eliminó una compra que sostenía una venta posterior.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Cada caso documenta síntoma, diagnóstico, corrección y verificación. El conjunto vive en <code>knowledge/cases/</code> y se indexa además en <code>cointracking_casos_v2.yaml</code> para poder consultarlo de forma programática (ADR-015).</p>
+
+      <div class="grid cols-3">
+        <div class="card"><h3>Patrones</h3><p>Formas reconocibles de fallar, con su estrategia de resolución: reconciliación de balances, detección de duplicados, agotamiento del purchase pool y emparejamiento de transferencias.</p></div>
+        <div class="card"><h3>Árboles de decisión</h3><p>Qué hacer según lo que aparece: flujo de auditoría, flujo de duplicados y flujo de saldo negativo. Evitan que dos sesiones resuelvan lo mismo de forma distinta.</p></div>
+        <div class="card"><h3>Procedimientos</h3><p>Pasos ordenados para auditar una cuenta completa, arreglar el historial de compras y conciliar transferencias, con checklist final y tiempo esperado.</p></div>
+      </div>
+
+      <div class="note">
+        <p><strong>Nunca se borra por parecido.</strong> Antes de eliminar un duplicado hay que verificar el <code>Trade ID</code> en el exchange: si es distinto, son operaciones legítimas. El agente los lista con ejemplos y <em>pide confirmación explícita</em> antes de tocar nada (ADR-014). Borrar una compra legítima deja saldos negativos y obliga a restaurar desde copia de seguridad.</p>
+      </div>
+    </section>
+
+    <section id="fiscalidad" class="section">
+      <div class="section-head"><span class="section-num">9</span><h2 class="title">Fiscalidad española</h2></div>
+      <p class="sub">Tres piezas: qué se identifica (FIFO), en qué año tributa y con qué tipo; y un modelo informativo aparte para las tenencias en el extranjero.</p>
+
+      <h3>Identificación de unidades: FIFO</h3>
+      <p>Cada transmisión consume primero las unidades más antiguas del mismo activo. La identidad del activo es el ticker completo, y las colisiones de ticker del chequeo <code>collisions</code> existen precisamente porque dos monedas distintas bajo el mismo símbolo invalidan el cálculo. El coste no lo calcula el modelo: sale del informe de impuestos de CoinTracking, que es un cálculo determinista (ADR-006).</p>
+
+      <h3>Permuta cripto-cripto</h3>
+      <p>Cambiar una cripto por otra es una transmisión, no una operación neutra (art. 37.1.h LIRPF). Se valora en euros a la fecha de la operación, y la comisión forma parte de la valoración. Este es el error fiscal más común entre usuarios noveles: creer que «no vendí, solo cambié».</p>
+
+      <h3>Tramos de la base del ahorro · ejercicio 2025</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Base liquidable</th><th>Tipo aplicable</th></tr></thead>
+          <tbody>
+            <tr><td>0 – 6.000 €</td><td>19 %</td></tr>
+            <tr><td>6.000 – 50.000 €</td><td>21 %</td></tr>
+            <tr><td>50.000 – 200.000 €</td><td>23 %</td></tr>
+            <tr><td>200.000 – 300.000 €</td><td>27 %</td></tr>
+            <tr><td>Más de 300.000 €</td><td>30 %</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>El último tramo pasó del 28 % al <strong>30 %</strong> en 2025. Los tipos se seleccionan por ejercicio: no se cablean en el código, porque cambian con la ley.</p>
+
+      <h3>Compensación de pérdidas</h3>
+      <ul class="plain">
+        <li>Primero, con ganancias patrimoniales de la misma base del ahorro, sin límite.</li>
+        <li>Si queda saldo negativo, con el saldo positivo de rendimientos del capital mobiliario (intereses, staking…), con el límite del <strong>25 %</strong> de ese saldo positivo —vigente desde 2018—.</li>
+        <li>Lo que aún sobrevive se arrastra a los <strong>cuatro ejercicios siguientes</strong>, en el mismo orden; pasado ese plazo, se pierde.</li>
+        <li>Existe además la regla anti-aplicación de pérdidas por recompra de valores homogéneos (art. 33.5.e y f LIRPF): vender con pérdida y recomprar en plazo no permite compensar esa pérdida todavía.</li>
+      </ul>
+
+      <h3>Modelo 721: criptomonedas en el extranjero</h3>
+      <div class="grid cols-2">
+        <div class="card"><h3>Quién está obligado</h3><p>Quien tenga cripto en custodios <strong>no residentes</strong> cuyo valor conjunto a 31 de diciembre supere los <strong>50.000 €</strong>. La autocustodia —control propio de las claves privadas, sea wallet hardware o software— queda <strong>fuera</strong> del modelo, con independencia del importe.</p></div>
+        <div class="card"><h3>Plazo y continuidad</h3><p>Del <strong>1 de enero al 31 de marzo</strong> del año siguiente. Tras la primera presentación solo se repite si el saldo conjunto crece en más de <strong>20.000 €</strong> respecto al que motivó la última declaración.</p></div>
+      </div>
+      <p>Los modelos 172, 173 y 721 son informativos y no tienen régimen sancionador propio: se aplica el general de la LGT (art. 198), con 20 € por dato y mínimos y máximos de 300 € y 20.000 €; la presentación voluntaria fuera de plazo reduce la cuantía a la mitad.</p>
+
+      <div class="note">
+        <p><strong>Nada de esto es asesoramiento fiscal.</strong> El agente identifica, clasifica y documenta; no presenta declaraciones ni emite cifras vinculantes. Cada dato fiscal de <code>knowledge/taxation/</code> trae su fuente (AEAT, BOE, DGT) y su fecha de verificación, y se reverifica antes de aplicarlo a otro ejercicio.</p>
+      </div>
+    </section>
+
+    <section id="gobernanza" class="section">
+      <div class="section-head"><span class="section-num">10</span><h2 class="title">Gobernanza y decisiones</h2></div>
+      <p class="sub">Cuarenta y dos ADR en formato MADR. No son documentación decorativa: cualquier cambio de comportamiento tiene que poder rastrearse hasta una decisión.</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>ADR</th><th>Decisión</th><th>Por qué importa</th></tr></thead>
+          <tbody>
+            <tr><td><code>006</code></td><td>El producto es un agente auditor, no una librería determinista</td><td>Define qué se puede prometer y qué no: el agente explica, el cálculo determinista lo hace el tool.</td></tr>
+            <tr><td><code>009</code></td><td>Protocolo de auditor crítico: cero invención</td><td>Ante un hueco se busca, se escala o se pregunta. Nunca se rellena.</td></tr>
+            <tr><td><code>013</code></td><td>Estructura multi-proyecto obligatoria</td><td>Dos cuentas nunca comparten carpeta, caché ni informe.</td></tr>
+            <tr><td><code>014</code></td><td>Duplicados: verificar <code>Trade ID</code> y pedir consentimiento</td><td>Evita el borrado accidental de operaciones legítimas por lotes del exchange.</td></tr>
+            <tr><td><code>016</code></td><td>Cambio de proyecto activo en caliente en el MCP</td><td>Sin reiniciar el servidor no hay ventana para consultar la cuenta equivocada.</td></tr>
+            <tr><td><code>026</code> · <code>028</code></td><td>Límites de la decisión fiscal; auditor frente a asesor</td><td>Marca la frontera entre documentar y decidir por el contribuyente.</td></tr>
+            <tr><td><code>033</code></td><td>Sistema de conocimiento jerárquico de seis niveles</td><td>Da a cada afirmación un nivel de autoridad comprobable.</td></tr>
+            <tr><td><code>042</code></td><td>Proactividad en gobernanza</td><td>Quien detecta un hallazgo repetible propone el ADR en el momento, no después.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Flujo de trabajo obligatorio</h3>
+      <p>El contrato de git, CHANGELOG y versionado no deja margen a la interpretación:</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Elemento</th><th>Regla</th></tr></thead>
+          <tbody>
+            <tr><td>Ramas</td><td><code>main</code> estable; trabajo en <code>feature/</code>, <code>fix/</code>, <code>docs/</code> o <code>refactor/</code>, breve y de un solo asunto.</td></tr>
+            <tr><td>Commits</td><td>Convencionales (<code>feat</code>, <code>fix</code>, <code>docs</code>, <code>refactor</code>, <code>test</code>, <code>build</code>, <code>chore</code>), uno por cambio lógico.</td></tr>
+            <tr><td>CHANGELOG</td><td>Todo se anota primero en <code>[Sin publicar]</code> con fecha ISO; al publicar, pasa a la versión.</td></tr>
+            <tr><td>Versiones</td><td>Versionado semántico con etiquetas git; <code>alpha</code>, <code>beta</code> y <code>rc</code> para las preliminares.</td></tr>
+            <tr><td>Verificación</td><td>Antes de integrar: revisar el diff completo, ejecutar pruebas y compilación, y confirmar que no hay secretos ni archivos temporales.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Validación automática del conocimiento</h3>
+      <p>La base de conocimiento se valida como si fuera código: <code>tools/audit_mega_complete.py</code> comprueba metadatos, identificadores y referencias; el <em>hook</em> de pre-commit y los flujos de integración continúa (<code>audit-mega.yml</code> para el conocimiento, <code>go-tests.yml</code> para el servidor MCP) impiden que un documento mal formado entre en la rama principal.</p>
+      <div class="code"><pre><code># validar antes de commitear
+python tools/audit_mega_complete.py
+
+# instalar la validación local (Windows)
+powershell -ExecutionPolicy Bypass .\tools\install_hooks.ps1</code></pre></div>
+
+      <div class="note">
+        <p><strong>Nada se publica sin permiso.</strong> El agente aplica cambios en los ficheros, pero nunca ejecuta <code>git commit</code> ni <code>git push</code> sin consentimiento explícito. La gobernanza protege al revisor: cambios pequeños, commits revisables y el porqué siempre escrito.</p>
+      </div>
+    </section>
+
+    <section id="trazabilidad" class="section">
+      <div class="section-head"><span class="section-num">11</span><h2 class="title">Trazabilidad, caché y memoria</h2></div>
+      <p class="sub">Nada importante vive solo en el chat. Si no está en un informe, en el registro de cambios o en la memoria del proyecto, se puede perder.</p>
+
+      <div class="grid cols-3">
+        <div class="card">
+          <h3>Caché en disco</h3>
+          <p>Los datos obtenidos se guardan en <code>.cache/cointracking/</code> con marca de tiempo, excluidos de git. Se reutilizan mientras sean válidos y se invalidan en cuanto el usuario cambia algo en CoinTracking.</p>
+        </div>
+        <div class="card">
+          <h3>Registro de cambios</h3>
+          <p>Toda corrección aplicada en CoinTracking se anota en <code>reports/output/REGISTRO-CAMBIOS.md</code>, solo añadiendo: qué se cambió, por qué, con qué evidencia, el antes y el después, y cómo se verificó.</p>
+        </div>
+        <div class="card">
+          <h3>Memoria de sesión</h3>
+          <p>Al retomar en una sesión nueva se leen primero la memoria y los informes para recuperar el estado: qué cuentas están auditadas, cuáles pendientes y qué decisiones se tomaron.</p>
+        </div>
+      </div>
+
+      <h3>Economía de tokens</h3>
+      <ul class="plain">
+        <li>Consultar lo mínimo: acotar por rango de fechas y límite, y preferir agregados antes que el detalle completo.</li>
+        <li>Procesar lo grande con código, no en el contexto: volcar a fichero y subir solo el resultado compacto.</li>
+        <li>No pegar volcados completos en la conversación ni en los informes: totales y ejemplos.</li>
+        <li>Verificar por lotes: guiar todas las correcciones de una ronda y comprobar una sola vez, al final, en lugar de consultar tras cada cambio.</li>
+      </ul>
+
+      <h3>Cómo se presenta un resultado</h3>
+      <p>En la conversación, las listas de operaciones usan formatos compactos y consistentes según el caso —línea temporal, auditoría con marcas de verificación y avisos, balance por moneda, recorrido de fondos— (ADR-025). En disco, el informe sigue la plantilla de <code>templates/AUDIT_REPORT.md</code>.</p>
+    </section>
+
+    <section id="limites" class="section">
+      <div class="section-head"><span class="section-num">12</span><h2 class="title">Límites y principios</h2></div>
+      <p class="sub">Un auditor que no dice sus límites no es un auditor. Estos son los del proyecto, y están escritos como decisiones, no como advertencias.</p>
+
+      <div class="grid cols-2">
+        <div class="card">
+          <div class="card-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 9v4M12 17h.01"></path><path d="M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"></path></svg></div>
+          <h3>No es determinista</h3>
+          <p>Es un modelo de lenguaje: encuentra y explica problemas cualitativos, pero no produce cifras fiscales vinculantes. Toda cantidad exacta es una estimación no vinculante salvo que provenga de un cálculo determinista.</p>
+        </div>
+        <div class="card">
+          <div class="card-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="M9 12l2 2 4-4"></path></svg></div>
+          <h3>Cero invención</h3>
+          <p>Toda afirmación se apoya en los datos reales del usuario, la base de conocimiento fundamentada o una fuente oficial verificada en la sesión. Sin respaldo, no se afirma.</p>
+        </div>
+        <div class="card">
+          <div class="card-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5M12 16h.01"></path></svg></div>
+          <h3>Ante la duda, para</h3>
+          <p>Buscar en el conocimiento, luego en la fuente oficial, luego preguntar. Se prefiere «hay que verificar X» a una cifra dudosa, y el agente puede negarse a dar un número que no pueda fundamentar.</p>
+        </div>
+        <div class="card">
+          <div class="card-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg></div>
+          <h3>Consentimiento antes de actuar</h3>
+          <p>Ante una acción consecuente —irreversible o con impacto fiscal— se explica qué se va a hacer, se advierte de la consecuencia de no hacerlo y se pregunta. No se aplica a lecturas ni a pasos triviales.</p>
+        </div>
+      </div>
+
+      <h3>Lo que este agente no hace</h3>
+      <ul class="plain">
+        <li>No presenta declaraciones ni firma nada: prepara la información y la documenta.</li>
+        <li>No modifica CoinTracking por su cuenta: el servidor MCP es de solo lectura y las correcciones las aplica el usuario, guiado paso a paso.</li>
+        <li>No sustituye al profesional: el informe está pensado para que un asesor lo revise, con sus dudas declaradas.</li>
+        <li>No mezcla proyectos ni cuentas, ni siquiera cuando el nombre del archivo coincide.</li>
+        <li>No rellena huecos con supuestos plausibles: los marca como <code>[VERIFICAR]</code> o <code>[PENDIENTE DE FUNDAMENTAR]</code>.</li>
+        <li>No oculta incertidumbre: el silencio no es aceptable, y lo que no se puede verificar se dice.</li>
+      </ul>
+    </section>
+
+    <section id="preguntas" class="section">
+      <div class="section-head"><span class="section-num">13</span><h2 class="title">Preguntas cortas</h2></div>
+      <p class="sub">Dudas que aparecen en las primeras sesiones, con la respuesta directa.</p>
+
+      <div class="qa"><h3>¿Dónde están mis datos?</h3><p>En <code>USER_INPUT/&lt;proyecto&gt;/</code> las fuentes que dejas; en <code>reports/output/&lt;proyecto&gt;/</code> los informes; en <code>.cache/cointracking/</code> las respuestas guardadas de la API. Las tres rutas están excluidas de git: nada de eso se versiona.</p></div>
+      <div class="qa"><h3>¿Puedo auditar dos cuentas distintas?</h3><p>Sí, y deben ir en proyectos separados. El servidor MCP cambia de proyecto en caliente, y si cada cuenta tiene sus propias credenciales se arranca con <code>--project-env-dir</code> para que no compartan ni identidad ni caché (ADR-040).</p></div>
+      <div class="qa"><h3>¿El agente modifica mis operaciones en CoinTracking?</h3><p>No. El servidor MCP solo lee. Lo que hace es detectar el problema, explicarlo y decirte exactamente qué cambiar en la web, campo a campo.</p></div>
+      <div class="qa"><h3>¿Necesito la API o me basta con el CSV?</h3><p>Con el CSV basta para auditar y para usar el auditor determinista. La API añade datos en vivo y consultas agregadas, pero no es obligatoria.</p></div>
+      <div class="qa"><h3>¿Por qué aparecen duplicados si importé una sola vez?</h3><p>Porque el CSV y la API pueden haberse importado en momentos distintos, o porque el exchange ejecutó varias operaciones en el mismo segundo. Antes de borrar nada se comprueba el <code>Trade ID</code>: si difiere, son legítimas (ADR-014).</p></div>
+      <div class="qa"><h3>¿Qué pasa si falta un exchange?</h3><p>Se verá como transferencias huérfanas o saldos negativos. No se «arregla» a mano: el informe lo declara como fuente faltante y se importa el histórico antes de seguir, porque cualquier cifra calculada sin él sería falsa.</p></div>
+      <div class="qa"><h3>¿Por qué hay 42 ADR para un agente?</h3><p>Porque el proyecto trata datos fiscales. Cada decisión que afecta a la corrección —cómo se detecta un duplicado, cuándo se invalida la caché, qué se puede afirmar— tiene que estar escrita y ser discutible. La alternativa es un agente que cambia de criterio sin que nadie lo note.</p></div>
+      <div class="qa"><h3>¿Qué significa «estimación no vinculante»?</h3><p>Que la cifra sirve para entender, planificar y contrastar, pero no es una liquidación. Solo los cálculos deterministas —el tool y el informe de impuestos de CoinTracking— producen números que se pueden usar como base, y aun así los revisa un profesional.</p></div>
+      <div class="qa"><h3>¿Y si mis criptos están en una wallet propia?</h3><p>Se auditan igual, pero no entran en el Modelo 721: la autocustodia queda fuera del modelo con independencia del importe, porque lo determinante es quién controla las claves privadas.</p></div>
+      <div class="qa"><h3>¿Cómo sabe el agente que he corregido algo en CoinTracking?</h3><p>Porque se lo dices y porque la caché se invalida antes de volver a leer. Sin ese paso, las cifras nuevas se mezclarían con las viejas: es el error más caro posible en una auditoría.</p></div>
+      <div class="qa"><h3>¿Puedo usar solo una parte del sistema?</h3><p>Sí. La base de conocimiento y el auditor determinista funcionan sin el servidor MCP; la skill de declaración necesita la reconciliación previa, aunque sea con el CSV.</p></div>
+    </section>
+
+    <section id="diagramas" class="section">
+      <div class="section-head"><span class="section-num">14</span><h2 class="title">Los diagramas</h2></div>
+      <p class="sub">Las dos vistas del mismo sistema, por otros dos caminos: el proceso paso a paso y las piezas que lo sostienen.</p>
+      <div class="grid cols-2">
+        <a class="card card-link" href="flujo-de-trabajo.html">
+          <div class="card-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h6v5H4zM14 13h6v5h-6z"></path><path d="M10 8.5h2a2 2 0 0 1 2 2v5"></path></svg></div>
+          <h3>Flujo de trabajo</h3>
+          <p>Del proyecto activo al informe revisable: qué calcula el código, qué interpreta el agente, qué decide el usuario y dónde se para el flujo. Incluye el bucle de corrección y verificación.</p>
+          <span class="go">Abrir el diagrama →</span>
+        </a>
+        <a class="card card-link" href="arquitectura.html">
+          <div class="card-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg></div>
+          <h3>Arquitectura</h3>
+          <p>Los once componentes y las tres fronteras reales —repositorio versionado, proceso MCP, datos fuera de git— con el camino de una petición hasta la API y la evidencia de cada componente.</p>
+          <span class="go">Abrir el diagrama →</span>
+        </a>
+      </div>
+      <div class="note">
+        <p><strong>Cómo se generan.</strong> Los dos son artefactos de archify: un <code>candidate.json</code> describe el diagrama y el renderizador produce un HTML autónomo con temas, movimiento y exportación. Las fuentes —<code>flujo-de-trabajo.json</code> y <code>arquitectura.json</code>— están al lado de cada página, así que se pueden corregir y volver a renderizar. El de arquitectura, además, cita archivo y línea de cada componente contra un commit concreto.</p>
+      </div>
+    </section>
+  </main>
+</div>
+
+<footer class="footer">
+  <span>PROJECT-COINTRACKING-EXPERT · documento del repositorio, en español (ADR-001)</span>
+  <span><a href="flujo-de-trabajo.html">Flujo de trabajo</a> · <a href="arquitectura.html">Arquitectura</a></span>
+  <span>Página estática: no envía datos ni carga recursos externos · <code>docs/web/index.html</code></span>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+
+  var STORAGE_KEY = "project-cointracking-expert:prefs";
+  var root = document.documentElement;
+
+  var COPY_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+  var CHECK_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>';
+
+  function updateThemeLabel() {
+    var btn = document.getElementById("theme-toggle");
+    if (!btn) { return; }
+    var dark = root.getAttribute("data-theme") === "dark";
+    btn.setAttribute("aria-label", dark ? "Cambiar a tema claro" : "Cambiar a tema oscuro");
+  }
+
+  function applyTheme(theme) {
+    if (theme !== "dark" && theme !== "light") { theme = "light"; }
+    root.setAttribute("data-theme", theme);
+    updateThemeLabel();
+  }
+
+  var prefs = {};
+  try { prefs = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); } catch (e) { prefs = {}; }
+
+  var initialTheme = prefs.theme;
+  if (initialTheme !== "dark" && initialTheme !== "light") {
+    initialTheme = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  }
+  applyTheme(initialTheme);
+
+  function savePrefs() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(prefs)); } catch (e) {}
+  }
+
+  var themeBtn = document.getElementById("theme-toggle");
+  if (themeBtn) {
+    themeBtn.addEventListener("click", function () {
+      prefs.theme = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+      applyTheme(prefs.theme);
+      savePrefs();
+    });
+  }
+
+  // El botón de copiar no se escribe en el marcado: se crea aquí para que
+  // añadir un bloque de código no obligue a recordar su botón.
+  document.querySelectorAll(".code").forEach(function (block) {
+    if (block.querySelector(".copy")) { return; }
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy";
+    btn.innerHTML = COPY_ICON + "<span>Copiar</span>";
+    btn.setAttribute("aria-label", "Copiar");
+    block.appendChild(btn);
+
+    btn.addEventListener("click", function () {
+      var pre = block.querySelector("pre");
+      var code = (pre && (pre.querySelector("code") || pre)) || null;
+      if (!code) { return; }
+      var done = function () {
+        btn.classList.add("copied");
+        btn.innerHTML = CHECK_ICON + "<span>Copiado</span>";
+        btn.setAttribute("aria-label", "Copiado");
+        setTimeout(function () {
+          btn.classList.remove("copied");
+          btn.innerHTML = COPY_ICON + "<span>Copiar</span>";
+          btn.setAttribute("aria-label", "Copiar");
+        }, 1600);
+      };
+      var text = code.textContent;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done, done);
+      } else {
+        var ta = document.createElement("textarea");
+        ta.value = text;
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand("copy"); } catch (e) {}
+        document.body.removeChild(ta);
+        done();
+      }
+    });
+  });
+
+  if ("IntersectionObserver" in window) {
+    var links = {};
+    document.querySelectorAll(".toc a").forEach(function (a) { links[a.getAttribute("href").slice(1)] = a; });
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          Object.keys(links).forEach(function (id) { links[id].classList.remove("active"); });
+          if (links[entry.target.id]) { links[entry.target.id].classList.add("active"); }
+        }
+      });
+    }, { rootMargin: "-20% 0px -70% 0px", threshold: 0 });
+    document.querySelectorAll("main section").forEach(function (s) { observer.observe(s); });
+  }
+})();
+</script>
+</body>
+</html>
