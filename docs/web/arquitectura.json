@@ -1,0 +1,176 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Arquitectura de PROJECT-COINTRACKING-EXPERT",
+    "locale": "es",
+    "output": "docs/web/arquitectura.html",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/fred66sp/cointracking-expert.git",
+      "provider": "github",
+      "revision": "415961104ac6009262495ce5dee865fbf48a4b44"
+    }
+  },
+  "components": [
+    {
+      "id": "usuario",
+      "type": "external",
+      "label": "Usuario",
+      "sublabel": "decide y corrige",
+      "pos": [40, 40],
+      "size": [130, 60],
+      "icon": "person"
+    },
+    {
+      "id": "agente",
+      "type": "frontend",
+      "label": "Claude Code",
+      "sublabel": "agente auditor",
+      "pos": [300, 40],
+      "size": [150, 64],
+      "sources": [{ "path": "CLAUDE.md", "line": 5, "end_line": 11 }]
+    },
+    {
+      "id": "mcp",
+      "type": "backend",
+      "label": "cointracking-mcp",
+      "sublabel": "Go · JSON-RPC",
+      "pos": [700, 40],
+      "size": [170, 64],
+      "sources": [{ "path": "cointracking-mcp/cmd/cointracking-mcp/main.go", "line": 58, "end_line": 61 }]
+    },
+    {
+      "id": "apihmac",
+      "type": "security",
+      "label": "Cliente HMAC-SHA512",
+      "sublabel": "nonce monotónico",
+      "pos": [940, 40],
+      "size": [170, 64],
+      "sources": [{ "path": "cointracking-mcp/internal/api/client.go", "line": 1, "end_line": 2 }]
+    },
+    {
+      "id": "cache",
+      "type": "database",
+      "label": "Caché por proyecto",
+      "sublabel": "LRU + TTL",
+      "pos": [700, 180],
+      "size": [170, 64],
+      "sources": [{ "path": "cointracking-mcp/internal/cache/manager.go", "line": 18, "end_line": 23 }]
+    },
+    {
+      "id": "ctapi",
+      "type": "cloud",
+      "label": "CoinTracking API v1",
+      "sublabel": "solo lectura",
+      "pos": [940, 320],
+      "size": [170, 64],
+      "sources": [{ "path": "knowledge/cointracking/MCP_API.md", "line": 45, "end_line": 49 }]
+    },
+    {
+      "id": "skills",
+      "type": "frontend",
+      "label": "Skills",
+      "sublabel": "/audit · /tax-return",
+      "pos": [480, 200],
+      "size": [170, 64],
+      "sources": [{ "path": "CLAUDE.md", "line": 96, "end_line": 97 }]
+    },
+    {
+      "id": "adr",
+      "type": "database",
+      "label": "Decisiones (ADR)",
+      "sublabel": "42 · formato MADR",
+      "pos": [40, 200],
+      "size": [170, 64],
+      "sources": [{ "path": "adr/INDEX.md", "line": 1, "end_line": 7 }]
+    },
+    {
+      "id": "conocimiento",
+      "type": "database",
+      "label": "knowledge/",
+      "sublabel": "113 docs · niveles A-F",
+      "pos": [40, 340],
+      "size": [170, 64],
+      "sources": [{ "path": "knowledge/INDEX_MASTER.md", "line": 1, "end_line": 12 }]
+    },
+    {
+      "id": "tool",
+      "type": "messagebus",
+      "label": "ct_audit.py",
+      "sublabel": "5 chequeos",
+      "pos": [250, 340],
+      "size": [160, 64],
+      "sources": [{ "path": "tools/ct_audit.py", "line": 233, "end_line": 241 }]
+    },
+    {
+      "id": "disco",
+      "type": "database",
+      "label": "Proyecto en disco",
+      "sublabel": "USER_INPUT · reports",
+      "tag": "fuera de git",
+      "pos": [40, 520],
+      "size": [180, 64],
+      "sources": [{ "path": "USER_INPUT/README.md", "line": 1, "end_line": 3 }]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Repositorio versionado (git)",
+      "wraps": ["adr", "conocimiento", "tool"]
+    },
+    {
+      "kind": "region",
+      "label": "Proceso MCP (Go)",
+      "wraps": ["mcp", "cache", "apihmac"]
+    },
+    {
+      "kind": "security-group",
+      "label": "Datos reales · fuera de git",
+      "wraps": ["disco"]
+    }
+  ],
+  "connections": [
+    { "id": "pide-auditoria", "from": "usuario", "to": "agente", "label": "pide auditoría", "variant": "emphasis" },
+    { "id": "ejecuta-skill", "from": "agente", "to": "skills", "label": "ejecuta" },
+    { "id": "mcp-stdio", "from": "agente", "to": "mcp", "label": "JSON-RPC (stdio)", "variant": "emphasis" },
+    { "id": "se-rige-por", "from": "agente", "to": "adr", "label": "se rige por", "variant": "dashed" },
+    { "id": "consulta", "from": "skills", "to": "conocimiento", "label": "consulta" },
+    { "id": "lanza-chequeos", "from": "skills", "to": "tool", "label": "lanza", "variant": "emphasis" },
+    { "id": "lee-csv", "from": "tool", "to": "disco", "label": "lee el CSV", "variant": "dashed" },
+    { "id": "escribe-informe", "from": "skills", "to": "disco", "label": "informe", "variant": "dashed" },
+    { "id": "cache-ttl", "from": "mcp", "to": "cache", "label": "LRU + TTL", "variant": "dashed" },
+    { "id": "firma", "from": "mcp", "to": "apihmac", "label": "firma" },
+    { "id": "https", "from": "apihmac", "to": "ctapi", "label": "HMAC-SHA512", "variant": "security" }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Agente y conocimiento",
+      "items": [
+        "Claude Code carga dos skills y las reglas de CLAUDE.md; no ejecuta nada fuera de ellas",
+        "knowledge/ aporta la regla y su fecha de vigencia: 113 documentos en seis niveles",
+        "El cálculo determinista va por tools/ct_audit.py; el agente interpreta, no calcula saldos"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Servidor MCP propio",
+      "items": [
+        "Proceso Go aparte, hablado por stdio: 6 herramientas de lectura y las de control de caché y proyecto",
+        "Firma HMAC-SHA512 con nonce monotónico y control de cuota de la API",
+        "Caché por proyecto con LRU + TTL: dos cuentas nunca comparten entradas"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Fronteras",
+      "items": [
+        "Lo versionado es conocimiento, ADR y herramientas; los datos reales nunca entran en git",
+        "Cada proyecto aísla su carpeta de entrada y sus informes",
+        "El conocimiento se valida en CI (.github/workflows/audit-mega.yml) y en el hook de pre-commit"
+      ]
+    }
+  ]
+}

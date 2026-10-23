@@ -1,0 +1,336 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Flujo de trabajo del auditor de CoinTracking",
+    "subtitle": "De la fuente de datos al informe revisable: qué calcula el código, qué interpreta el agente, qué decide el usuario y dónde se para el flujo.",
+    "locale": "es",
+    "output": "docs/web/flujo-de-trabajo.html",
+    "visual_preset": "signal-flow",
+    "quality_profile": "showcase"
+  },
+  "lanes": [
+    {
+      "id": "usuario",
+      "label": "Usuario y proyecto"
+    },
+    {
+      "id": "datos",
+      "label": "Datos y evidencia"
+    },
+    {
+      "id": "auditor",
+      "label": "Agente auditor"
+    },
+    {
+      "id": "control",
+      "label": "Control y verificación",
+      "variant": "exception"
+    }
+  ],
+  "phases": [
+    {
+      "id": "entrada",
+      "label": "Entrada",
+      "fromCol": 0,
+      "toCol": 1
+    },
+    {
+      "id": "reconciliacion",
+      "label": "Reconciliación",
+      "fromCol": 2,
+      "toCol": 3,
+      "variant": "emphasis"
+    },
+    {
+      "id": "remediacion",
+      "label": "Remediación y control",
+      "fromCol": 4,
+      "toCol": 4,
+      "variant": "security"
+    },
+    {
+      "id": "cierre",
+      "label": "Cierre y fiscalidad",
+      "fromCol": 5,
+      "toCol": 5
+    }
+  ],
+  "groups": [
+    {
+      "id": "calculo",
+      "label": "Cálculo determinista",
+      "lane": "datos",
+      "fromCol": 1,
+      "toCol": 2,
+      "variant": "emphasis"
+    },
+    {
+      "id": "bucle",
+      "label": "Bucle de corrección",
+      "lane": "control",
+      "fromCol": 4,
+      "toCol": 5,
+      "variant": "security"
+    }
+  ],
+  "mainPath": [
+    "proyecto",
+    "fuente",
+    "skill",
+    "tool",
+    "diagnostico",
+    "guia",
+    "aplica",
+    "verifica",
+    "gate",
+    "fiscal",
+    "entrega"
+  ],
+  "nodes": [
+    {
+      "id": "proyecto",
+      "lane": "usuario",
+      "col": 0,
+      "type": "external",
+      "label": "Proyecto activo",
+      "sublabel": "una carpeta por cuenta",
+      "tag": "aislamiento",
+      "icon": "start",
+      "width": 150
+    },
+    {
+      "id": "aplica",
+      "lane": "usuario",
+      "col": 4,
+      "type": "external",
+      "label": "Corrección en CoinTracking",
+      "sublabel": "la aplica el usuario",
+      "tag": "pide confirmación",
+      "icon": "person",
+      "width": 190
+    },
+    {
+      "id": "entrega",
+      "lane": "usuario",
+      "col": 5,
+      "type": "frontend",
+      "label": "Informe para revisar",
+      "sublabel": "evidencia + límites",
+      "icon": "success",
+      "width": 150
+    },
+    {
+      "id": "fuente",
+      "lane": "datos",
+      "col": 1,
+      "type": "database",
+      "label": "Fuente de datos",
+      "sublabel": "MCP (API) o CSV",
+      "tag": "solo lectura",
+      "width": 150
+    },
+    {
+      "id": "tool",
+      "lane": "datos",
+      "col": 2,
+      "type": "messagebus",
+      "label": "ct_audit.py",
+      "sublabel": "5 chequeos sobre el CSV",
+      "width": 160
+    },
+    {
+      "id": "skill",
+      "lane": "auditor",
+      "col": 1,
+      "type": "frontend",
+      "label": "Skill de auditoría",
+      "sublabel": "/audit-cointracking",
+      "width": 150
+    },
+    {
+      "id": "conocimiento",
+      "lane": "auditor",
+      "col": 2,
+      "type": "database",
+      "label": "Base de conocimiento",
+      "sublabel": "113 documentos · niveles A-F",
+      "tag": "con fecha de vigencia",
+      "width": 160
+    },
+    {
+      "id": "diagnostico",
+      "lane": "auditor",
+      "col": 3,
+      "type": "backend",
+      "label": "Diagnóstico",
+      "sublabel": "evidencia → causa → impacto",
+      "tag": "cero invención",
+      "width": 150
+    },
+    {
+      "id": "guia",
+      "lane": "auditor",
+      "col": 4,
+      "type": "backend",
+      "label": "Guía de corrección",
+      "sublabel": "qué campo cambiar y por qué",
+      "tag": "bloque resumen",
+      "width": 160
+    },
+    {
+      "id": "fiscal",
+      "lane": "auditor",
+      "col": 5,
+      "type": "backend",
+      "label": "Cálculo fiscal",
+      "sublabel": "FIFO · tramos · 721",
+      "tag": "estimación no vinculante",
+      "width": 160
+    },
+    {
+      "id": "verifica",
+      "lane": "control",
+      "col": 4,
+      "type": "security",
+      "label": "Verificación por lote",
+      "sublabel": "invalida caché → relee",
+      "width": 160
+    },
+    {
+      "id": "gate",
+      "lane": "control",
+      "col": 5,
+      "type": "security",
+      "label": "¿Cuadra el saldo?",
+      "sublabel": "contra exchange y banco",
+      "tag": "nada se borra sin Trade ID",
+      "icon": "decision",
+      "width": 168
+    }
+  ],
+  "edges": [
+    {
+      "id": "abre-carpeta",
+      "from": "proyecto",
+      "to": "fuente",
+      "label": "abre la carpeta",
+      "role": "main"
+    },
+    {
+      "id": "entrega-datos",
+      "from": "fuente",
+      "to": "skill",
+      "label": "datos",
+      "variant": "emphasis",
+      "role": "main"
+    },
+    {
+      "id": "ejecuta-chequeos",
+      "from": "skill",
+      "to": "tool",
+      "label": "ejecuta chequeos",
+      "role": "main"
+    },
+    {
+      "id": "descuadres",
+      "from": "tool",
+      "to": "diagnostico",
+      "label": "descuadres",
+      "variant": "emphasis",
+      "role": "main"
+    },
+    {
+      "id": "regla-aplicada",
+      "from": "conocimiento",
+      "to": "diagnostico",
+      "label": "regla aplicada",
+      "variant": "dashed",
+      "role": "branch"
+    },
+    {
+      "id": "hallazgos",
+      "from": "diagnostico",
+      "to": "guia",
+      "label": "hallazgos",
+      "variant": "emphasis",
+      "role": "main"
+    },
+    {
+      "id": "usuario-edita",
+      "from": "guia",
+      "to": "aplica",
+      "label": "corrige",
+      "variant": "emphasis",
+      "role": "main"
+    },
+    {
+      "id": "confirma",
+      "from": "aplica",
+      "to": "verifica",
+      "label": "confirma",
+      "role": "main"
+    },
+    {
+      "id": "compara",
+      "from": "verifica",
+      "to": "gate",
+      "label": "compara",
+      "role": "main"
+    },
+    {
+      "id": "aun-no-cuadra",
+      "from": "gate",
+      "to": "guia",
+      "label": "aún no cuadra",
+      "variant": "security",
+      "role": "return"
+    },
+    {
+      "id": "cuadra",
+      "from": "gate",
+      "to": "fiscal",
+      "label": "cuadra",
+      "variant": "emphasis",
+      "role": "main"
+    },
+    {
+      "id": "informe",
+      "from": "fiscal",
+      "to": "entrega",
+      "label": "informe",
+      "variant": "emphasis",
+      "role": "main"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Qué hace el código y qué hace el agente",
+      "items": [
+        "ct_audit.py calcula saldos, transferencias, duplicados y colisiones de ticker",
+        "El agente interpreta esos números y explica causa e impacto; no hace aritmética de saldos",
+        "FIFO y tramos del ejercicio son cálculo, no estimación"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Dónde se para el flujo",
+      "items": [
+        "Sin proyecto activo no se toca ningún dato",
+        "Ningún duplicado se borra sin verificar el Trade ID en el exchange",
+        "La caché se invalida antes de dar cifras nuevas",
+        "El MCP solo lee: las correcciones las aplica el usuario"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Qué queda al cerrar",
+      "items": [
+        "Informe con evidencia, causa, impacto y recomendación",
+        "Entrada en REGISTRO-CAMBIOS.md con el antes y el después",
+        "Pendientes declarados en voz alta, no silenciados"
+      ]
+    }
+  ]
+}

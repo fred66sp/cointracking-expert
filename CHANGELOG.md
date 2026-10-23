@@ -6,6 +6,14 @@ Todos los cambios notables en el proyecto CoinTracking Expert se documentan en e
 
 ## [No lanzado]
 
+### 2026-10-23: Documentación web del proyecto en `docs/web/`
+
+Tres páginas estáticas para explicar el agente sin abrir el repositorio: `docs/web/index.html` (guía completa en español, 14 secciones: qué es, empezar, mapa del repositorio, las dos skills, servidor MCP, base de conocimiento, auditor determinista, casos y patrones, fiscalidad española, gobernanza, trazabilidad, límites, preguntas y los diagramas), `docs/web/flujo-de-trabajo.html` (el proceso de auditoría con su bucle de corrección y verificación) y `docs/web/arquitectura.html` (componentes y fronteras reales del sistema). Las tres se enlazan desde la guía —botón del hero, índice, sección 14 y pie— y ninguna carga recursos externos ni datos del usuario.
+
+Los dos diagramas son artefactos de **archify** renderizados desde sus candidatos, que quedan versionados al lado (`flujo-de-trabajo.json`, `arquitectura.json`): un `finalize` con `--quality showcase` regenera cada HTML autónomo sin instalar nada. El de arquitectura va en modo *repository-backed*: fija la identidad del repositorio en el commit `4159611` y cita archivo y línea de cada componente (`CLAUDE.md`, `cmd/cointracking-mcp/main.go`, `internal/api/client.go`, `internal/cache/manager.go`, `tools/ct_audit.py`, `adr/INDEX.md`, `knowledge/INDEX_MASTER.md`, `USER_INPUT/README.md`); el de flujo de trabajo no cita fuentes y describe el proceso documentado en `knowledge/procedures/`.
+
+Verificación: HTML balanceado y sin anclas rotas (parser estricto), las cuatro puertas de archify en verde (validate, deliver, check, browser-check) y revisión visual en claro, oscuro y móvil (390 px). No se tocó código del agente ni del servidor MCP.
+
 ### 2026-07-05: Campo MADR `Deciders` añadido a los 42 ADRs (warning de ADR Explorer)
 
 La extensión **ADR Explorer** del usuario marcó los 42 ADRs como "decisions without deciders": ningún ADR llevaba el campo MADR estándar de decisores. Corregido con script idempotente que inserta `**Deciders:** Alfredo González P. (propietario, aprueba) · Claude Code (agente, propone)` tras la línea `**Status:**` de cada ADR, respetando los dos estilos de formato presentes (bloques con saltos duros y estilo espaciado) — la atribución refleja la división real de ADR-012/026: el agente propone, el usuario decide.
