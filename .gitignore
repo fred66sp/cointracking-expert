@@ -61,6 +61,8 @@ reports/output/
 *.sqlite3
 
 # Local agent/runtime state — never version
+.pi/
+.codegraph/
 .atl/
 .claude/
 *.code-workspace
