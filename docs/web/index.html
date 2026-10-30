@@ -156,7 +156,23 @@
     filter: blur(6px);
     pointer-events: none;
   }
-  .hero-inner { position: relative; max-width: 1080px; margin: 0 auto; }
+  /* Rejilla de fondo: da profundidad al hero sin cargar ninguna imagen. */
+  .hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(to right, color-mix(in srgb, var(--border-strong) 45%, transparent) 1px, transparent 1px),
+      linear-gradient(to bottom, color-mix(in srgb, var(--border-strong) 45%, transparent) 1px, transparent 1px);
+    background-size: 56px 56px;
+    -webkit-mask-image: radial-gradient(70% 65% at 50% 20%, #000 0%, transparent 78%);
+    mask-image: radial-gradient(70% 65% at 50% 20%, #000 0%, transparent 78%);
+    opacity: .5;
+    pointer-events: none;
+  }
+  /* La rejilla se pinta por encima del contenido posicionado: sin este
+     z-index el texto del hero quedaría debajo de ella. */
+  .hero-inner { position: relative; z-index: 1; max-width: 1080px; margin: 0 auto; }
   .pill {
     display: inline-flex;
     align-items: center;
@@ -178,7 +194,25 @@
     letter-spacing: -.035em;
     font-weight: 800;
   }
-  .hero h1 .grad { color: var(--accent); }
+  .hero h1 .grad {
+    background: linear-gradient(112deg, var(--accent) 0%, var(--accent-2) 52%, var(--accent-3) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  /* Entrada y ambiente del hero: el contenido sube escalonado y los halos
+     derivan muy despacio. La regla global de prefers-reduced-motion lo apaga. */
+  @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+  @keyframes hero-drift {
+    from { translate: 0 0; scale: 1; filter: blur(6px) hue-rotate(0deg); }
+    to { translate: 64px -36px; scale: 1.12; filter: blur(6px) hue-rotate(40deg); }
+  }
+  .hero::before { animation: hero-drift 20s ease-in-out -5s infinite alternate; }
+  .hero-inner > * { animation: rise .6s ease-out both; }
+  .hero-inner > *:nth-child(2) { animation-delay: .08s; }
+  .hero-inner > *:nth-child(3) { animation-delay: .16s; }
+  .hero-inner > *:nth-child(4) { animation-delay: .24s; }
+  .hero-inner > *:nth-child(5) { animation-delay: .32s; }
   .hero p.lead {
     margin: 20px 0 0;
     max-width: 660px;
@@ -460,7 +494,65 @@
   .footer code { background: var(--bg-soft); border: 1px solid var(--border); border-radius: 6px; padding: 1px 6px; }
   .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
   ::selection { background: color-mix(in srgb, var(--accent) 30%, transparent); }
-  @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; transition: none !important; } }
+
+  /* Vuelta arriba: aparece cuando la cabecera ya no se ve. */
+  .to-top {
+    position: fixed; right: clamp(16px, 3vw, 28px); bottom: clamp(16px, 3vw, 28px); z-index: 60;
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 44px; height: 44px; padding: 0;
+    border: 1px solid var(--border-strong); border-radius: 50%;
+    background: color-mix(in srgb, var(--bg-elev) 92%, transparent);
+    -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+    color: var(--muted); box-shadow: var(--shadow);
+    opacity: 0; visibility: hidden; transform: translateY(10px);
+    transition: opacity .2s, transform .2s, visibility .2s, border-color .15s, color .15s;
+  }
+  .to-top.is-visible { opacity: 1; visibility: visible; transform: none; }
+  .to-top:hover { color: var(--accent); border-color: var(--accent); text-decoration: none; }
+  .to-top:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  .to-top svg { width: 18px; height: 18px; }
+
+  /* Línea superior: se llena al cargar la página y después marca el progreso
+     de lectura. En reposo --p es 0, así que no tapa la cabecera. */
+  .progress {
+    position: fixed; inset: 0 0 auto 0; height: 3px; z-index: 60;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2) 52%, var(--accent-3));
+    transform: scaleX(var(--p, 0)); transform-origin: 0 50%;
+    pointer-events: none;
+  }
+  .progress.is-loading { transition: transform .7s cubic-bezier(.16, 1, .3, 1); }
+
+  /* Tramos fiscales: una banda de fondo de ancho proporcional al tipo, para
+     que 19 % y 30 % se comparen de un vistazo. Es un color mezclado, así que
+     el texto conserva el contraste en ambos temas. */
+  td.pct {
+    font-variant-numeric: tabular-nums;
+    background-image: linear-gradient(90deg,
+      color-mix(in srgb, var(--accent) 22%, transparent) calc(var(--pct) * 1%),
+      transparent calc(var(--pct) * 1%));
+    background-repeat: no-repeat;
+    box-shadow: inset 3px 0 0 var(--accent);
+  }
+
+  /* Entrada en cascada del contenido: los bloques que llegan juntos se
+     escalonan con --d (la posición en el lote, la fija el script) y el resto
+     sube con un fade simple. El estado oculto depende de .is-ready, que solo
+     añade JavaScript: sin él nada queda oculto y el estado final es el estático. */
+  @media screen and (prefers-reduced-motion: no-preference) {
+    .flow.is-ready .flow-step:not(.is-in), .grid.is-ready .card:not(.is-in),
+    .role-grid.is-ready .role-block:not(.is-in),
+    ul.plain.is-ready li:not(.is-in), .qa.is-ready:not(.is-in),
+    .section-head.is-ready:not(.is-in), section > .sub.is-ready:not(.is-in),
+    .code.is-ready:not(.is-in), .table-wrap.is-ready:not(.is-in),
+    .note.is-ready:not(.is-in) { opacity: 0; }
+    .flow .flow-step.is-in, .grid .card.is-in, .role-grid .role-block.is-in,
+    ul.plain li.is-in, .qa.is-in, .section-head.is-in, section > .sub.is-in,
+    .code.is-in, .table-wrap.is-in, .note.is-in {
+      animation: rise .55s cubic-bezier(.16, 1, .3, 1) backwards;
+      animation-delay: calc(var(--d, 0) * 70ms);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; transition: none !important; animation: none !important; } }
 
   .qa { border-bottom: 1px solid var(--border); padding: 18px 0; }
   .qa:last-child { border-bottom: 0; }
@@ -474,6 +566,8 @@
 </style>
 </head>
 <body>
+
+<div class="progress" id="progress" aria-hidden="true"></div>
 
 <header class="topbar">
   <a class="brand" href="#top">
@@ -494,8 +588,8 @@
   </a>
   <span class="topbar-spacer"></span>
   <button class="icon-btn" id="theme-toggle" type="button" aria-label="Cambiar a tema oscuro">
-    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path></svg>
-    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg>
+    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z"/></svg>
+    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z"/></svg>
     <span>Tema</span>
   </button>
 </header>
@@ -785,17 +879,17 @@ version: 1.0
       <p>El conocimiento caduca, y caduca por tres motivos distintos que se revisan por separado:</p>
       <div class="grid cols-3">
         <div class="card">
-          <div class="card-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg></div>
+          <div class="card-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15.75 15.75V18m-7.5-6.75h.008v.008H8.25v-.008Zm0 2.25h.008v.008H8.25V13.5Zm0 2.25h.008v.008H8.25v-.008Zm0 2.25h.008v.008H8.25V18Zm2.498-6.75h.007v.008h-.007v-.008Zm0 2.25h.007v.008h-.007V13.5Zm0 2.25h.007v.008h-.007v-.008Zm0 2.25h.007v.008h-.007V18Zm2.504-6.75h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V13.5Zm0 2.25h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V18Zm2.498-6.75h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V13.5ZM8.25 6h7.5v2.25h-7.5V6ZM12 2.25c-1.892 0-3.758.11-5.593.322C5.307 2.7 4.5 3.65 4.5 4.757V19.5a2.25 2.25 0 0 0 2.25 2.25h10.5a2.25 2.25 0 0 0 2.25-2.25V4.757c0-1.108-.806-2.057-1.907-2.185A48.507 48.507 0 0 0 12 2.25Z"/></svg></div>
           <h3>Lo fiscal</h3>
           <p>Tramos, umbrales, criterios de la DGT y plazos cambian cada año. Nada se aplica «de memoria»: se reverifica contra AEAT, BOE o DGT.</p>
         </div>
         <div class="card">
-          <div class="card-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="M2 10h20"></path></svg></div>
+          <div class="card-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 0 1-1.125-1.125M3.375 19.5h7.5c.621 0 1.125-.504 1.125-1.125m-9.75 0V5.625m0 12.75v-1.5c0-.621.504-1.125 1.125-1.125m18.375 2.625V5.625m0 12.75c0 .621-.504 1.125-1.125 1.125m1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125m0 3.75h-7.5A1.125 1.125 0 0 1 12 18.375m9.75-12.75c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125m19.5 0v1.5c0 .621-.504 1.125-1.125 1.125M2.25 5.625v1.5c0 .621.504 1.125 1.125 1.125m0 0h17.25m-17.25 0h7.5c.621 0 1.125.504 1.125 1.125M3.375 8.25c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125m17.25-3.75h-7.5c-.621 0-1.125.504-1.125 1.125m8.625-1.125c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125m-17.25 0h7.5m-7.5 0c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125M12 10.875v-1.5m0 1.5c0 .621-.504 1.125-1.125 1.125M12 10.875c0 .621.504 1.125 1.125 1.125m-2.25 0c.621 0 1.125.504 1.125 1.125M13.125 12h7.5m-7.5 0c-.621 0-1.125.504-1.125 1.125M20.625 12c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125m-17.25 0h7.5M12 14.625v-1.5m0 1.5c0 .621-.504 1.125-1.125 1.125M12 14.625c0 .621.504 1.125 1.125 1.125m-2.25 0c.621 0 1.125.504 1.125 1.125m0 1.5v-1.5m0 0c0-.621.504-1.125 1.125-1.125m0 0h7.5"/></svg></div>
           <h3>Lo de CoinTracking</h3>
           <p>Formato CSV, tickers y herramientas cambian con la plataforma. La verdad del formato actual son los datos reales del usuario y el centro de ayuda oficial.</p>
         </div>
         <div class="card">
-          <div class="card-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg></div>
+          <div class="card-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z"/></svg></div>
           <h3>Lo regulatorio</h3>
           <p>Licencias, cierres y migraciones forzosas de exchanges (por ejemplo MiCA) afectan a la operativa y se comprueban antes de preparar una declaración.</p>
         </div>
@@ -895,11 +989,11 @@ version: 1.0
         <table>
           <thead><tr><th>Base liquidable</th><th>Tipo aplicable</th></tr></thead>
           <tbody>
-            <tr><td>0 – 6.000 €</td><td>19 %</td></tr>
-            <tr><td>6.000 – 50.000 €</td><td>21 %</td></tr>
-            <tr><td>50.000 – 200.000 €</td><td>23 %</td></tr>
-            <tr><td>200.000 – 300.000 €</td><td>27 %</td></tr>
-            <tr><td>Más de 300.000 €</td><td>30 %</td></tr>
+            <tr><td>0 – 6.000 €</td><td class="pct" style="--pct:19">19 %</td></tr>
+            <tr><td>6.000 – 50.000 €</td><td class="pct" style="--pct:21">21 %</td></tr>
+            <tr><td>50.000 – 200.000 €</td><td class="pct" style="--pct:23">23 %</td></tr>
+            <tr><td>200.000 – 300.000 €</td><td class="pct" style="--pct:27">27 %</td></tr>
+            <tr><td>Más de 300.000 €</td><td class="pct" style="--pct:30">30 %</td></tr>
           </tbody>
         </table>
       </div>
@@ -1010,22 +1104,22 @@ powershell -ExecutionPolicy Bypass .\tools\install_hooks.ps1</code></pre></div>
 
       <div class="grid cols-2">
         <div class="card">
-          <div class="card-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 9v4M12 17h.01"></path><path d="M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"></path></svg></div>
+          <div class="card-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"/></svg></div>
           <h3>No es determinista</h3>
           <p>Es un modelo de lenguaje: encuentra y explica problemas cualitativos, pero no produce cifras fiscales vinculantes. Toda cantidad exacta es una estimación no vinculante salvo que provenga de un cálculo determinista.</p>
         </div>
         <div class="card">
-          <div class="card-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="M9 12l2 2 4-4"></path></svg></div>
+          <div class="card-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z"/></svg></div>
           <h3>Cero invención</h3>
           <p>Toda afirmación se apoya en los datos reales del usuario, la base de conocimiento fundamentada o una fuente oficial verificada en la sesión. Sin respaldo, no se afirma.</p>
         </div>
         <div class="card">
-          <div class="card-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5M12 16h.01"></path></svg></div>
+          <div class="card-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z"/></svg></div>
           <h3>Ante la duda, para</h3>
           <p>Buscar en el conocimiento, luego en la fuente oficial, luego preguntar. Se prefiere «hay que verificar X» a una cifra dudosa, y el agente puede negarse a dar un número que no pueda fundamentar.</p>
         </div>
         <div class="card">
-          <div class="card-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg></div>
+          <div class="card-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg></div>
           <h3>Consentimiento antes de actuar</h3>
           <p>Ante una acción consecuente —irreversible o con impacto fiscal— se explica qué se va a hacer, se advierte de la consecuencia de no hacerlo y se pregunta. No se aplica a lecturas ni a pasos triviales.</p>
         </div>
@@ -1064,13 +1158,13 @@ powershell -ExecutionPolicy Bypass .\tools\install_hooks.ps1</code></pre></div>
       <p class="sub">Las dos vistas del mismo sistema, por otros dos caminos: el proceso paso a paso y las piezas que lo sostienen.</p>
       <div class="grid cols-2">
         <a class="card card-link" href="flujo-de-trabajo.html">
-          <div class="card-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h6v5H4zM14 13h6v5h-6z"></path><path d="M10 8.5h2a2 2 0 0 1 2 2v5"></path></svg></div>
+          <div class="card-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 0 1 0 3.75H5.625a1.875 1.875 0 0 1 0-3.75Z"/></svg></div>
           <h3>Flujo de trabajo</h3>
           <p>Del proyecto activo al informe revisable: qué calcula el código, qué interpreta el agente, qué decide el usuario y dónde se para el flujo. Incluye el bucle de corrección y verificación.</p>
           <span class="go">Abrir el diagrama →</span>
         </a>
         <a class="card card-link" href="arquitectura.html">
-          <div class="card-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg></div>
+          <div class="card-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z"/></svg></div>
           <h3>Arquitectura</h3>
           <p>Los once componentes y las tres fronteras reales —repositorio versionado, proceso MCP, datos fuera de git— con el camino de una petición hasta la API y la evidencia de cada componente.</p>
           <span class="go">Abrir el diagrama →</span>
@@ -1089,6 +1183,10 @@ powershell -ExecutionPolicy Bypass .\tools\install_hooks.ps1</code></pre></div>
   <span>Página estática: no envía datos ni carga recursos externos · <code>docs/web/index.html</code></span>
 </footer>
 
+<a class="to-top" id="to-top" href="#top" aria-label="Volver arriba">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4.5 15.75 7.5-7.5 7.5 7.5"/></svg>
+</a>
+
 <script>
 (function () {
   "use strict";
@@ -1096,8 +1194,8 @@ powershell -ExecutionPolicy Bypass .\tools\install_hooks.ps1</code></pre></div>
   var STORAGE_KEY = "project-cointracking-expert:prefs";
   var root = document.documentElement;
 
-  var COPY_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
-  var CHECK_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>';
+  var COPY_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/></svg>';
+  var CHECK_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>';
 
   function updateThemeLabel() {
     var btn = document.getElementById("theme-toggle");
@@ -1189,6 +1287,80 @@ powershell -ExecutionPolicy Bypass .\tools\install_hooks.ps1</code></pre></div>
     }, { rootMargin: "-20% 0px -70% 0px", threshold: 0 });
     document.querySelectorAll("main section").forEach(function (s) { observer.observe(s); });
   }
+
+  // Vuelta arriba: aparece cuando la cabecera ya no se ve.
+  var toTop = document.getElementById("to-top");
+  if (toTop) {
+    var updateToTop = function () { toTop.classList.toggle("is-visible", window.scrollY > 480); };
+    window.addEventListener("scroll", updateToTop, { passive: true });
+    updateToTop();
+  }
+
+  // Línea superior: se llena al cargar y después pasa a marcar el progreso de
+  // lectura. Con movimiento reducido solo hace lo segundo.
+  var bar = document.getElementById("progress");
+  if (bar) {
+    var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var paint = function () {
+      var max = document.documentElement.scrollHeight - window.innerHeight;
+      bar.style.setProperty("--p", max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0);
+    };
+    var ticking = false;
+    window.addEventListener("scroll", function () {
+      if (ticking) { return; }
+      ticking = true;
+      requestAnimationFrame(function () { paint(); ticking = false; });
+    }, { passive: true });
+    window.addEventListener("resize", paint);
+
+    if (reduced) {
+      paint();
+    } else {
+      bar.classList.add("is-loading");
+      requestAnimationFrame(function () { bar.style.setProperty("--p", 1); });
+      bar.addEventListener("transitionend", function () {
+        // Todavía con transición, la barra se recoge hasta el progreso real;
+        // solo después se apaga para que el scroll mande sin retardo.
+        paint();
+        setTimeout(function () { bar.classList.remove("is-loading"); paint(); }, 720);
+      }, { once: true });
+    }
+  }
+})();
+</script>
+<script>
+(function () {
+  "use strict";
+  // Entrada en cascada del contenido: cada bloque se revela al entrar en
+  // pantalla y los que llegan juntos se renumeran en --d para escalonarse.
+  // Sin observer no se añade .is-ready y todo queda visible.
+  if (!("IntersectionObserver" in window)) { return; }
+  var observer = new IntersectionObserver(function (entries) {
+    entries.filter(function (entry) { return entry.isIntersecting; })
+      .sort(function (a, b) {
+        return parseFloat(a.target.style.getPropertyValue("--d")) - parseFloat(b.target.style.getPropertyValue("--d"));
+      })
+      .forEach(function (entry, i) {
+        entry.target.style.setProperty("--d", i);
+        entry.target.classList.add("is-in");
+        observer.unobserve(entry.target);
+      });
+  }, { threshold: 0, rootMargin: "0px 0px -8% 0px" });
+
+  // Bloques múltiples y listados: la cascada escala entre ellos.
+  document.querySelectorAll(".flow, .grid, .role-grid, ul.plain").forEach(function (group) {
+    var blocks = group.querySelectorAll(":scope > .flow-step, :scope > .card, :scope > .role-block, :scope > li");
+    blocks.forEach(function (block, i) { block.style.setProperty("--d", i); });
+    group.classList.add("is-ready");
+    blocks.forEach(function (block) { observer.observe(block); });
+  });
+
+  // Bloques sueltos: el mismo reveal, sin rejilla que coordinar.
+  document.querySelectorAll(".section-head, section > .sub, .qa, .code, .table-wrap, .note").forEach(function (block) {
+    block.style.setProperty("--d", 0);
+    block.classList.add("is-ready");
+    observer.observe(block);
+  });
 })();
 </script>
 </body>

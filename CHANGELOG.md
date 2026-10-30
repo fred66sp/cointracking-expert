@@ -6,6 +6,14 @@ Todos los cambios notables en el proyecto CoinTracking Expert se documentan en e
 
 ## [No lanzado]
 
+### 2026-10-31: Animaciones de scroll, degradados e iconografía en la guía web
+
+`docs/web/index.html` deja de ser una página estática plana, siguiendo la referencia del catálogo de tasks-ai: los bloques de contenido (tarjetas, pasos de flujo, listas, bloques de código, tablas y notas) aparecen en cascada al entrar en pantalla con un `IntersectionObserver` que numera cada lote en `--d` y se desconecta del elemento ya revelado; el estado oculto depende de `.is-ready`, que solo añade JavaScript, así que sin JS o con `prefers-reduced-motion` todo queda visible. El hero gana retícula de fondo con máscara radial, título con degradado de texto, halos que derivan despacio y entrada escalonada.
+
+Además: iconografía Heroicons 24 outline incrustada en línea (tema, vigencia del conocimiento, límites, diagramas, copiar y volver arriba) en lugar de los SVG improvisados, botón flotante de vuelta arriba a partir de 480 px de scroll, una única línea superior que se llena al cargar y después marca el progreso de lectura, y en la tabla de tramos de la base del ahorro una banda de fondo de ancho proporcional al tipo (19 % a 30 %). Sigue sin cargar recursos externos: todo va incrustado.
+
+Verificación: HTML balanceado (parser estricto), cero errores de consola, comprobado en claro, oscuro y 390 px, sin JS nada queda oculto, la barra llega a 1 al final del documento y el botón de vuelta arriba devuelve a `#top`.
+
 ### 2026-10-23: Documentación web del proyecto en `docs/web/`
 
 Tres páginas estáticas para explicar el agente sin abrir el repositorio: `docs/web/index.html` (guía completa en español, 14 secciones: qué es, empezar, mapa del repositorio, las dos skills, servidor MCP, base de conocimiento, auditor determinista, casos y patrones, fiscalidad española, gobernanza, trazabilidad, límites, preguntas y los diagramas), `docs/web/flujo-de-trabajo.html` (el proceso de auditoría con su bucle de corrección y verificación) y `docs/web/arquitectura.html` (componentes y fronteras reales del sistema). Las tres se enlazan desde la guía —botón del hero, índice, sección 14 y pie— y ninguna carga recursos externos ni datos del usuario.
